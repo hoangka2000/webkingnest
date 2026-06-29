@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="floatingConsult">
+    <div class="floating-consult" id="floatingConsult">
+        <button aria-label="Tắt bong bóng tư vấn" class="floating-close" onclick="toggleFloatingConsult(false)" type="button">×</button>
+        <div class="floating-consult-left">
+            <div class="floating-crown">
+                <img src="/images/icon/logo.png" alt="Kingnest" class="floating-logo">
+            </div>
+            <p class="floating-consult-title">Nhập yến chưng Kingnest giá sỉ – thùng 40/120 hũ, với giá ưu đãi</p>
+        </div>
+        <div class="floating-divider"></div>
+        <div class="floating-consult-actions">
+            <a class="floating-action-btn floating-chat" href="https://www.facebook.com/share/194mLCUAQU/?mibextid=wwXIfr" rel="noopener" target="_blank">
+                <span class="floating-icon">☏</span>
+                <span>Nhắn tin tư vấn ngay</span>
+            </a>
+        </div>
+    </div>
+    <button aria-label="Mở bong bóng tư vấn" class="floating-open" id="floatingOpen" onclick="toggleFloatingConsult(true)" type="button">💬</button>
+    <script src="/js/floating-consult.js" defer></script>
+</th:block>
+</body>
+</html>

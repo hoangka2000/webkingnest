@@ -1,0 +1,265 @@
+/* =========================================================
+   KHUNG TƯ VẤN — đồng nhất toàn site
+   Logo | Nội dung | Gạch dọc | Nút "Nhắn tin tư vấn ngay"
+   ========================================================= */
+
+.floating-consult {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(14px, 1.4vw, 26px);
+    transform: translateX(-50%);
+    z-index: 99999;
+    width: min(94vw, 1460px);
+    min-height: clamp(68px, 5.8vw, 104px);
+    padding: clamp(11px, 0.9vw, 18px) clamp(18px, 1.55vw, 32px);
+    border-radius: clamp(16px, 1.4vw, 26px);
+    border: 1.7px solid rgba(184, 137, 73, 0.78);
+    background: linear-gradient(180deg, rgba(255, 253, 247, 0.96), rgba(250, 241, 225, 0.94));
+    box-shadow:
+        0 12px 34px rgba(85, 55, 20, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(14px, 1.4vw, 28px);
+    transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s ease;
+}
+
+.floating-consult.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(26px);
+}
+
+.floating-consult-left {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 1.3vw, 26px);
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.floating-consult-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(16px, 1.42vw, 28px);
+    line-height: 1.35;
+    font-weight: 500;
+    color: #2d231d;
+}
+
+.floating-consult-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 1vw, 20px);
+    flex: 0 0 auto;
+}
+
+.floating-action-btn {
+    height: clamp(42px, 3.5vw, 62px);
+    min-width: clamp(235px, 21vw, 400px);
+    padding: 0 clamp(18px, 1.6vw, 32px);
+    border-radius: clamp(8px, 0.7vw, 12px);
+    border: 1.5px solid #b88949;
+    text-decoration: none;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(14px, 1.15vw, 22px);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(9px, 0.8vw, 15px);
+    cursor: pointer;
+    transition: 0.25s ease;
+    white-space: nowrap;
+    background: linear-gradient(180deg, #c79a49, #a57425);
+    color: #fff8e8;
+    box-shadow: 0 10px 20px rgba(145, 96, 31, 0.18);
+}
+
+.floating-action-btn:hover {
+    transform: translateY(-2px) scale(1.04);
+    filter: brightness(1.06);
+}
+
+.floating-crown {
+    width: clamp(50px, 4.2vw, 80px);
+    height: clamp(50px, 4.2vw, 80px);
+    flex: 0 0 auto;
+    border-radius: 50%;
+    border: 1.5px solid rgba(184, 137, 73, 0.7);
+    background: rgba(255, 248, 235, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: clamp(4px, 0.35vw, 6px);
+}
+
+.floating-logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.floating-divider {
+    width: 1px;
+    height: clamp(42px, 3.8vw, 72px);
+    background: rgba(184, 137, 73, 0.32);
+    flex: 0 0 auto;
+}
+
+.floating-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.4px solid rgba(184, 137, 73, 0.75);
+    background: #fff8ec;
+    color: #8b1b1e;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(85, 55, 20, 0.18);
+    transition: 0.24s ease;
+}
+
+.floating-close:hover {
+    transform: scale(1.12);
+    background: #8b1b1e;
+    color: #fff4dc;
+}
+
+.floating-open {
+    position: fixed;
+    right: clamp(16px, 1.5vw, 28px);
+    bottom: clamp(16px, 1.5vw, 28px);
+    z-index: 99998;
+    width: clamp(52px, 4vw, 72px);
+    height: clamp(52px, 4vw, 72px);
+    border-radius: 50%;
+    border: 1.6px solid #c99b4e;
+    background: linear-gradient(180deg, #a8141a, #7d080d);
+    color: #fff4dc;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(22px, 1.9vw, 34px);
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(85, 0, 0, 0.28);
+    transition: 0.25s ease;
+}
+
+.floating-open.is-show {
+    display: flex;
+}
+
+.floating-open:hover {
+    transform: translateY(-3px) scale(1.08);
+    filter: brightness(1.08);
+}
+
+body.has-floating-consult {
+    padding-bottom: clamp(100px, 8vw, 130px);
+}
+
+/* Mobile & tablet — xếp dọc: logo + chữ, nút full-width bên dưới */
+@media (max-width: 1180px) {
+    .floating-consult {
+        bottom: max(10px, env(safe-area-inset-bottom, 10px));
+        width: min(94vw, 640px);
+        min-height: 0;
+        padding: 12px 14px 14px;
+        gap: 10px;
+        flex-direction: column;
+        align-items: stretch;
+        overflow: hidden;
+    }
+
+    .floating-consult.is-hidden {
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    .floating-consult-left {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .floating-crown {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+    }
+
+    .floating-consult-title {
+        font-size: clamp(11px, 2.8vw, 14px);
+        line-height: 1.35;
+        text-align: center;
+    }
+
+    .floating-divider {
+        display: none;
+    }
+
+    .floating-consult-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .floating-action-btn {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        height: 40px;
+        font-size: clamp(12px, 2.8vw, 14px);
+        padding: 0 16px;
+        box-sizing: border-box;
+    }
+
+    .floating-close {
+        top: -10px;
+        right: -10px;
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+
+    .floating-open {
+        right: max(12px, env(safe-area-inset-right, 12px));
+        bottom: max(12px, env(safe-area-inset-bottom, 12px));
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    body.has-floating-consult {
+        padding-bottom: clamp(118px, 18vw, 140px);
+    }
+}
+
+@media (max-width: 400px) {
+    .floating-consult {
+        width: min(96vw, 640px);
+        padding: 10px 12px 12px;
+    }
+
+    .floating-crown {
+        width: 38px;
+        height: 38px;
+    }
+
+    .floating-consult-title {
+        font-size: 11px;
+    }
+
+    .floating-action-btn {
+        height: 38px;
+        font-size: 12px;
+    }
+}

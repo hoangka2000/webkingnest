@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/mobile-theme.css">
+    <link rel="stylesheet" href="/css/cart-page.css">
+    <title>Giỏ hàng - Yến Sào An Thịnh Nhân</title>
+</head>
+<body class="cart-page">
+<th:block th:replace="~{fragments/header :: siteHeader(${activeNav})}"></th:block>
+
+<main class="cart-shell">
+    <div class="cart-steps" aria-label="Tiến trình đặt hàng">
+        <div class="cart-step active" data-step-target="1">
+            <div class="cart-step-icon" aria-hidden="true">🛒</div>
+            <div class="cart-step-label">Sản phẩm đã chọn</div>
+        </div>
+        <div class="cart-step" data-step-target="2">
+            <div class="cart-step-icon" aria-hidden="true">✓</div>
+            <div class="cart-step-label">Xác nhận thông tin</div>
+        </div>
+        <div class="cart-step" data-step-target="3">
+            <div class="cart-step-icon" aria-hidden="true">💳</div>
+            <div class="cart-step-label">Thanh toán</div>
+        </div>
+    </div>
+
+    <!-- Bước 1: Danh sách giỏ hàng -->
+    <section class="cart-panel cart-step-panel" id="cartStep1" data-cart-step="1">
+        <h2>Sản phẩm đã chọn</h2>
+        <div id="cartEmptyBox" class="cart-empty" hidden>
+            <p>Giỏ hàng của bạn đang trống.</p>
+            <a href="/san-pham">Tiếp tục mua sắm</a>
+        </div>
+        <div id="cartItemsBox"></div>
+        <div class="cart-actions-row">
+            <a class="cart-continue" href="/san-pham">← Tiếp tục mua sắm</a>
+            <button class="cart-next-btn" type="button" id="goToCheckoutBtn">Tiếp tục đặt hàng</button>
+        </div>
+    </section>
+
+    <!-- Bước 2 & 3: Xác nhận + thanh toán (cùng một màn hình, bước 3 mở modal QR) -->
+    <section class="cart-panel cart-step-panel checkout-layout" id="cartStep2" data-cart-step="2" hidden>
+        <div id="checkoutSummaryCol">
+            <h2>Sản phẩm đã chọn</h2>
+            <table class="checkout-summary-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm đã chọn</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="checkoutSummaryBody"></tbody>
+            </table>
+            <div class="checkout-totals" id="checkoutTotals"></div>
+        </div>
+
+        <div id="checkoutCustomerCol">
+            <h2>Thông tin khách hàng</h2>
+            <form class="checkout-form" id="checkoutForm">
+                <div class="field">
+                    <label for="customerName">Họ và tên</label>
+                    <input id="customerName" name="customerName" type="text" placeholder="Nhập họ và tên" required>
+                </div>
+                <div class="field">
+                    <label for="customerEmail">Email</label>
+                    <input id="customerEmail" name="customerEmail" type="email" placeholder="Nhập email" required>
+                </div>
+                <div class="field">
+                    <label for="customerPhone">Số điện thoại</label>
+                    <input id="customerPhone" name="customerPhone" type="tel" placeholder="Nhập số điện thoại" required>
+                </div>
+                <div class="field">
+                    <label for="customerAddress">Địa chỉ</label>
+                    <input id="customerAddress" name="customerAddress" type="text" placeholder="Nhập địa chỉ nhận hàng" required>
+                </div>
+                <div class="field">
+                    <label for="customerNote">Ghi chú</label>
+                    <textarea id="customerNote" name="customerNote" placeholder="Ghi chú thêm cho đơn hàng"></textarea>
+                </div>
+            </form>
+            <button class="confirm-btn" type="button" id="confirmCheckoutBtn">XÁC NHẬN</button>
+            <button class="pay-back" type="button" id="backToCartBtn" style="width:100%;margin-top:10px;min-height:42px;border-radius:8px;">QUAY LẠI</button>
+        </div>
+
+        <div id="paymentSection" hidden>
+            <h2>Thanh toán</h2>
+            <p class="payment-order-code">Mã đơn hàng: <strong id="orderCodeInline">ORC-000000-0000</strong></p>
+            <div class="payment-qr-block">
+                <img src="/images/QR.jpg" alt="Mã QR thanh toán VietQR" class="payment-qr-image">
+            </div>
+            <button class="pay-primary" type="button" id="confirmPaidBtn">TÔI XÁC NHẬN ĐÃ THANH TOÁN HOÀN TẤT</button>
+            <div class="pay-secondary-row">
+                <button class="pay-back" type="button" id="backToFormBtn">QUAY LẠI</button>
+                <button class="pay-cod" type="button" id="codBtn">THANH TOÁN KHI NHẬN HÀNG</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="/js/cart-page.js" defer></script>
+</body>
+</html>

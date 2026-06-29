@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/mobile-theme.css">
+    <link rel="stylesheet" href="/css/product-detail.css">
+    <title>Chi tiết sản phẩm - Yến Sào An Thịnh Nhân</title>
+</head>
+<body class="product-detail-page">
+<th:block th:replace="~{fragments/header :: siteHeader(${activeNav})}"></th:block>
+
+<section class="detail-section">
+    <div class="detail-wrap">
+        <article class="product-panel">
+            <div class="product-top">
+                <div class="product-gallery">
+                    <div class="gallery-main">
+                        <button type="button" class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Ảnh trước">‹</button>
+                        <img id="mainImage" src="/images/yentinh/chanria/trungbay.jpeg" alt="">
+                        <button type="button" class="gallery-nav gallery-next" id="galleryNext" aria-label="Ảnh sau">›</button>
+                    </div>
+                    <div class="gallery-thumbs-wrap">
+                        <div class="gallery-thumbs" id="galleryThumbs"></div>
+                    </div>
+                </div>
+
+                <div class="product-summary">
+                    <span class="product-category" id="productCategory"></span>
+                    <h2 id="productTitle">Đang tải...</h2>
+                    <div class="detail-price" id="productPrice"></div>
+
+                    <div class="summary-box" id="benefitBox">
+                        <h3>Công dụng</h3>
+                        <ul class="summary-list" id="benefitList"></ul>
+                    </div>
+
+                    <div class="summary-box" id="usageBox">
+                        <h3>Hướng dẫn sử dụng</h3>
+                        <ul class="detail-list" id="usageList"></ul>
+                    </div>
+
+                    <div class="detail-purchase-row">
+                        <div class="detail-qty" aria-label="Số lượng mua">
+                            <button type="button" id="qtyMinus" aria-label="Giảm số lượng">−</button>
+                            <input type="number" id="productQty" value="1" min="1" max="99" readonly aria-label="Số lượng">
+                            <button type="button" id="qtyPlus" aria-label="Tăng số lượng">+</button>
+                        </div>
+                        <button type="button" class="detail-cart" id="addToCartBtn">Thêm vào giỏ hàng</button>
+                        <button type="button" class="detail-buy" id="buyNowBtn">MUA NGAY</button>
+                    </div>
+                </div>
+
+                <aside class="detail-sidebar">
+                    <div class="side-card">
+                        <h3>Có thể bạn thích</h3>
+                        <div class="related-list" id="relatedProducts"></div>
+                    </div>
+                    <div class="side-card consult-box" id="contact">
+                        <h3>Cần tư vấn chọn yến?</h3>
+                        <p>Kingnest hỗ trợ chọn sản phẩm phù hợp cho gia đình, biếu tặng hoặc nhập sỉ.</p>
+                        <a href="https://www.facebook.com/share/194mLCUAQU/?mibextid=wwXIfr" target="_blank" rel="noopener">Liên hệ ngay</a>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="info-block" id="specBlock">
+                <h3>Thông tin sản phẩm</h3>
+                <table class="spec-table" id="specTable"></table>
+            </div>
+
+            <div class="info-block" id="descriptionBlockWrap">
+                <h3>Mô tả sản phẩm</h3>
+                <div id="descriptionBlock"></div>
+            </div>
+
+            <div class="info-block" id="highlightBlock">
+                <h3>Đặc điểm nổi bật</h3>
+                <ul class="detail-list" id="highlightList"></ul>
+            </div>
+
+            <div class="info-block product-content-html" id="contentHtmlBlock" hidden>
+                <h3>Thông tin chi tiết</h3>
+                <div id="productContentHtml"></div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script>
+let products = [];
+let currentProduct = null;
+let currentGallery = [];
+let currentGalleryIndex = 0;
+let galleryAutoTimer = null;
+let thumbScrollTimer = null;
+
+function getCartProductPayload(product) {
+    return {
+        id: product.id,
+        slug: product.slug || "",
+        title: product.title,
+        desc: product.desc || product.shortDesc || "Sản phẩm yến sào cao cấp Kingnest.",
+        price: product.price,
+        image: product.image || "/images/yentinh/tinh_che_L1.png"
+    };
+}
+
+function getPurchaseQuantity() {
+    const input = document.getElementById("productQty");
+    return Math.max(1, Math.min(99, Number(input?.value) || 1));
+}
+
+function setPurchaseQuantity(quantity) {
+    const safeQty = Math.max(1, Math.min(99, Number(quantity) || 1));
+    const input = document.getElementById("productQty");
+    if (input) {
+        input.value = String(safeQty);
+    }
+}
+
+function handleDetailBuyNow() {
+    if (!currentProduct || !window.KingnestCart) {
+        return;
+    }
+    window.KingnestCart.buyNow(getCartProductPayload(currentProduct), getPurchaseQuantity());
+}
+
+function handleDetailAddToCart() {
+    if (!currentProduct || !window.KingnestCart) {
+        return;
+    }
+    window.KingnestCart.addToCart(getCartProductPayload(currentProduct), getPurchaseQuantity());
+}
+
+function setupDetailActions() {
+    document.getElementById("buyNowBtn")?.addEventListener("click", handleDetailBuyNow);
+    document.getElementById("addToCartBtn")?.addEventListener("click", handleDetailAddToCart);
+    document.getElementById("qtyMinus")?.addEventListener("click", () => setPurchaseQuantity(getPurchaseQuantity() - 1));
+    document.getElementById("qtyPlus")?.addEventListener("click", () => setPurchaseQuantity(getPurchaseQuantity() + 1));
+}
+
+function formatPrice(number) {
+    if (number == null) {
+        return "Liên hệ";
+    }
+    return new Intl.NumberFormat("vi-VN").format(number) + "đ";
+}
+
+function getProductIdOrSlug() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        id: params.get("id"),
+        slug: params.get("slug")
+    };
+}
+
+function setImage(src, alt) {
+    const img = document.getElementById("mainImage");
+    img.src = src || "/images/yentinh/tinhche1/trungbay.jpeg";
+    img.alt = alt || "Sản phẩm yến sào";
+}
+
+function stopGalleryTimers() {
+    if (galleryAutoTimer) {
+        clearInterval(galleryAutoTimer);
+        galleryAutoTimer = null;
+    }
+    if (thumbScrollTimer) {
+        clearInterval(thumbScrollTimer);
+        thumbScrollTimer = null;
+    }
+}
+
+function scrollActiveThumbIntoView() {
+    const thumbs = document.getElementById("galleryThumbs");
+    const active = thumbs?.querySelector(".thumb.active");
+    if (!thumbs || !active) {
+        return;
+    }
+    const offset = active.offsetLeft - (thumbs.clientWidth / 2) + (active.clientWidth / 2);
+    thumbs.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
+}
+
+function setGalleryIndex(index, title) {
+    if (!currentGallery.length) {
+        return;
+    }
+
+    const safeIndex = ((index % currentGallery.length) + currentGallery.length) % currentGallery.length;
+    currentGalleryIndex = safeIndex;
+    setImage(currentGallery[safeIndex], title);
+
+    document.querySelectorAll(".gallery-thumbs .thumb").forEach((button, buttonIndex) => {
+        button.classList.toggle("active", buttonIndex === safeIndex);
+    });
+
+    scrollActiveThumbIntoView();
+}
+
+function startThumbAutoScroll() {
+    const thumbs = document.getElementById("galleryThumbs");
+    if (!thumbs || thumbs.scrollWidth <= thumbs.clientWidth + 4) {
+        return;
+    }
+
+    if (thumbScrollTimer) {
+        clearInterval(thumbScrollTimer);
+    }
+
+    thumbScrollTimer = setInterval(() => {
+        if (!thumbs || thumbs.matches(":hover")) {
+            return;
+        }
+
+        const maxScroll = thumbs.scrollWidth - thumbs.clientWidth;
+        if (maxScroll <= 0) {
+            return;
+        }
+
+        if (thumbs.scrollLeft >= maxScroll - 4) {
+            thumbs.scrollTo({ left: 0, behavior: "smooth" });
+            return;
+        }
+
+        thumbs.scrollBy({ left: Math.max(72, thumbs.clientWidth * 0.35), behavior: "smooth" });
+    }, 2800);
+}
+
+function startGalleryAutoPlay(title) {
+    stopGalleryTimers();
+    startThumbAutoScroll();
+
+    if (currentGallery.length <= 1) {
+        return;
+    }
+
+    galleryAutoTimer = setInterval(() => {
+        setGalleryIndex(currentGalleryIndex + 1, title);
+    }, 4500);
+}
+
+function renderGallery(product) {
+    const gallery = (product.gallery && product.gallery.length > 0)
+        ? product.gallery
+        : [product.image];
+    currentGallery = gallery.filter(Boolean);
+
+    const thumbs = document.getElementById("galleryThumbs");
+    thumbs.innerHTML = currentGallery.map((src, index) => `
+        <button class="thumb ${index === 0 ? "active" : ""}" type="button" data-index="${index}" aria-label="Ảnh ${index + 1}">
+            <img src="${src}" alt="${product.title} ${index + 1}" loading="lazy" onerror="this.closest('.thumb')?.remove();">
+        </button>
+    `).join("");
+
+    thumbs.querySelectorAll(".thumb").forEach(button => {
+        button.addEventListener("click", () => {
+            setGalleryIndex(Number(button.dataset.index), product.title);
+        });
+    });
+
+    setGalleryIndex(0, product.title);
+    startGalleryAutoPlay(product.title);
+}
+
+function setupGalleryControls() {
+    document.getElementById("galleryPrev")?.addEventListener("click", () => {
+        if (!currentProduct) {
+            return;
+        }
+        setGalleryIndex(currentGalleryIndex - 1, currentProduct.title);
+    });
+
+    document.getElementById("galleryNext")?.addEventListener("click", () => {
+        if (!currentProduct) {
+            return;
+        }
+        setGalleryIndex(currentGalleryIndex + 1, currentProduct.title);
+    });
+
+    const thumbs = document.getElementById("galleryThumbs");
+    thumbs?.addEventListener("mouseenter", () => {
+        if (thumbScrollTimer) {
+            clearInterval(thumbScrollTimer);
+            thumbScrollTimer = null;
+        }
+    });
+    thumbs?.addEventListener("mouseleave", startThumbAutoScroll);
+    thumbs?.addEventListener("touchstart", () => {
+        if (thumbScrollTimer) {
+            clearInterval(thumbScrollTimer);
+            thumbScrollTimer = null;
+        }
+    }, { passive: true });
+}
+
+function toggleBlock(elementId, hasContent) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.hidden = !hasContent;
+    }
+}
+
+function renderList(elementId, items) {
+    const element = document.getElementById(elementId);
+    const list = items || [];
+    element.innerHTML = list.map(item => `<li>${item}</li>`).join("");
+    return list.length > 0;
+}
+
+function normalizeProductType(type) {
+    if (!type) {
+        return "";
+    }
+    if (type === "yen-vien" || type === "yen-rut-long") {
+        return "yen-tinh-che";
+    }
+    return type;
+}
+
+function getRelatedProducts(product) {
+    const currentType = normalizeProductType(product.type);
+    const candidates = products.filter(p => p.id !== product.id);
+
+    if (!currentType) {
+        return candidates.slice(0, 4);
+    }
+
+    const sameType = candidates.filter(p => normalizeProductType(p.type) === currentType);
+    return sameType.slice(0, 4);
+}
+
+function renderRelatedProducts(product) {
+    const related = getRelatedProducts(product);
+    const container = document.getElementById("relatedProducts");
+
+    if (related.length === 0) {
+        container.innerHTML = `<p class="related-empty">Chưa có sản phẩm cùng dạng.</p>`;
+        return;
+    }
+
+    container.innerHTML = related.map(p => {
+        const imageSrc = p.image || "/images/yentinh/tinh_che_L1.png";
+        return `
+            <a class="related-card" href="/chi-tiet-san-pham?slug=${encodeURIComponent(p.slug || "")}">
+                <div class="related-card-img">
+                    <img src="${imageSrc}" alt="${p.title}" loading="lazy" onerror="this.src='/images/yentinh/tinh_che_L1.png';">
+                </div>
+                <div class="related-card-body">
+                    <strong class="related-card-title">${p.title}</strong>
+                    <span class="related-card-price">${formatPrice(p.price)}</span>
+                </div>
+            </a>
+        `;
+    }).join("");
+}
+
+function renderProduct(product) {
+    currentProduct = product;
+    setPurchaseQuantity(1);
+    document.title = `${product.title} - Yến Sào An Thịnh Nhân`;
+    document.getElementById("productTitle").textContent = product.title;
+    document.getElementById("productPrice").textContent = formatPrice(product.price);
+
+    const category = document.getElementById("productCategory");
+    if (product.category) {
+        category.textContent = product.category;
+        category.hidden = false;
+    } else {
+        category.hidden = true;
+    }
+
+    renderGallery(product);
+
+    toggleBlock("benefitBox", renderList("benefitList", product.benefits));
+    toggleBlock("usageBox", renderList("usageList", product.usage));
+
+    const descriptions = product.description || [];
+    const hasContentHtml = Boolean(product.contentHtml);
+
+    if (hasContentHtml) {
+        document.getElementById("productContentHtml").innerHTML = product.contentHtml;
+        document.getElementById("contentHtmlBlock").hidden = false;
+        toggleBlock("specBlock", false);
+        toggleBlock("descriptionBlockWrap", false);
+        toggleBlock("highlightBlock", false);
+    } else {
+        document.getElementById("descriptionBlock").innerHTML = descriptions
+            .map(item => `<p>${item}</p>`)
+            .join("");
+        document.getElementById("contentHtmlBlock").hidden = true;
+        toggleBlock("descriptionBlockWrap", descriptions.length > 0);
+
+        const specs = product.specs || {};
+        const specEntries = Object.entries(specs);
+        document.getElementById("specTable").innerHTML = specEntries
+            .map(([key, value]) => `<tr><th>${key}</th><td>${value}</td></tr>`)
+            .join("");
+        toggleBlock("specBlock", specEntries.length > 0);
+        toggleBlock("highlightBlock", renderList("highlightList", product.highlights));
+    }
+
+    document.getElementById("relatedProducts").innerHTML = "";
+    renderRelatedProducts(product);
+}
+
+function renderProductError(message) {
+    stopGalleryTimers();
+    document.getElementById("productTitle").textContent = "Không tìm thấy sản phẩm";
+    document.getElementById("productPrice").textContent = "";
+    document.getElementById("descriptionBlock").innerHTML = `<p>${message}</p>`;
+    toggleBlock("benefitBox", false);
+    toggleBlock("usageBox", false);
+    toggleBlock("specBlock", false);
+    toggleBlock("highlightBlock", false);
+    toggleBlock("contentHtmlBlock", false);
+}
+
+async function loadProductPage() {
+    const { id, slug } = getProductIdOrSlug();
+    const key = slug || id || "chan-yen-ria-sach";
+
+    try {
+        const [listResponse, detailResponse] = await Promise.all([
+            fetch("/api/products", { headers: { "Accept": "application/json" } }),
+            fetch(`/api/products/${encodeURIComponent(key)}`, { headers: { "Accept": "application/json" } })
+        ]);
+
+        const listData = await listResponse.json();
+        const detailData = await detailResponse.json();
+
+        if (listResponse.ok && listData.success) {
+            products = listData.products || [];
+        }
+
+        if (!detailResponse.ok || !detailData.success) {
+            renderProductError(detailData.message || "Không tải được sản phẩm từ database.");
+            return;
+        }
+
+        renderProduct(detailData.product);
+    } catch (error) {
+        renderProductError("Không gọi được API sản phẩm. Hãy chạy ứng dụng Spring Boot.");
+    }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    setupDetailActions();
+    setupGalleryControls();
+    loadProductPage();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/mobile-theme.css">
+    <title>Sản phẩm Kingnest</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #fbf4e8;
+            color: #302720;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Header: /css/site-header.css + mobile-header.css */
+
+        /* ================= KHUNG NỀN SẢN PHẨM ================= */
+
+        .product-stage {
+            width: 100%;
+            aspect-ratio: 1672 / 941;
+            min-height: calc(100vh - clamp(72px, 5.6vw, 92px));
+            background-image: url('/images/banner/bg-san-pham.png');
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: 100% 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ================= BỘ LỌC ================= */
+
+        .filter-layer {
+            position: absolute;
+            left: 5.95%;
+            top: 22.4%;
+            width: 21.05%;
+            height: 69.3%;
+            padding: clamp(8px, 0.8vw, 15px) clamp(13px, 1.05vw, 22px);
+            overflow: hidden;
+        }
+
+        .filter-scroll {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(184, 137, 73, 0.6) transparent;
+        }
+
+        .filter-scroll::-webkit-scrollbar,
+        .product-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .filter-scroll::-webkit-scrollbar-thumb,
+        .product-scroll::-webkit-scrollbar-thumb {
+            background: rgba(184, 137, 73, 0.6);
+            border-radius: 99px;
+        }
+
+        .filter-group {
+            padding: clamp(9px, 0.7vw, 14px) 0;
+            border-bottom: 1px solid rgba(190, 147, 75, 0.23);
+            transition: 0.22s ease;
+        }
+
+        .filter-group:hover {
+            background: rgba(255, 244, 224, 0.28);
+        }
+
+        .filter-group-head {
+            width: 100%;
+            border: 0;
+            outline: none;
+            background: transparent;
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            color: #3e342c;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(14px, 1.02vw, 18px);
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .filter-group-head .left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .filter-icon {
+            color: #c89a55;
+            font-size: clamp(14px, 1vw, 18px);
+        }
+
+        .chevron {
+            color: #8d7049;
+            font-size: clamp(17px, 1.2vw, 22px);
+            line-height: 1;
+            transition: transform 0.28s ease;
+        }
+
+        .filter-group:not(.open) .chevron {
+            transform: rotate(180deg);
+        }
+
+        .filter-options {
+            max-height: 320px;
+            overflow: hidden;
+            opacity: 1;
+            padding-top: clamp(7px, 0.55vw, 11px);
+            transition:
+                max-height 0.32s ease,
+                opacity 0.25s ease,
+                padding-top 0.25s ease;
+        }
+
+        .filter-group:not(.open) .filter-options {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+        }
+
+        .check-line {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: clamp(5px, 0.38vw, 8px) 0;
+            color: #5b5149;
+            font-size: clamp(12px, 0.82vw, 15px);
+            line-height: 1.35;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s ease;
+        }
+
+        .check-line:hover {
+            transform: translateX(4px) scale(1.02);
+            color: #8b1b1e;
+        }
+
+        .check-line input {
+            appearance: none;
+            flex: 0 0 auto;
+            width: clamp(12px, 0.85vw, 15px);
+            height: clamp(12px, 0.85vw, 15px);
+            border: 1.4px solid #c7b9a5;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.46);
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: 0.22s ease;
+        }
+
+        .check-line input::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            transform: scale(0);
+            border-radius: 2px;
+            background: #8b1b1e;
+            transition: 0.18s ease;
+        }
+
+        .check-line input:checked {
+            border-color: #9b1c20;
+            background: #fff6e8;
+        }
+
+        .check-line input:checked::before {
+            transform: scale(1);
+        }
+
+        .mobile-filter-toggle,
+        .filter-backdrop,
+        .filter-drawer-head {
+            display: none;
+        }
+
+        /* ================= DANH SÁCH SẢN PHẨM ================= */
+
+        .products-layer {
+            position: absolute;
+            left: 31.05%;
+            top: 3.55%;
+            width: 67.2%;
+            height: 93.5%;
+            padding: clamp(13px, 1.1vw, 22px) clamp(20px, 1.45vw, 32px);
+            overflow: hidden;
+        }
+
+        .product-toolbar {
+            height: 8%;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding-bottom: 0.8%;
+            border-bottom: 1px solid rgba(190, 147, 75, 0.24);
+        }
+
+        .product-search {
+            flex: 1 1 auto;
+            min-width: 0;
+            max-width: clamp(220px, 28vw, 360px);
+        }
+
+        .product-search-input {
+            width: 100%;
+            height: clamp(30px, 2.05vw, 40px);
+            padding: 0 clamp(12px, 0.9vw, 16px);
+            border: 1.4px solid rgba(190, 147, 75, 0.48);
+            border-radius: 7px;
+            background: rgba(255, 247, 235, 0.86);
+            color: #3f342c;
+            font-size: clamp(12px, 0.82vw, 15px);
+            outline: none;
+            transition: 0.22s ease;
+        }
+
+        .product-search-input::placeholder {
+            color: #8a7a6c;
+        }
+
+        .product-search-input:hover,
+        .product-search-input:focus {
+            background: rgba(255, 240, 212, 0.96);
+            border-color: #b88949;
+            box-shadow: 0 8px 16px rgba(128, 80, 22, 0.1);
+        }
+
+        .sort-area {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: clamp(7px, 0.65vw, 11px);
+            flex-wrap: wrap;
+            transform: translateX(-25px);
+        }
+
+        .sort-label {
+            color: #4d423a;
+            font-size: clamp(12px, 0.9vw, 15px);
+            font-weight: 700;
+        }
+
+        .sort-select,
+        .sort-btn {
+            height: clamp(30px, 2.05vw, 40px);
+            padding: 0 clamp(10px, 0.82vw, 16px);
+            border: 1.4px solid rgba(190, 147, 75, 0.48);
+            border-radius: 7px;
+            background: rgba(255, 247, 235, 0.86);
+            color: #554234;
+            font-size: clamp(11px, 0.76vw, 14px);
+            cursor: pointer;
+            transition: 0.22s ease;
+        }
+
+        .sort-select {
+            min-width: clamp(118px, 7.6vw, 150px);
+            outline: none;
+        }
+
+        .sort-btn.active,
+        .sort-btn:hover,
+        .sort-select:hover {
+            background: rgba(255, 240, 212, 0.96);
+            border-color: #b88949;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 10px 18px rgba(128, 80, 22, 0.12);
+        }
+
+        .product-scroll {
+            height: 90%;
+            padding-top: clamp(12px, 0.85vw, 20px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 2px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(184, 137, 73, 0.6) transparent;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(12px, 1vw, 22px);
+            padding-bottom: clamp(14px, 1vw, 24px);
+        }
+
+        .product-card {
+            position: relative;
+            min-height: clamp(315px, 23vw, 430px);
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(210, 170, 95, 0.28);
+            border-radius: 9px;
+            box-shadow: 0 9px 16px rgba(76, 54, 26, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+        }
+
+        .product-card {
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px) scale(1.018);
+            border-color: rgba(184, 137, 73, 0.72);
+            box-shadow: 0 18px 30px rgba(76, 54, 26, 0.17);
+        }
+
+        .product-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            flex: 0 0 auto;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at center, rgba(216, 173, 97, 0.18), transparent 50%),
+                #f4ead8;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.35s ease, filter 0.35s ease;
+        }
+
+        .product-card:hover .product-img img {
+            transform: scale(1.06);
+            filter: brightness(1.04);
+        }
+
+        .heart-btn {
+            display: none !important;
+        }
+
+        .product-info {
+            flex: 1 1 auto;
+            min-height: clamp(132px, 9vw, 175px);
+            padding: clamp(10px, 0.72vw, 14px) clamp(9px, 0.82vw, 16px) clamp(10px, 0.72vw, 14px);
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.82);
+        }
+
+        .product-title {
+            min-height: 0;
+            margin-bottom: clamp(5px, 0.42vw, 8px);
+            padding: 0 clamp(28px, 2.2vw, 42px);
+            font-family: Georgia, "Times New Roman", serif;
+            color: #3b2e29;
+            font-size: clamp(13.5px, 0.98vw, 19px);
+            font-weight: 700;
+            line-height: 1.18;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-desc {
+            display: none;
+        }
+
+        .price {
+            margin-bottom: clamp(4px, 0.35vw, 7px);
+            font-family: Georgia, "Times New Roman", serif;
+            color: #8e2628;
+            font-size: clamp(15px, 1.06vw, 21px);
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        .detail-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: clamp(92px, 6.4vw, 122px);
+            height: clamp(28px, 1.9vw, 36px);
+            padding: 0 clamp(10px, 0.8vw, 16px);
+            border-radius: 7px;
+            border: 1.3px solid rgba(139, 113, 63, 0.72);
+            background: rgba(255, 250, 235, 0.78);
+            color: #675437;
+            text-decoration: none;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(12px, 0.82vw, 15px);
+            font-weight: 700;
+            line-height: 1;
+            transition: 0.22s ease;
+        }
+
+        .product-card-footer {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+            margin-top: auto;
+            min-height: clamp(32px, 2.25vw, 43px);
+        }
+
+        .product-card-footer .detail-btn {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .product-card-footer .detail-btn:hover {
+            transform: translateX(-50%) translateY(-2px) scale(1.04);
+        }
+
+        .detail-btn:hover {
+            transform: translateY(-2px) scale(1.04);
+            background: linear-gradient(180deg, #f5d98b, #c99334);
+            color: #721014;
+            border-color: #b88949;
+            box-shadow: 0 8px 16px rgba(128, 80, 22, 0.16);
+        }
+
+        .product-card-footer .cart-circle {
+            position: static;
+            flex-shrink: 0;
+        }
+
+        .cart-circle {
+            width: clamp(32px, 2.25vw, 43px);
+            height: clamp(32px, 2.25vw, 43px);
+            border-radius: 50%;
+            border: 1.4px solid rgba(190, 147, 75, 0.48);
+            background: rgba(255, 252, 245, 0.96);
+            color: #b88949;
+            font-size: clamp(16px, 1.18vw, 21px);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: 0.22s ease;
+            text-decoration: none;
+            padding: 0;
+        }
+
+        .cart-circle:hover {
+            transform: scale(1.13);
+            background: linear-gradient(180deg, #f5d98b, #c99334);
+            color: #721014;
+            border-color: #b88949;
+            box-shadow: 0 10px 20px rgba(128, 80, 22, 0.18);
+        }
+
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 80px 20px;
+            color: #64574d;
+            font-size: 18px;
+        }
+
+        .empty-state.show {
+            display: block;
+        }
+
+        button,
+        a,
+        .check-line,
+        .product-card,
+        .filter-group,
+        .sort-select {
+            will-change: transform;
+        }
+
+
+        /* ================= BỔ SUNG: KHUNG SẢN PHẨM CUỘN DỌC ================= */
+
+        .product-scroll {
+            height: 90.5%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-top: clamp(12px, 0.85vw, 20px);
+            padding-right: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(145, 111, 71, 0.72) transparent;
+        }
+
+        .product-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .product-scroll::-webkit-scrollbar-thumb {
+            background: rgba(145, 111, 71, 0.72);
+            border-radius: 99px;
+        }
+
+        .product-grid {
+            height: auto !important;
+            overflow: visible !important;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(12px, 1vw, 22px);
+            padding-bottom: clamp(14px, 1vw, 24px);
+        }
+
+        .product-card {
+            height: auto !important;
+            min-height: clamp(315px, 23vw, 430px);
+        }
+
+        .product-img {
+            aspect-ratio: 1 / 1;
+            flex: 0 0 auto;
+        }
+
+        .badge {
+            display: none !important;
+        }
+
+
+        /* ================= NÚT ĐỔI KIỂU HIỂN THỊ ================= */
+
+        .view-switch {
+            height: clamp(36px, 2.55vw, 48px);
+            display: inline-flex;
+            align-items: stretch;
+            overflow: hidden;
+            border: 1.4px solid rgba(190, 147, 75, 0.48);
+            border-radius: 12px;
+            background: rgba(255, 250, 240, 0.72);
+            box-shadow: 0 8px 18px rgba(128, 80, 22, 0.08);
+        }
+
+        .view-btn {
+            width: clamp(50px, 3.65vw, 70px);
+            height: 100%;
+            border: 0;
+            border-right: 1px solid rgba(190, 147, 75, 0.25);
+            background: rgba(255, 250, 240, 0.42);
+            color: #5c5147;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: 0.22s ease;
+        }
+
+        .view-btn:last-child {
+            border-right: 0;
+        }
+
+        .view-btn:hover,
+        .view-btn.active {
+            background: linear-gradient(180deg, rgba(246, 222, 170, 0.95), rgba(215, 174, 98, 0.72));
+            color: #741116;
+            transform: scale(1.04);
+        }
+
+        .icon-list {
+            width: 30px;
+            height: 24px;
+            position: relative;
+            display: block;
+        }
+
+        .icon-list::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 3px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 9px 0 currentColor, 0 18px 0 currentColor;
+        }
+
+        .icon-list::after {
+            content: "";
+            position: absolute;
+            left: 11px;
+            top: 4px;
+            width: 19px;
+            height: 3px;
+            border-radius: 99px;
+            background: currentColor;
+            box-shadow: 0 9px 0 currentColor, 0 18px 0 currentColor;
+        }
+
+        /* ================= ICON ẢNH CHO NÚT GRID ================= */
+
+        .view-icon-img {
+            width: clamp(22px, 1.65vw, 32px);
+            height: clamp(22px, 1.65vw, 32px);
+            object-fit: contain;
+            display: block;
+            opacity: 0.92;
+            transition: transform 0.22s ease, opacity 0.22s ease;
+            pointer-events: none;
+        }
+
+        .view-btn:hover .view-icon-img,
+        .view-btn.active .view-icon-img {
+            transform: scale(1.06);
+            opacity: 1;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(180deg, rgba(246, 222, 170, 0.96), rgba(214, 174, 98, 0.75)) !important;
+        }
+
+        /* ================= CHẾ ĐỘ HIỂN THỊ SẢN PHẨM ================= */
+
+        .product-grid.view-grid3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .product-grid.view-grid5 {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: clamp(9px, 0.72vw, 15px);
+        }
+
+        .product-grid.view-grid5 .product-card {
+            min-height: clamp(235px, 17vw, 320px);
+            border-radius: 8px;
+        }
+
+        .product-grid.view-grid5 .product-info {
+            min-height: clamp(118px, 7.8vw, 148px);
+            padding: clamp(8px, 0.55vw, 11px);
+        }
+
+        .product-grid.view-grid5 .product-title {
+            padding: 0 clamp(14px, 1.15vw, 22px);
+            font-size: clamp(11.5px, 0.74vw, 15px);
+            line-height: 1.18;
+        }
+
+        .product-grid.view-grid5 .price {
+            font-size: clamp(13px, 0.84vw, 17px);
+        }
+
+        .product-grid.view-grid5 .detail-btn {
+            min-width: clamp(76px, 4.8vw, 92px);
+            height: clamp(24px, 1.55vw, 30px);
+            font-size: clamp(10.5px, 0.68vw, 13px);
+        }
+
+        .product-grid.view-grid5 .cart-circle {
+            width: clamp(27px, 1.75vw, 34px);
+            height: clamp(27px, 1.75vw, 34px);
+            font-size: clamp(13px, 0.9vw, 17px);
+        }
+
+        .product-grid.view-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .product-grid.view-list .product-card {
+            min-height: 118px;
+            border-radius: 0;
+            border-left: 0;
+            border-right: 0;
+            border-top: 0;
+            box-shadow: none;
+            background: rgba(255, 255, 255, 0.58);
+            display: grid;
+            grid-template-columns: clamp(78px, 6.3vw, 112px) minmax(0, 1fr) auto;
+            align-items: center;
+            column-gap: clamp(14px, 1.2vw, 22px);
+            padding: clamp(9px, 0.75vw, 13px) 0;
+        }
+
+        .product-grid.view-list .product-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 251, 244, 0.88);
+            box-shadow: none;
+        }
+
+        .product-grid.view-list .product-img {
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+            margin-left: 0;
+        }
+
+        .product-grid.view-list .product-info {
+            min-height: auto;
+            text-align: left;
+            align-items: flex-start;
+            justify-content: center;
+            background: transparent;
+            padding: 0;
+        }
+
+        .product-grid.view-list .product-title {
+            padding: 0;
+            margin-bottom: 4px;
+            font-size: clamp(17px, 1.25vw, 24px);
+            color: #064c3d;
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        .product-grid.view-list .product-desc {
+            display: block;
+            max-width: 92%;
+            margin-bottom: 6px;
+            color: #5f6571;
+            font-size: clamp(12.5px, 0.9vw, 16px);
+            line-height: 1.45;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-grid.view-list .price {
+            color: #064c3d;
+            font-size: clamp(18px, 1.25vw, 25px);
+            margin-bottom: 0;
+        }
+
+        .product-grid.view-list .detail-btn {
+            display: none;
+        }
+
+        .product-grid.view-list .cart-circle {
+            position: static;
+            width: clamp(48px, 3.2vw, 62px);
+            height: clamp(40px, 2.8vw, 52px);
+            border-radius: 8px;
+            background: #064c3d;
+            color: #f0c100;
+            border-color: #064c3d;
+            margin-right: 0;
+        }
+
+        .product-grid.view-list .cart-circle::before {
+            content: none;
+            display: none;
+        }
+
+        .product-grid.view-list .heart-btn {
+            display: none;
+        }
+
+        .product-grid.view-list .product-card:hover .product-img img {
+            transform: scale(1.04);
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1180px) {
+            .product-stage {
+                aspect-ratio: auto;
+                min-height: auto;
+                display: block;
+                gap: 0;
+                padding: 24px 16px 40px;
+            }
+
+            .mobile-filter-toggle {
+                display: inline-flex;
+            }
+
+            .filter-layer {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: min(300px, 88vw);
+                height: 100dvh;
+                z-index: 10050;
+                transform: translateX(-100%);
+                visibility: hidden;
+                border-radius: 0;
+                padding: 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .filter-layer.is-open {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+            .filter-drawer-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-shrink: 0;
+                padding: 16px 18px;
+                border-bottom: 1px solid rgba(184, 137, 73, 0.28);
+                background: linear-gradient(180deg, #4b0000, #5a0808);
+                color: #f7ddb0;
+                font-family: Georgia, "Times New Roman", serif;
+                font-size: 17px;
+                font-weight: 600;
+            }
+
+            .filter-drawer-close {
+                width: 34px;
+                height: 34px;
+                border: 1.5px solid rgba(216, 166, 58, 0.55);
+                border-radius: 8px;
+                background: rgba(118, 7, 7, 0.85);
+                color: #ffd36b;
+                font-size: 22px;
+                line-height: 1;
+                cursor: pointer;
+            }
+
+            .filter-backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(30, 0, 0, 0.5);
+                opacity: 0;
+                visibility: hidden;
+                transition: 0.25s ease;
+                z-index: 10040;
+            }
+
+            .filter-backdrop.is-open {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .filter-layer .filter-scroll {
+                flex: 1 1 auto;
+                max-height: none;
+                overflow-y: auto;
+                padding: 12px 16px 20px;
+            }
+
+            .products-layer {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 14px 12px;
+                border: 1.5px solid rgba(190, 147, 75, 0.5);
+                border-radius: 10px;
+                background: rgba(255, 250, 242, 0.88);
+                box-shadow: 0 10px 22px rgba(99, 64, 22, 0.12);
+            }
+
+            .product-toolbar {
+                height: auto;
+                align-items: stretch;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .product-search {
+                max-width: none;
+                width: 100%;
+            }
+
+            .sort-area {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+                transform: none;
+                gap: 8px;
+            }
+
+            .sort-label {
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+
+            .sort-select {
+                flex: 1 1 auto;
+                min-width: 0;
+                max-width: 150px;
+            }
+
+            .view-switch {
+                flex-shrink: 0;
+                margin-left: auto;
+            }
+
+            .view-btn {
+                width: 40px;
+            }
+
+            .view-btn-desktop-only {
+                display: none !important;
+            }
+
+            .product-scroll {
+                height: auto;
+                overflow: visible;
+                padding-right: 0;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .product-card {
+                height: auto;
+            }
+
+            .product-img {
+                flex-basis: auto;
+                aspect-ratio: 1 / 1;
+            }
+
+            .product-title {
+                padding: 0 8px;
+                font-size: 11px;
+            }
+
+            .product-grid.view-grid5,
+            .product-grid.view-grid3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .product-grid.view-list .product-card {
+                grid-template-columns: 72px minmax(0, 1fr);
+                row-gap: 8px;
+            }
+
+        }
+    
+        /* ================= SỬA BỐ CỤC DẠNG DANH SÁCH CHO CÂN ĐỐI ================= */
+
+        .product-grid.view-list {
+            display: flex !important;
+            flex-direction: column;
+            gap: 0 !important;
+            padding-right: 4px;
+        }
+
+        .product-grid.view-list .product-card {
+            width: 100%;
+            min-height: clamp(128px, 8.8vw, 160px) !important;
+            padding: clamp(12px, 0.85vw, 16px) clamp(16px, 1.2vw, 22px);
+            display: grid !important;
+            grid-template-columns: clamp(86px, 6.8vw, 118px) minmax(0, 1fr);
+            align-items: center;
+            column-gap: clamp(18px, 1.4vw, 28px);
+            border: 0;
+            border-bottom: 1px solid rgba(190, 147, 75, 0.24);
+            border-radius: 0;
+            background: rgba(255, 255, 255, 0.54);
+            box-shadow: none;
+        }
+
+        .product-grid.view-list .product-card:hover {
+            transform: translateX(4px) scale(1.002);
+            background: rgba(255, 251, 244, 0.88);
+            box-shadow: none;
+            border-color: rgba(184, 137, 73, 0.42);
+        }
+
+        .product-grid.view-list .product-img {
+            width: clamp(86px, 6.8vw, 118px);
+            height: clamp(86px, 6.8vw, 118px);
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f4ead8;
+        }
+
+        .product-grid.view-list .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-grid.view-list .heart-btn {
+            display: none !important;
+        }
+
+        .product-grid.view-list .product-info {
+            width: 100%;
+            min-height: auto;
+            padding: 0;
+            background: transparent;
+            text-align: left;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) clamp(118px, 9.6vw, 170px) clamp(46px, 3.35vw, 58px);
+            grid-template-rows: auto auto auto;
+            column-gap: clamp(12px, 1vw, 20px);
+            align-items: center;
+        }
+
+        .product-grid.view-list .product-title {
+            grid-column: 1;
+            grid-row: 1;
+            justify-content: flex-start;
+            text-align: left;
+            padding: 0;
+            margin: 0 0 4px;
+            color: #064c3d;
+            font-size: clamp(18px, 1.35vw, 25px);
+            line-height: 1.2;
+            min-height: 0;
+        }
+
+        .product-grid.view-list .product-desc {
+            grid-column: 1;
+            grid-row: 2;
+            display: block;
+            max-width: 96%;
+            margin: 0 0 6px;
+            color: #5f6571;
+            font-size: clamp(13px, 0.95vw, 17px);
+            line-height: 1.45;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-grid.view-list .price {
+            grid-column: 1;
+            grid-row: 3;
+            margin: 0;
+            color: #064c3d;
+            font-size: clamp(19px, 1.35vw, 26px);
+            line-height: 1.1;
+            text-align: left;
+        }
+
+        .product-grid.view-list .product-card-footer {
+            display: contents;
+        }
+
+        .product-grid.view-list .detail-btn {
+            grid-column: 2;
+            grid-row: 1 / 4;
+            align-self: center;
+            justify-self: stretch;
+            display: inline-flex !important;
+            margin-top: 0;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            width: 100%;
+            height: clamp(42px, 3vw, 54px);
+            border: 1.5px solid rgba(154, 129, 82, 0.78);
+            border-radius: 9px;
+            background: rgba(255, 249, 235, 0.88);
+            color: #6d5b3d;
+            box-shadow: 0 6px 14px rgba(120, 86, 39, 0.08);
+            font-size: clamp(12px, 0.9vw, 15px);
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: 0.24s ease;
+        }
+
+        .product-grid.view-list .detail-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            background: rgba(255, 244, 221, 0.98);
+            color: #8b1b1e;
+            border-color: #b88949;
+            box-shadow: 0 10px 18px rgba(120, 86, 39, 0.16);
+            filter: none;
+        }
+
+        .product-grid.view-list .cart-circle {
+            grid-column: 3;
+            grid-row: 1 / 4;
+            position: static !important;
+            align-self: center;
+            justify-self: end;
+            width: clamp(46px, 3.35vw, 58px);
+            height: clamp(42px, 3vw, 54px);
+            border-radius: 9px;
+            background: #064c3d;
+            color: #f0c100;
+            border-color: #064c3d;
+            margin: 0;
+        }
+
+        .product-grid.view-list .cart-circle::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        .product-grid.view-list .cart-circle:hover {
+            transform: scale(1.08);
+            background: #053a30;
+            color: #f5d23d;
+        }
+
+        @media (max-width: 1180px) {
+            .product-grid.view-list .product-card {
+                grid-template-columns: 72px minmax(0, 1fr);
+                grid-template-rows: auto auto auto auto;
+                column-gap: 12px;
+                row-gap: 4px;
+                padding: 12px;
+                align-items: start;
+                min-height: 0 !important;
+            }
+
+            .product-grid.view-list .product-img {
+                grid-column: 1;
+                grid-row: 1 / 4;
+                width: 72px;
+                height: 72px;
+                align-self: start;
+            }
+
+            .product-grid.view-list .product-info {
+                display: contents;
+            }
+
+            .product-grid.view-list .product-card-footer {
+                display: flex !important;
+                grid-column: 2;
+                grid-row: 4;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+                width: 100%;
+                min-height: 0;
+                margin-top: 6px;
+            }
+
+            .product-grid.view-list .product-title {
+                grid-column: 2;
+                grid-row: 1;
+                margin: 0;
+                padding: 0;
+                font-size: 13px;
+                line-height: 1.25;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                white-space: normal;
+            }
+
+            .product-grid.view-list .product-desc {
+                grid-column: 2;
+                grid-row: 2;
+                margin: 0;
+                max-width: 100%;
+                font-size: 11px;
+                line-height: 1.35;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .product-grid.view-list .price {
+                grid-column: 2;
+                grid-row: 3;
+                margin: 0;
+                font-size: 14px;
+                line-height: 1.1;
+            }
+
+            .product-grid.view-list .detail-btn {
+                position: static !important;
+                left: auto !important;
+                transform: none !important;
+                flex: 1 1 auto;
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+                width: auto;
+                min-width: 0;
+                max-width: none;
+                height: 36px;
+                margin: 0;
+                padding: 0 10px;
+                font-size: 11px;
+                border-radius: 8px;
+            }
+
+            .product-grid.view-list .detail-btn:hover {
+                transform: translateY(-2px) scale(1.03) !important;
+            }
+
+            .product-grid.view-list .cart-circle {
+                display: grid;
+                flex: 0 0 40px;
+                position: static !important;
+                width: 40px;
+                height: 36px;
+                margin: 0;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<th:block th:replace="~{fragments/header :: siteHeader(${activeNav})}"></th:block>
+
+<main class="product-stage">
+
+    <div class="filter-backdrop" id="filterBackdrop" aria-hidden="true"></div>
+
+    <button type="button" class="mobile-filter-toggle" id="mobileFilterToggle" aria-expanded="false" aria-controls="filterLayer">
+        <span aria-hidden="true">☰</span> Bộ lọc sản phẩm
+    </button>
+
+    <aside class="filter-layer" id="filterLayer">
+        <div class="filter-drawer-head">
+            <span>Bộ lọc</span>
+            <button type="button" class="filter-drawer-close" id="filterCloseBtn" aria-label="Đóng bộ lọc">×</button>
+        </div>
+        <div class="filter-scroll">
+
+            <div class="filter-group open">
+                <button class="filter-group-head" type="button" aria-expanded="true">
+                    <div class="left"><span class="filter-icon">🏷️</span><span>Khoảng giá</span></div>
+                    <span class="chevron">⌃</span>
+                </button>
+
+                <div class="filter-options">
+                    <label class="check-line"><input type="checkbox" data-filter="price" value="under500"><span>Dưới 500.000đ</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="price" value="500to1m"><span>500.000đ – 1.000.000đ</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="price" value="1mto3m"><span>1.000.000đ – 3.000.000đ</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="price" value="over3m"><span>Trên 3.000.000đ</span></label>
+                </div>
+            </div>
+
+            <div class="filter-group open">
+                <button class="filter-group-head" type="button" aria-expanded="true">
+                    <div class="left"><span class="filter-icon">♨️</span><span>Nhu cầu sử dụng</span></div>
+                    <span class="chevron">⌃</span>
+                </button>
+
+                <div class="filter-options">
+                    <label class="check-line"><input type="checkbox" data-filter="need" value="daily"><span>Dùng hằng ngày</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="need" value="gift"><span>Biếu tặng</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="need" value="elder"><span>Cho người lớn tuổi</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="need" value="family"><span>Cho gia đình</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="need" value="diet"><span>Ăn kiêng / ít đường</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="need" value="tired"><span>Bồi bổ sau mệt mỏi</span></label>
+                </div>
+            </div>
+
+            <div class="filter-group open">
+                <button class="filter-group-head" type="button" aria-expanded="true">
+                    <div class="left"><span class="filter-icon">📦</span><span>Loại sản phẩm</span></div>
+                    <span class="chevron">⌃</span>
+                </button>
+
+                <div class="filter-options">
+                    <label class="check-line"><input type="checkbox" data-filter="type" value="yen-chung"><span>Yến chưng</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="type" value="yen-tinh-che"><span>Yến tinh</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="type" value="yen-tho"><span>Yến thô</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="type" value="hop-qua"><span>Hộp quà</span></label>
+                </div>
+            </div>
+
+            <div class="filter-group open">
+                <button class="filter-group-head" type="button" aria-expanded="true">
+                    <div class="left"><span class="filter-icon">☆</span><span>Trạng thái</span></div>
+                    <span class="chevron">⌃</span>
+                </button>
+
+                <div class="filter-options">
+                    <label class="check-line"><input type="checkbox" data-filter="status" value="best"><span>Bán chạy</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="status" value="new"><span>Sản phẩm mới</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="status" value="sale"><span>Đang khuyến mãi</span></label>
+                    <label class="check-line"><input type="checkbox" data-filter="status" value="premium"><span>Cao cấp nhất</span></label>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <section class="products-layer">
+        <div class="product-toolbar">
+            <div class="product-search">
+                <input type="search" id="productSearchInput" class="product-search-input" placeholder="Tìm kiếm theo tên sản phẩm..." autocomplete="off" aria-label="Tìm kiếm theo tên sản phẩm">
+            </div>
+
+            <div class="sort-area">
+                <span class="sort-label">Sắp xếp:</span>
+
+                <select class="sort-select" id="sortSelect">
+                    <option value="new">Mới nhất</option>
+                    <option value="low">Giá thấp đến cao</option>
+                    <option value="high">Giá cao đến thấp</option>
+                    <option value="az">Tên A-Z</option>
+                    <option value="za">Tên Z-A</option>
+                </select>
+
+                <div class="view-switch" aria-label="Chọn kiểu hiển thị sản phẩm">
+                    <button class="view-btn" type="button" data-view="list" title="Danh sách ngang" aria-label="Danh sách ngang">
+                        <span class="icon-list" aria-hidden="true"></span>
+                    </button>
+
+                    <button class="view-btn active" type="button" data-view="grid3" title="Lưới 3 cột" aria-label="Lưới 3 cột">
+                        <img class="view-icon-img" src="/images/icon/icon_gird_3.png" alt="" aria-hidden="true">
+                    </button>
+
+                    <button class="view-btn view-btn-desktop-only" type="button" data-view="grid5" title="Lưới 5 cột" aria-label="Lưới 5 cột">
+                        <img class="view-icon-img" src="/images/icon/icon_gird_5.png" alt="" aria-hidden="true">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-scroll">
+            <div class="product-grid" id="productGrid"></div>
+            <div class="empty-state" id="emptyState">Không tìm thấy sản phẩm phù hợp.</div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    let products = [];
+
+    const productGrid = document.getElementById("productGrid");
+    const productSearchInput = document.getElementById("productSearchInput");
+    const emptyState = document.getElementById("emptyState");
+    const sortSelect = document.getElementById("sortSelect");
+    const sortButtons = document.querySelectorAll(".sort-btn");
+    const filterInputs = document.querySelectorAll("input[type='checkbox']");
+    const filterHeads = document.querySelectorAll(".filter-group-head");
+    const viewButtons = document.querySelectorAll(".view-btn");
+
+    let currentSort = "new";
+    let currentView = "grid3";
+    let searchQuery = "";
+
+    function formatPrice(number) {
+        return new Intl.NumberFormat("vi-VN").format(number) + "đ";
+    }
+
+    function getSelectedFilters() {
+        const filters = {
+            price: [],
+            need: [],
+            type: [],
+            status: []
+        };
+
+        filterInputs.forEach((input) => {
+            if (input.checked) {
+                filters[input.dataset.filter].push(input.value);
+            }
+        });
+
+        return filters;
+    }
+
+    function matchPrice(price, ranges) {
+        if (ranges.length === 0) return true;
+
+        return ranges.some((range) => {
+            if (range === "under500") return price < 500000;
+            if (range === "500to1m") return price >= 500000 && price <= 1000000;
+            if (range === "1mto3m") return price >= 1000000 && price <= 3000000;
+            if (range === "over3m") return price > 3000000;
+            return true;
+        });
+    }
+
+    function filterProducts() {
+        const filters = getSelectedFilters();
+        const query = searchQuery.trim().toLowerCase();
+
+        return products.filter((product) => {
+            const okPrice = matchPrice(product.price, filters.price);
+            const okNeed = filters.need.length === 0 || filters.need.some((need) => (product.need || []).includes(need));
+            const okType = filters.type.length === 0 || filters.type.includes(product.type);
+            const okStatus = filters.status.length === 0 || filters.status.some((status) => (product.status || []).includes(status));
+            const okSearch = !query
+                || (product.title || "").toLowerCase().includes(query)
+                || (product.desc || "").toLowerCase().includes(query);
+
+            return okPrice && okNeed && okType && okStatus && okSearch;
+        });
+    }
+
+    function sortProducts(list) {
+        const sorted = [...list];
+
+        if (currentSort === "low") sorted.sort((a, b) => a.price - b.price);
+        if (currentSort === "high") sorted.sort((a, b) => b.price - a.price);
+        if (currentSort === "az") sorted.sort((a, b) => a.title.localeCompare(b.title, "vi"));
+        if (currentSort === "za") sorted.sort((a, b) => b.title.localeCompare(a.title, "vi"));
+
+        return sorted;
+    }
+
+    function productDetailUrl(product) {
+        if (product.slug) {
+            return `/chi-tiet-san-pham?slug=${encodeURIComponent(product.slug)}`;
+        }
+        return `/chi-tiet-san-pham?id=${encodeURIComponent(product.id)}`;
+    }
+
+    function cartIconHtml() {
+        return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"></circle><circle cx="18" cy="20" r="1.5"></circle><path d="M2 3h2l2.2 12.3a2 2 0 0 0 2 1.7h8.7a2 2 0 0 0 2-1.6L22 6H6"></path></svg>`;
+    }
+
+    function handleAddToCart(event, product) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (window.KingnestCart) {
+            window.KingnestCart.addToCart(product);
+        }
+    }
+
+    function renderProducts() {
+        const filtered = sortProducts(filterProducts());
+
+        if (filtered.length === 0) {
+            productGrid.innerHTML = "";
+            emptyState.classList.add("show");
+            return;
+        }
+
+        emptyState.classList.remove("show");
+        productGrid.className = `product-grid view-${currentView}`;
+
+        productGrid.innerHTML = filtered.map((product) => {
+            const productJson = encodeURIComponent(JSON.stringify(product));
+            return `
+            <article class="product-card" data-product-id="${product.id}" role="link" tabindex="0" aria-label="Xem chi tiết ${product.title}">
+                <div class="product-img">
+                    <img src="${product.image}" alt="${product.title}" onerror="this.style.display='none';">
+                </div>
+
+                <div class="product-info">
+                    <h3 class="product-title">${product.title}</h3>
+                    <p class="product-desc">${product.desc || "Sản phẩm yến sào cao cấp Kingnest, phù hợp chăm sóc sức khỏe và biếu tặng."}</p>
+                    <div class="price">${formatPrice(product.price)}</div>
+                    <div class="product-card-footer">
+                        <a class="detail-btn" href="${productDetailUrl(product)}" onclick="event.stopPropagation()">Xem chi tiết</a>
+                        <button class="cart-circle" type="button" data-product="${productJson}" aria-label="Thêm vào giỏ hàng" onclick="handleAddToCart(event, JSON.parse(decodeURIComponent(this.dataset.product)))">
+                            ${cartIconHtml()}
+                        </button>
+                    </div>
+                </div>
+            </article>
+        `;
+        }).join("");
+    }
+
+    function setSort(sortValue) {
+        currentSort = sortValue;
+        sortSelect.value = sortValue;
+
+        sortButtons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.sort === sortValue);
+        });
+
+        renderProducts();
+    }
+
+
+    function setView(viewValue) {
+        currentView = viewValue;
+
+        viewButtons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.view === viewValue);
+        });
+
+        renderProducts();
+    }
+
+    function setupCollapsibleFilters() {
+        filterHeads.forEach((head) => {
+            head.addEventListener("click", () => {
+                const group = head.closest(".filter-group");
+                const isOpen = group.classList.toggle("open");
+
+                head.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            });
+        });
+    }
+
+    function normalizeProductType(type) {
+        if (type === "yen-vien" || type === "yen-rut-long") {
+            return "yen-tinh-che";
+        }
+        return type;
+    }
+
+    function applyQueryFilter() {
+        const params = new URLSearchParams(window.location.search);
+        const type = normalizeProductType(params.get("type"));
+        const need = params.get("need");
+
+        if (type) {
+            const typeInput = document.querySelector(`input[data-filter="type"][value="${type}"]`);
+            if (typeInput) {
+                typeInput.checked = true;
+            }
+        }
+
+        if (need) {
+            const needInput = document.querySelector(`input[data-filter="need"][value="${need}"]`);
+            if (needInput) {
+                needInput.checked = true;
+            }
+        }
+    }
+
+    function setupExclusiveFilters() {
+        filterInputs.forEach((input) => {
+            input.addEventListener("change", () => {
+                if (input.checked) {
+                    const group = input.closest(".filter-group");
+                    if (group) {
+                        group.querySelectorAll(`input[data-filter="${input.dataset.filter}"]`).forEach((other) => {
+                            if (other !== input) {
+                                other.checked = false;
+                            }
+                        });
+                    }
+                }
+                renderProducts();
+            });
+        });
+    }
+
+    sortSelect.addEventListener("change", (event) => {
+        setSort(event.target.value);
+    });
+
+    productSearchInput?.addEventListener("input", (event) => {
+        searchQuery = event.target.value;
+        renderProducts();
+    });
+
+    sortButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            setSort(button.dataset.sort);
+        });
+    });
+
+
+    viewButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            setView(button.dataset.view);
+        });
+    });
+
+
+
+    productGrid.addEventListener("click", (event) => {
+        if (event.target.closest("a, button, input, label, select")) return;
+        const card = event.target.closest(".product-card");
+        if (!card) return;
+        const product = products.find((item) => String(item.id) === String(card.dataset.productId));
+        window.location.href = product ? productDetailUrl(product) : `/chi-tiet-san-pham?id=${encodeURIComponent(card.dataset.productId)}`;
+    });
+
+    productGrid.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const card = event.target.closest(".product-card");
+        if (!card) return;
+        event.preventDefault();
+        const product = products.find((item) => String(item.id) === String(card.dataset.productId));
+        window.location.href = product ? productDetailUrl(product) : `/chi-tiet-san-pham?id=${encodeURIComponent(card.dataset.productId)}`;
+    });
+
+    async function loadProducts() {
+        productGrid.innerHTML = `<p>Đang tải sản phẩm...</p>`;
+        try {
+            const response = await fetch("/api/products", { headers: { "Accept": "application/json" } });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Không tải được danh sách sản phẩm");
+            }
+            products = data.products || [];
+            renderProducts();
+        } catch (error) {
+            productGrid.innerHTML = `<p>Không tải được sản phẩm từ database. Hãy chạy ứng dụng Spring Boot.</p>`;
+            emptyState.classList.remove("show");
+        }
+    }
+
+    setupCollapsibleFilters();
+    setupExclusiveFilters();
+    applyQueryFilter();
+    loadProducts();
+
+    (function setupMobileFilter() {
+        const toggle = document.getElementById("mobileFilterToggle");
+        const closeBtn = document.getElementById("filterCloseBtn");
+        const backdrop = document.getElementById("filterBackdrop");
+        const filterLayer = document.getElementById("filterLayer");
+
+        if (!toggle || !filterLayer) {
+            return;
+        }
+
+        function closeFilter() {
+            filterLayer.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+            if (backdrop) {
+                backdrop.classList.remove("is-open");
+                backdrop.setAttribute("aria-hidden", "true");
+            }
+            document.body.classList.remove("filter-open");
+        }
+
+        function openFilter() {
+            filterLayer.classList.add("is-open");
+            toggle.setAttribute("aria-expanded", "true");
+            if (backdrop) {
+                backdrop.classList.add("is-open");
+                backdrop.setAttribute("aria-hidden", "false");
+            }
+            document.body.classList.add("filter-open");
+        }
+
+        toggle.addEventListener("click", function () {
+            if (filterLayer.classList.contains("is-open")) {
+                closeFilter();
+            } else {
+                openFilter();
+            }
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener("click", closeFilter);
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener("click", closeFilter);
+        }
+
+        window.addEventListener("resize", function () {
+            if (window.innerWidth > 1180) {
+                closeFilter();
+            }
+        });
+    })();
+</script>
+
+</body>
+</html>

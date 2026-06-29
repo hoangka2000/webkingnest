@@ -1,0 +1,16 @@
+# Runtime database
+data/*.trace.db
+data/*.lock.db
+
+# OS / IDE
+.DS_Store
+*.iml
+.idea/
+.vscode/
+
+# Build
+target/
+
+# Word temp files
+~$*.docx
+**/~$*.docx

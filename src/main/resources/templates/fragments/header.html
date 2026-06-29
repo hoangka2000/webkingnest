@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="siteHeader(activeNav)">
+    <div class="mobile-nav-backdrop" aria-hidden="true"></div>
+
+    <header class="main-header">
+        <div class="header-inner">
+            <button class="mobile-nav-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+
+            <a href="/" class="header-brand">
+                <div class="logo-box">
+                    <img src="/images/icon/logo.png" alt="Kingnest Logo">
+                </div>
+                <div class="brand-divider"></div>
+                <div class="brand-text">
+                    <h1>Yến Sào An Thịnh Nhân</h1>
+                    <p>Yến sào cao cấp chính hãng</p>
+                </div>
+            </a>
+
+            <nav class="main-nav" id="mainNav">
+                <button class="mobile-nav-close" type="button" aria-label="Đóng menu">✕</button>
+                <a href="/" th:classappend="${activeNav == 'home'} ? 'active' : ''">Trang chủ</a>
+                <a href="/gioi-thieu" th:classappend="${activeNav == 'about'} ? 'active' : ''">Giới thiệu</a>
+                <a href="/san-pham" th:classappend="${activeNav == 'products'} ? 'active' : ''">Sản phẩm</a>
+                <a href="/tin-tuc" th:classappend="${activeNav == 'news'} ? 'active' : ''">Tin tức</a>
+
+                <div class="nav-dropdown">
+                    <a href="/#certificate">Thư viện <span>⌄</span></a>
+                    <div class="dropdown-menu">
+                        <a href="/#certificate">Chứng nhận</a>
+                        <a href="/tin-tuc">Bài viết</a>
+                        <a href="/#home">Hình ảnh</a>
+                    </div>
+                </div>
+
+                <a href="/lien-he" th:classappend="${activeNav == 'contact'} ? 'active' : ''">Liên hệ</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="search-button" type="button">⌕</button>
+                <a class="cart-button" href="/gio-hang" aria-label="Giỏ hàng">
+                    GIỎ HÀNG
+                    <span class="cart-button-icon">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"></circle><circle cx="18" cy="20" r="1.5"></circle><path d="M2 3h2l2.2 12.3a2 2 0 0 0 2 1.7h8.7a2 2 0 0 0 2-1.6L22 6H6"></path></svg>
+                        <span class="cart-badge" data-cart-count hidden>0</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <th:block th:replace="~{fragments/floating-consult :: floatingConsult}"></th:block>
+
+    <script src="/js/cart.js" defer></script>
+    <script src="/js/mobile-nav.js" defer></script>
+</th:block>
+</body>
+</html>
