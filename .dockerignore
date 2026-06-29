@@ -1,0 +1,11 @@
+target/
+.git/
+.gitignore
+.idea/
+.vscode/
+*.iml
+.DS_Store
+data/*.trace.db
+data/*.lock.db
+**/~$*.docx
+src/main/dockerfile
