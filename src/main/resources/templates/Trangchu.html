@@ -45,8 +45,10 @@ body {
 
 
 .main-header {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     height: clamp(72px, 5.6vw, 92px);
     z-index: 9999;
@@ -55,16 +57,21 @@ body {
     border-top: 2px solid #b88949;
     border-bottom: 2px solid #b88949;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+    transition: box-shadow 0.25s ease;
+}
+
+.main-header.is-scrolled {
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.34);
 }
 
 .header-inner {
-    width: 92%;
+    width: min(94%, 1680px);
     height: 100%;
     margin: 0 auto;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
-    gap: clamp(14px, 1.8vw, 34px);
+    gap: clamp(12px, 1.4vw, 24px);
 }
 
 .header-brand {
@@ -74,6 +81,7 @@ body {
     gap: clamp(12px, 1.3vw, 22px);
     text-decoration: none;
     flex-shrink: 0;
+    justify-self: start;
 }
 
 .logo-box {
@@ -121,11 +129,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(14px, 1.6vw, 34px);
-    flex: 1;
+    gap: clamp(22px, 2.4vw, 44px);
+    justify-self: center;
 }
 
-.main-nav > a, .nav-dropdown > a {
+.main-nav > a {
     position: relative;
     height: 100%;
     display: flex;
@@ -137,7 +145,7 @@ body {
     white-space: nowrap;
 }
 
-.main-nav > a:hover, .nav-dropdown > a:hover, .main-nav > a.active {
+.main-nav > a:hover, .main-nav > a.active {
     color: #ffd36b;
 }
 
@@ -152,58 +160,12 @@ body {
     border-radius: 99px;
 }
 
-.nav-dropdown {
-    height: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.nav-dropdown span {
-    margin-left: 6px;
-    color: #d8a63a;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 230px;
-    background: rgba(75, 0, 0, 0.96);
-    border: 1px solid rgba(216, 166, 58, 0.45);
-    border-radius: 8px;
-    padding: 10px 0;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: 0.25s ease;
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
-}
-
-.dropdown-menu a {
-    display: block;
-    padding: 12px 18px;
-    text-decoration: none;
-    color: #f7ddb0;
-    font-size: 15px;
-}
-
-.dropdown-menu a:hover {
-    background: rgba(216, 166, 58, 0.16);
-    color: #ffd36b;
-}
-
-.nav-dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
 .header-actions {
     display: flex;
     align-items: center;
     gap: clamp(10px, 1vw, 16px);
     flex-shrink: 0;
+    justify-self: end;
 }
 
 .search-button {
@@ -247,7 +209,7 @@ body {
 
 
 /* Thứ tự nền sau khi đổi vị trí */
-.section-1 { --section-ratio: 1672 / 941; }
+.section-1 { --section-ratio: auto; }
 .section-2 { --section-ratio: 1672 / 941; background-image: url('/images/banner/bg-product-seller.png'); }
 .section-3 { --section-ratio: 1672 / 941; background-image: url('/images/banner/bg-choose.png'); overflow: visible !important; }
 .section-4 { --section-ratio: 1672 / 941; background-image: url('/images/banner/bg-yen-chung.png'); }
@@ -316,22 +278,57 @@ body {
 
 
 .section-1 {
-    --section-ratio: 1672 / 941;
+    --section-ratio: auto;
     position: relative;
     width: 100%;
-    aspect-ratio: var(--section-ratio);
-    background: #0d1f19;
-    overflow: hidden;
+    aspect-ratio: auto;
+    height: auto;
+    min-height: 0;
+    background-color: #f3ece0;
+    background-image: url('/images/banner/banner_chung.png');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    overflow: visible;
+    padding: clamp(14px, 2vw, 28px) clamp(12px, 2.4vw, 36px) clamp(22px, 3vw, 38px);
+}
+
+.section-1-layout {
+    width: min(100%, 1320px);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2.2vw, 30px);
 }
 
 /* ================= SECTION 1 - HERO SLIDER ================= */
 
-.hero-slider {
+.hero-promo-frame {
+    position: relative;
+    padding: clamp(7px, 0.9vw, 11px);
+    border: 1.5px solid #d7aa5b;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 251, 242, 0.98) 0%, rgba(252, 245, 232, 0.96) 100%);
+    box-shadow: 0 12px 28px rgba(115, 80, 35, 0.1);
+}
+
+.hero-promo-frame::before {
+    content: "";
     position: absolute;
-    inset: 0;
+    inset: 6px;
+    border: 1px solid rgba(215, 170, 91, 0.62);
+    border-radius: 14px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.hero-slider {
+    position: relative;
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1672 / 620;
+    border-radius: 12px;
     overflow: hidden;
+    background: #0d1f19;
 }
 
 .hero-slider-track {
@@ -353,71 +350,9 @@ body {
     background-repeat: no-repeat;
 }
 
-.hero-slider-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background: linear-gradient(180deg, rgba(8, 18, 14, 0.12) 0%, rgba(8, 18, 14, 0.38) 55%, rgba(8, 18, 14, 0.52) 100%);
-    pointer-events: none;
-}
-
+.hero-slider-overlay,
 .hero-slider-content {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: clamp(24px, 4vw, 48px) clamp(70px, 8vw, 110px);
-    pointer-events: none;
-}
-
-.hero-slider-content h1 {
-    margin: 0 0 clamp(10px, 1.2vw, 18px);
-    max-width: 900px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: clamp(30px, 4.2vw, 58px);
-    font-weight: 800;
-    line-height: 1.12;
-    color: #fff;
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-}
-
-.hero-slider-content p {
-    margin: 0 0 clamp(18px, 2vw, 28px);
-    max-width: 760px;
-    font-size: clamp(14px, 1.35vw, 22px);
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.28);
-}
-
-.hero-slider-cta {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: clamp(180px, 16vw, 240px);
-    height: clamp(44px, 3.6vw, 56px);
-    padding: 0 clamp(22px, 2vw, 34px);
-    border-radius: 8px;
-    border: none;
-    background: #f0c100;
-    color: #111827;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: clamp(14px, 1.1vw, 18px);
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    text-decoration: none;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-    transition: transform 0.22s ease, filter 0.22s ease;
-}
-
-.hero-slider-cta:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.04);
+    display: none;
 }
 
 .hero-slider-nav {
@@ -489,28 +424,198 @@ body {
     transform: scale(1.15);
 }
 
+/* ================= SECTION 1 - SẢN PHẨM NỔI BẬT ================= */
+
+.featured-products {
+    width: 100%;
+}
+
+.featured-products-title {
+    margin: 0 0 clamp(12px, 1.6vw, 20px);
+    padding: 0 4px;
+    text-align: center;
+    font-family: "Great Vibes", "Segoe Script", "Brush Script MT", cursive;
+    font-size: clamp(30px, 4.2vw, 44px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    color: #0b2e26;
+}
+
+.featured-products-title::after {
+    content: "";
+    display: block;
+    width: min(168px, 42%);
+    height: 2px;
+    margin: 6px auto 0;
+    border-radius: 99px;
+    background: #0b2e26;
+}
+
+.featured-carousel {
+    position: relative;
+    width: min(100%, 1240px);
+    margin: 0 auto;
+}
+
+.featured-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.featured-track {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(12px, 1.5vw, 22px);
+}
+
+.featured-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    border: 1.5px solid #d7aa5b;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #fffdf8 0%, #fff8ee 100%);
+    box-shadow: 0 10px 22px rgba(115, 80, 35, 0.1);
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.featured-card::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(215, 170, 91, 0.55);
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.featured-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 30px rgba(115, 80, 35, 0.16);
+}
+
+.featured-card-image {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    padding: clamp(10px, 1.2vw, 16px);
+    background: #fff;
+}
+
+.featured-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.featured-card-name {
+    position: relative;
+    z-index: 3;
+    margin: 0;
+    padding: 0 clamp(10px, 1vw, 14px);
+    min-height: 2.6em;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(13px, 1vw, 16px);
+    line-height: 1.3;
+    font-weight: 600;
+    color: #0b2e26;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.featured-card-price {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    margin: auto clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 16px);
+    padding: clamp(7px, 0.7vw, 10px) clamp(14px, 1.4vw, 20px);
+    border: 1.5px solid #d7aa5b;
+    border-radius: 999px;
+    background: rgba(255, 252, 245, 0.96);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(11px, 0.95vw, 14px);
+    font-weight: 700;
+    color: #601c21;
+    white-space: nowrap;
+}
+
+.featured-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 6;
+    width: clamp(36px, 3vw, 48px);
+    height: clamp(36px, 3vw, 48px);
+    margin-top: calc(clamp(36px, 3vw, 48px) / -2);
+    border: 1.5px solid #d7aa5b;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #8f1015, #68070a);
+    color: #f8dfad;
+    font-size: clamp(24px, 2vw, 32px);
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(104, 7, 10, 0.22);
+    transition: transform 0.22s ease;
+}
+
+.featured-nav:hover {
+    transform: scale(1.08);
+}
+
+.featured-prev {
+    left: clamp(-6px, -2vw, -18px);
+}
+
+.featured-next {
+    right: clamp(-6px, -2vw, -18px);
+}
+
+@media (max-width: 1180px) {
+    .featured-track {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        padding: 0 2px 4px;
+    }
+
+    .featured-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .featured-card {
+        flex: 0 0 calc((100% - 12px) / 2);
+        min-width: calc((100% - 12px) / 2);
+        scroll-snap-align: start;
+    }
+
+    .featured-nav {
+        display: inline-flex;
+    }
+}
+
 @media (max-width: 760px) {
     .section-1 {
-        aspect-ratio: 16 / 9 !important;
-        max-height: 280px;
+        padding: 10px 12px 18px;
     }
 
-    .hero-slider-content {
-        padding: 12px 44px 24px;
-    }
-
-    .hero-slider-content h1 {
-        font-size: clamp(18px, 5.2vw, 24px);
-    }
-
-    .hero-slider-content p {
-        font-size: 11px;
-    }
-
-    .hero-slider-cta {
-        height: 36px;
-        font-size: 11px;
-        padding: 0 14px;
+    .hero-slider {
+        aspect-ratio: 16 / 10;
     }
 
     .hero-slider-nav {
@@ -527,18 +632,68 @@ body {
     .hero-slider-next {
         right: 8px;
     }
+
+    .featured-carousel {
+        width: 100%;
+        padding: 0 2px;
+    }
+
+    .featured-track {
+        gap: 8px;
+        padding: 0 2px 4px;
+    }
+
+    .featured-card {
+        flex: 0 0 calc((100% - 8px) / 2);
+        min-width: calc((100% - 8px) / 2);
+        border-radius: 10px;
+        border-width: 1px;
+        box-shadow: 0 6px 14px rgba(115, 80, 35, 0.08);
+    }
+
+    .featured-card::before {
+        inset: 4px;
+        border-radius: 8px;
+    }
+
+    .featured-card-image {
+        padding: 5px;
+        aspect-ratio: 1 / 1;
+    }
+
+    .featured-card-name {
+        min-height: 2.2em;
+        padding: 0 4px;
+        font-size: 10px;
+        line-height: 1.2;
+    }
+
+    .featured-card-price {
+        margin: 2px 4px 6px;
+        padding: 4px 6px;
+        font-size: 8.5px;
+        border-width: 1px;
+    }
+
+    .featured-nav {
+        width: 28px;
+        height: 28px;
+        margin-top: -14px;
+        font-size: 18px;
+    }
+
+    .featured-prev {
+        left: -4px;
+    }
+
+    .featured-next {
+        right: -4px;
+    }
 }
 
 @media (max-width: 400px) {
-    .section-1 {
-        max-height: 220px;
-    }
-
-    .hero-slider-content p {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    .hero-slider {
+        aspect-ratio: 16 / 11;
     }
 }
 
@@ -1243,6 +1398,11 @@ body {
     height: 74%;
     object-fit: contain;
     display: block;
+}
+
+.featured-card-image.is-empty {
+    background: radial-gradient(circle at center, rgba(214, 161, 78, 0.18), transparent 42%),
+        rgba(255, 248, 236, 0.78);
 }
 
 .best-product-image.is-empty, .category-image-box.is-empty, .knowledge-img.is-empty {
@@ -2112,26 +2272,33 @@ from {
 <th:block th:replace="~{fragments/header :: siteHeader(${activeNav})}"></th:block>
 
 <section class="bg-section section-1" id="home">
-    <div class="hero-slider" id="heroSlider">
-        <div class="hero-slider-track" id="heroSliderTrack">
-            <div class="hero-slide" style="background-image: url('/images/banner/bg-hero.png');" role="img" aria-label="Liên hệ và đồng hành cùng Kingnest"></div>
-            <div class="hero-slide" style="background-image: url('/images/banner/gth_section1.png');" role="img" aria-label="Yến sào cao cấp Kingnest"></div>
-            <div class="hero-slide" style="background-image: url('/images/banner/gth_section2.png');" role="img" aria-label="Sản phẩm yến sào An Thịnh Nhân"></div>
-            <div class="hero-slide" style="background-image: url('/images/banner/gth_section3.png');" role="img" aria-label="Yến chưng Kingnest chất lượng"></div>
+    <div class="section-1-layout">
+        <div class="hero-promo-frame">
+            <div class="hero-slider" id="heroSlider">
+                <div class="hero-slider-track" id="heroSliderTrack">
+                    <div class="hero-slide" style="background-image: url('/images/banner/bg-hero.png');" role="img" aria-label="Yến sào cao cấp Kingnest"></div>
+                    <div class="hero-slide" style="background-image: url('/images/banner/gth_section1.png');" role="img" aria-label="Tết yến khô tinh chế Kingnest"></div>
+                    <div class="hero-slide" style="background-image: url('/images/banner/gth_section2.png');" role="img" aria-label="Sản phẩm yến sào An Thịnh Nhân"></div>
+                    <div class="hero-slide" style="background-image: url('/images/banner/gth_section3.png');" role="img" aria-label="Yến chưng Kingnest chất lượng"></div>
+                </div>
+
+                <button class="hero-slider-nav hero-slider-prev" type="button" id="heroSliderPrev" aria-label="Ảnh trước">‹</button>
+                <button class="hero-slider-nav hero-slider-next" type="button" id="heroSliderNext" aria-label="Ảnh sau">›</button>
+
+                <div class="hero-slider-dots" id="heroSliderDots" aria-hidden="true"></div>
+            </div>
         </div>
 
-        <div class="hero-slider-overlay" aria-hidden="true"></div>
-
-        <div class="hero-slider-content">
-            <h1>Yến Sào Cao Cấp</h1>
-            <p>An Thịnh Nhân - Yến Sào Khánh Hòa - Chất lượng hàng đầu tại Việt Nam</p>
-            <a class="hero-slider-cta" href="/san-pham">KHÁM PHÁ NGAY</a>
+        <div class="featured-products">
+            <h2 class="featured-products-title">Sản phẩm nổi bật</h2>
+            <div class="featured-carousel">
+                <button aria-label="Sản phẩm trước" class="featured-nav featured-prev" id="featuredPrev" type="button">‹</button>
+                <div class="featured-viewport">
+                    <div class="featured-track" id="featuredTrack"></div>
+                </div>
+                <button aria-label="Sản phẩm sau" class="featured-nav featured-next" id="featuredNext" type="button">›</button>
+            </div>
         </div>
-
-        <button class="hero-slider-nav hero-slider-prev" type="button" id="heroSliderPrev" aria-label="Ảnh trước">‹</button>
-        <button class="hero-slider-nav hero-slider-next" type="button" id="heroSliderNext" aria-label="Ảnh sau">›</button>
-
-        <div class="hero-slider-dots" id="heroSliderDots" aria-hidden="true"></div>
     </div>
 </section>
 
@@ -2381,6 +2548,52 @@ let categoryAnimating = false;
 
 const BEST_PRODUCT_ICON = "/images/icon/icon_yen_chung.png";
 const CATEGORY_ICON = "/images/icon/icon_yen_tinh.png";
+const HERO_AUTO_MS = 3000;
+
+const FEATURED_PRODUCT_SLUGS = [
+    "thung-yen-gia-si",
+    "hop-qua-yen-chung-10-hu",
+    "hop-qua-yen-chung-6-hu",
+    "yen-tinh-che-loai-1"
+];
+
+const FEATURED_FALLBACK_PRODUCTS = [
+    {
+        slug: "thung-yen-gia-si",
+        name: "Thùng yến 40 hũ",
+        price: 1200000,
+        image: "/images/hopqua/thungyen/trungbay.png"
+    },
+    {
+        slug: "hop-qua-yen-chung-10-hu",
+        name: "Hộp quà 10 hũ",
+        price: 400000,
+        image: "/images/hopqua/hop10hu/trungbay.png"
+    },
+    {
+        slug: "hop-qua-yen-chung-6-hu",
+        name: "Hộp quà 6 hũ",
+        price: 300000,
+        image: "/images/hopqua/hop6hu/trungbay.png"
+    },
+    {
+        slug: "yen-tinh-che-loai-1",
+        name: "Yến tinh chế loại 1",
+        price: 3200000,
+        image: "/images/yentinh/tinhche1/trungbay.png"
+    }
+];
+
+const FEATURED_DISPLAY_NAMES = {
+    "thung-yen-gia-si": "Thùng yến 40 hũ",
+    "hop-qua-yen-chung-10-hu": "Hộp quà 10 hũ",
+    "hop-qua-yen-chung-6-hu": "Hộp quà 6 hũ",
+    "yen-tinh-che-loai-1": "Yến tinh chế loại 1"
+};
+
+const FEATURED_PRICE_OVERRIDE = {
+    "thung-yen-gia-si": 1200000
+};
 
 let bestSellerProducts = [];
 let categoryProducts = [];
@@ -2426,11 +2639,13 @@ async function loadHomeProducts() {
 
         renderBestSellerProducts();
         renderCategoryProducts();
+        renderFeaturedProducts(allProducts);
     } catch (error) {
         bestSellerProducts = [];
         categoryProducts = [];
         renderBestSellerProducts();
         renderCategoryProducts();
+        renderFeaturedProducts([]);
     }
 }
 
@@ -2458,6 +2673,78 @@ function productImageHtml(product, wrapperClass) {
             onerror="this.closest('.${wrapperClass}').classList.add('is-empty'); this.remove();"
         >
     `;
+}
+
+function formatVndPrice(price) {
+    const value = Number(price) || 0;
+    return `${value.toLocaleString("vi-VN")}đ`;
+}
+
+function getFeaturedProducts(allProducts) {
+    const productMap = new Map((allProducts || []).map((product) => [product.slug, product]));
+
+    return FEATURED_PRODUCT_SLUGS.map((slug) => {
+        const product = productMap.get(slug);
+        const fallback = FEATURED_FALLBACK_PRODUCTS.find((item) => item.slug === slug);
+
+        if (!product && !fallback) {
+            return null;
+        }
+
+        return {
+            slug,
+            name: FEATURED_DISPLAY_NAMES[slug] || product?.name || fallback?.name || slug,
+            price: FEATURED_PRICE_OVERRIDE[slug] ?? product?.price ?? fallback?.price ?? 0,
+            image: product?.image || fallback?.image || ""
+        };
+    }).filter(Boolean);
+}
+
+function buildFeaturedCardHtml(product) {
+    const imageHtml = product.image
+        ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.closest('.featured-card-image').classList.add('is-empty'); this.remove();">`
+        : "";
+
+    return `
+        <a class="featured-card" href="${productDetailUrl(product.slug)}">
+            <div class="featured-card-image">
+                ${imageHtml}
+            </div>
+            <p class="featured-card-name">${product.name}</p>
+            <span class="featured-card-price">Giá: ${formatVndPrice(product.price)}</span>
+        </a>
+    `;
+}
+
+function renderFeaturedProducts(allProducts) {
+    const track = document.getElementById("featuredTrack");
+    if (!track) {
+        return;
+    }
+
+    const products = getFeaturedProducts(allProducts);
+    if (products.length === 0) {
+        track.innerHTML = `<p class="home-products-empty">Chưa có sản phẩm nổi bật.</p>`;
+        return;
+    }
+
+    track.innerHTML = products.map(buildFeaturedCardHtml).join("");
+}
+
+function scrollFeaturedProducts(direction) {
+    const track = document.getElementById("featuredTrack");
+    if (!track) {
+        return;
+    }
+
+    const card = track.querySelector(".featured-card");
+    const gap = Number.parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || "12") || 12;
+    const step = card ? card.offsetWidth + gap : track.clientWidth * 0.72;
+
+    track.scrollBy({
+        left: direction * step,
+        behavior: "smooth"
+    });
 }
 
 function buildBestProductCardHtml(product, icon, iconAlt) {
@@ -2879,6 +3166,7 @@ function scrollCategory(direction) {
 window.addEventListener("DOMContentLoaded", () => {
     initHeroSlider();
     setupCertificateCarousel();
+    renderFeaturedProducts([]);
 
     window.addEventListener("resize", () => {
         resetCertificateCarousel();
@@ -2892,6 +3180,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function initHeroSlider() {
+    const slider = document.getElementById("heroSlider");
     const track = document.getElementById("heroSliderTrack");
     const dotsBox = document.getElementById("heroSliderDots");
     const prevBtn = document.getElementById("heroSliderPrev");
@@ -2907,6 +3196,7 @@ function initHeroSlider() {
     }
 
     let currentIndex = 0;
+    let heroAutoTimer = null;
 
     function renderDots() {
         if (!dotsBox) {
@@ -2924,8 +3214,34 @@ function initHeroSlider() {
         renderDots();
     }
 
-    prevBtn?.addEventListener("click", () => goToSlide(currentIndex - 1));
-    nextBtn?.addEventListener("click", () => goToSlide(currentIndex + 1));
+    function startHeroAuto() {
+        stopHeroAuto();
+        heroAutoTimer = window.setInterval(() => {
+            goToSlide(currentIndex + 1);
+        }, HERO_AUTO_MS);
+    }
+
+    function stopHeroAuto() {
+        if (heroAutoTimer) {
+            window.clearInterval(heroAutoTimer);
+            heroAutoTimer = null;
+        }
+    }
+
+    function restartHeroAuto(delay = HERO_AUTO_MS) {
+        stopHeroAuto();
+        window.setTimeout(startHeroAuto, delay);
+    }
+
+    prevBtn?.addEventListener("click", () => {
+        goToSlide(currentIndex - 1);
+        restartHeroAuto();
+    });
+
+    nextBtn?.addEventListener("click", () => {
+        goToSlide(currentIndex + 1);
+        restartHeroAuto();
+    });
 
     dotsBox?.addEventListener("click", (event) => {
         const dot = event.target.closest("[data-slide-index]");
@@ -2933,10 +3249,22 @@ function initHeroSlider() {
             return;
         }
         goToSlide(Number(dot.dataset.slideIndex));
+        restartHeroAuto();
     });
 
+    slider?.addEventListener("mouseenter", stopHeroAuto);
+    slider?.addEventListener("mouseleave", startHeroAuto);
+    slider?.addEventListener("focusin", stopHeroAuto);
+    slider?.addEventListener("focusout", startHeroAuto);
+    slider?.addEventListener("touchstart", stopHeroAuto, { passive: true });
+    slider?.addEventListener("touchend", () => restartHeroAuto(), { passive: true });
+
     renderDots();
+    startHeroAuto();
 }
+
+document.getElementById("featuredPrev")?.addEventListener("click", () => scrollFeaturedProducts(-1));
+document.getElementById("featuredNext")?.addEventListener("click", () => scrollFeaturedProducts(1));
 
 let categoryResizeTimer;
 window.addEventListener("resize", () => {

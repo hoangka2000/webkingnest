@@ -179,44 +179,40 @@
     /* ══════════════════ TRANG CHỦ ══════════════════ */
 
     .section-1 {
-        padding: 0 !important;
+        padding: 12px 0 18px !important;
         display: block !important;
-        aspect-ratio: 16 / 9 !important;
+        aspect-ratio: auto !important;
         width: 100% !important;
         min-height: 0 !important;
         height: auto !important;
         max-height: none !important;
-        background: #0d1f19 !important;
+        background-color: transparent !important;
+        background-image: var(--kn-mobile-banner) !important;
+        background-size: cover !important;
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
+        overflow: visible !important;
+    }
+
+    .section-1-layout {
+        gap: 14px;
+        padding: 0 12px;
+    }
+
+    .hero-promo-frame {
+        border-radius: 14px;
+        padding: 6px;
+    }
+
+    .hero-slider {
+        aspect-ratio: 16 / 10 !important;
+        border-radius: 10px;
     }
 
     .section-1::before,
     .section-1::after {
         content: none !important;
         display: none !important;
-    }
-
-    .section-1 .hero-slider-content {
-        padding: 12px 48px 28px;
-    }
-
-    .section-1 .hero-slider-content h1 {
-        margin-bottom: 6px;
-        font-size: clamp(20px, 5.6vw, 28px);
-        line-height: 1.15;
-    }
-
-    .section-1 .hero-slider-content p {
-        margin-bottom: 12px;
-        font-size: clamp(11px, 3vw, 14px);
-        line-height: 1.4;
-    }
-
-    .section-1 .hero-slider-cta {
-        min-width: 0;
-        width: auto;
-        height: 38px;
-        padding: 0 18px;
-        font-size: 12px;
     }
 
     .section-1 .hero-slider-nav {
@@ -247,6 +243,43 @@
     .section-1 .hero-slide {
         background-size: cover !important;
         background-position: center center !important;
+    }
+
+    .featured-products-title {
+        font-size: clamp(28px, 7.2vw, 36px);
+        color: var(--kn-section-title-green);
+    }
+
+    .featured-products-title::after {
+        background: var(--kn-section-title-green);
+    }
+
+    .featured-card-name {
+        font-size: 11px;
+        min-height: 2.3em;
+        line-height: 1.2;
+    }
+
+    .featured-card-price {
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+
+    .featured-card {
+        border-width: 1.2px;
+    }
+
+    .featured-card-image {
+        padding: 6px;
+    }
+
+    .featured-track {
+        gap: 10px;
+    }
+
+    .featured-card {
+        flex: 0 0 calc((100% - 10px) / 2) !important;
+        min-width: calc((100% - 10px) / 2) !important;
     }
 
     .section-7 {

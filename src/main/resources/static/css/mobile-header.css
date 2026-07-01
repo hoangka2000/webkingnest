@@ -5,8 +5,10 @@
 
 @media (max-width: 1180px) {
     .main-header {
-        position: sticky !important;
+        position: fixed !important;
         top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
         width: 100% !important;
         height: clamp(64px, 8.5vw, 78px) !important;
         min-height: 0 !important;
@@ -176,6 +178,10 @@
 }
 
 @media (max-width: 480px) {
+    :root {
+        --site-header-height: 62px;
+    }
+
     .main-header {
         height: 62px !important;
     }

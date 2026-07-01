@@ -9,11 +9,19 @@
 @import url("/css/cart-ui.css");
 @import url("/css/floating-consult.css");
 
+:root {
+    --site-header-height: clamp(72px, 5.6vw, 92px);
+}
+
 html,
 body {
     width: 100%;
     min-width: 0;
     overflow-x: hidden;
+}
+
+body {
+    padding-top: var(--site-header-height);
 }
 
 img {
@@ -46,6 +54,10 @@ img {
 }
 
 @media (max-width: 1180px) {
+    :root {
+        --site-header-height: clamp(64px, 8.5vw, 78px);
+    }
+
     .mobile-nav-toggle {
         display: inline-flex;
         align-items: center;
@@ -56,17 +68,10 @@ img {
         overflow: hidden;
     }
 
-    .main-nav > a,
-    .nav-dropdown > a {
+    .main-nav > a {
         width: 100%;
         height: auto !important;
         white-space: normal !important;
-    }
-
-    .nav-dropdown {
-        width: 100%;
-        height: auto !important;
-        flex-direction: column;
     }
 
     .header-actions .search-button {
@@ -181,7 +186,7 @@ img {
     }
 
     .section-1 {
-        aspect-ratio: 16 / 9 !important;
+        aspect-ratio: auto !important;
         min-height: 0 !important;
         height: auto !important;
         max-height: none !important;

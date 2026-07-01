@@ -25,16 +25,6 @@
                 <a href="/gioi-thieu" th:classappend="${activeNav == 'about'} ? 'active' : ''">Giới thiệu</a>
                 <a href="/san-pham" th:classappend="${activeNav == 'products'} ? 'active' : ''">Sản phẩm</a>
                 <a href="/tin-tuc" th:classappend="${activeNav == 'news'} ? 'active' : ''">Tin tức</a>
-
-                <div class="nav-dropdown">
-                    <a href="/#certificate">Thư viện <span>⌄</span></a>
-                    <div class="dropdown-menu">
-                        <a href="/#certificate">Chứng nhận</a>
-                        <a href="/tin-tuc">Bài viết</a>
-                        <a href="/#home">Hình ảnh</a>
-                    </div>
-                </div>
-
                 <a href="/lien-he" th:classappend="${activeNav == 'contact'} ? 'active' : ''">Liên hệ</a>
             </nav>
 
@@ -55,6 +45,7 @@
 
     <script src="/js/cart.js" defer></script>
     <script src="/js/mobile-nav.js" defer></script>
+    <script src="/js/header-scroll.js" defer></script>
 </th:block>
 </body>
 </html>
