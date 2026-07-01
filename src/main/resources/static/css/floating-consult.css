@@ -23,6 +23,7 @@
     align-items: center;
     justify-content: space-between;
     gap: clamp(14px, 1.4vw, 28px);
+    overflow: visible;
     transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s ease;
 }
 
@@ -175,11 +176,11 @@ body.has-floating-consult {
         bottom: max(10px, env(safe-area-inset-bottom, 10px));
         width: min(94vw, 640px);
         min-height: 0;
-        padding: 12px 14px 14px;
-        gap: 10px;
+        padding: 28px 14px 12px;
+        gap: 8px;
         flex-direction: column;
         align-items: stretch;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .floating-consult.is-hidden {
@@ -223,11 +224,12 @@ body.has-floating-consult {
     }
 
     .floating-close {
-        top: -10px;
-        right: -10px;
+        top: 6px;
+        right: 6px;
         width: 28px;
         height: 28px;
         font-size: 16px;
+        z-index: 2;
     }
 
     .floating-open {
@@ -239,14 +241,14 @@ body.has-floating-consult {
     }
 
     body.has-floating-consult {
-        padding-bottom: clamp(118px, 18vw, 140px);
+        padding-bottom: clamp(108px, 16vw, 128px);
     }
 }
 
 @media (max-width: 400px) {
     .floating-consult {
         width: min(96vw, 640px);
-        padding: 10px 12px 12px;
+        padding: 26px 12px 10px;
     }
 
     .floating-crown {

@@ -37,13 +37,19 @@ public class ProductImageService {
             Map.entry("chan-yen-ria-sach", "yentinh/chanria"),
             Map.entry("chan-yen-sach-nho", "yentinh/chantinhnho"),
             Map.entry("yen-tinh-che-hoa-hong", "yentinh/hoahong"),
-            Map.entry("hong-yen-tinh-che", "yentinh/hoahong"),
-            Map.entry("yen-tinh-che-xo-roi-dap-chan", "yentinh/keosoi"),
-            Map.entry("yen-tinh-che-soi-ngan-20-to", "yentinh/keosoi"),
-            Map.entry("yen-vien-xu-baby", "yentinh/keosoi"),
-            Map.entry("yen-tinh-che-gan-tuyet", "yentinh/tinhche1"),
+            Map.entry("hong-yen-tinh-che", "yentinh/hong_yen"),
+            Map.entry("yen-tinh-che-gan-tuyet", "yentinh/gantuyet"),
             Map.entry("yen-tinh-che-loai-1", "yentinh/tinhche1"),
-            Map.entry("yen-tinh-che-loai-2", "yentinh/tinhche1")
+            Map.entry("yen-tinh-che-loai-2", "yentinh/tinh_L2"),
+            Map.entry("yen-tinh-che-soi-ngan-20-to", "yentinh/keosoi"),
+            Map.entry("yen-vien-xu-baby", "yentinh/xu_baby"),
+            Map.entry("yen-rut-long-xuong-cao-cap", "yentinh/long_xuong"),
+            Map.entry("yen-rut-long-kho-cao-cap", "yentinh/long_kho"),
+            Map.entry("yen-tho-vip", "yentho/tho_vip"),
+            Map.entry("yen-tho-gan-gia", "yentho/gan_gia"),
+            Map.entry("hop-qua-yen-chung-6-hu", "hopqua/hop6hu"),
+            Map.entry("hop-qua-yen-chung-10-hu", "hopqua/hop10hu"),
+            Map.entry("thung-yen-gia-si", "hopqua/thungyen")
     );
 
     private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();

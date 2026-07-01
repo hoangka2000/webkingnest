@@ -3,6 +3,8 @@ package com.example.yensao.service;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -20,8 +22,27 @@ import java.util.regex.Pattern;
 @Service
 public class ProductContentLoader {
 
-    private static final String DOCX_DIR = "static/docs/chi_tiet_sp 2/";
     private static final String YEN_CHUNG_DOCX = "static/docs/yen_chung/noi_dung_14_vi_yen_chung_Kingnest.docx";
+
+    /** slug → thư mục ảnh (static/images/{folder}) */
+    private static final Map<String, String> SLUG_TO_IMAGE_FOLDER = Map.ofEntries(
+            Map.entry("chan-yen-ria-sach", "yentinh/chanria"),
+            Map.entry("chan-yen-sach-nho", "yentinh/chantinhnho"),
+            Map.entry("yen-tinh-che-hoa-hong", "yentinh/hoahong"),
+            Map.entry("hong-yen-tinh-che", "yentinh/hong_yen"),
+            Map.entry("yen-tinh-che-gan-tuyet", "yentinh/gantuyet"),
+            Map.entry("yen-tinh-che-loai-1", "yentinh/tinhche1"),
+            Map.entry("yen-tinh-che-loai-2", "yentinh/tinh_L2"),
+            Map.entry("yen-tinh-che-soi-ngan-20-to", "yentinh/keosoi"),
+            Map.entry("yen-vien-xu-baby", "yentinh/xu_baby"),
+            Map.entry("yen-rut-long-xuong-cao-cap", "yentinh/long_xuong"),
+            Map.entry("yen-rut-long-kho-cao-cap", "yentinh/long_kho"),
+            Map.entry("yen-tho-vip", "yentho/tho_vip"),
+            Map.entry("yen-tho-gan-gia", "yentho/gan_gia"),
+            Map.entry("hop-qua-yen-chung-6-hu", "hopqua/hop6hu"),
+            Map.entry("hop-qua-yen-chung-10-hu", "hopqua/hop10hu"),
+            Map.entry("thung-yen-gia-si", "hopqua/thungyen")
+    );
 
     private static final Map<String, String> SLUG_BY_YEN_CHUNG_TITLE = Map.ofEntries(
             Map.entry("YẾN CHƯNG ĐÔNG TRÙNG HẠ THẢO", "yen-chung-dong-trung-ha-thao-6-hu-70ml"),
@@ -40,28 +61,14 @@ public class ProductContentLoader {
             Map.entry("YẾN CHƯNG NHUNG HƯƠU", "yen-chung-nhung-huou-6-hu-70ml")
     );
 
-    private static final Map<String, String> SLUG_BY_DOCX = Map.ofEntries(
-            Map.entry("chan_ria_yen", "chan-yen-ria-sach"),
-            Map.entry("chan_yen_nho", "chan-yen-sach-nho"),
-            Map.entry("gan_tuyet", "yen-tinh-che-gan-tuyet"),
-            Map.entry("hoa_hong", "yen-tinh-che-hoa-hong"),
-            Map.entry("hong_yen", "hong-yen-tinh-che"),
-            Map.entry("roi_dap_chan", "yen-tinh-che-xo-roi-dap-chan"),
-            Map.entry("soi_ngan", "yen-tinh-che-soi-ngan-20-to"),
-            Map.entry("tho_vip", "yen-tho-vip"),
-            Map.entry("tinh_L1", "yen-tinh-che-loai-1"),
-            Map.entry("tinh_L2", "yen-tinh-che-loai-2"),
-            Map.entry("xu_baby", "yen-vien-xu-baby")
-    );
-
     private static final Pattern PRICE_PATTERN = Pattern.compile("([\\d.,]+)\\s*đ", Pattern.CASE_INSENSITIVE);
-    private static final Pattern PRICE_GIA_PATTERN = Pattern.compile(
-            "(?i)giá\\s*:?\\s*([\\d.,]+)"
-    );
-    private static final Pattern SECTION_TWO = Pattern.compile("^2\\.\\s*(.+)$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern SECTION_THREE = Pattern.compile("^3\\.\\s*(.+)$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern SECTION_FOUR = Pattern.compile("^4\\.?\\s*Thông tin chi tiết.*$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    private static final Pattern DETAIL_INFO = Pattern.compile("^Thông tin chi tiết.*$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern PRICE_GIA_PATTERN = Pattern.compile("(?i)giá\\s*:?\\s*([\\d.,]+)");
+    private static final Pattern SECTION_TWO = Pattern.compile("^2\\.\\s*(.+)$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern SECTION_THREE = Pattern.compile("^3\\.\\s*(.+)$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern SECTION_FOUR = Pattern.compile(
+            "^4[.,]?\\s*(Thông tin chi tiết|Chi tiết sản phẩm).*$",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final Pattern DETAIL_INFO = Pattern.compile("^(Thông tin chi tiết|Chi tiết sản phẩm).*$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern SPEC_LINE = Pattern.compile("^•\\s*([^:]+):\\s*(.+)$");
     private static final Pattern DASH_SPEC_LINE = Pattern.compile("^-\\s*([^:]+):\\s*(.+)$");
     private static final Pattern DIAMOND_SPEC_LINE = Pattern.compile("^[♦]\\uFE0F?\\s*([^:]+):\\s*(.+)$");
@@ -69,12 +76,18 @@ public class ProductContentLoader {
             "^YẾN CHƯNG [A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ\\s]+$"
     );
 
+    private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
     public List<String> getDocxSlugs() {
-        return List.copyOf(SLUG_BY_DOCX.values());
+        return List.copyOf(SLUG_TO_IMAGE_FOLDER.keySet());
     }
 
     public List<String> getYenChungDocxSlugs() {
         return List.copyOf(SLUG_BY_YEN_CHUNG_TITLE.values());
+    }
+
+    public Optional<String> imageFolderForSlug(String slug) {
+        return Optional.ofNullable(SLUG_TO_IMAGE_FOLDER.get(slug));
     }
 
     public Optional<ProductDocxData> loadYenChungParsed(String slug) {
@@ -98,41 +111,52 @@ public class ProductContentLoader {
                 continue;
             }
 
-            ProductDocxData data = parseParagraphs(section);
-            parsed.put(slug, data);
+            parsed.put(slug, parseParagraphs(section));
         }
 
         return parsed;
     }
 
-    public Optional<String> slugForDocx(String docxBaseName) {
-        return Optional.ofNullable(SLUG_BY_DOCX.get(docxBaseName));
-    }
-
     public Optional<ProductDocxData> loadParsed(String slug) {
-        Optional<String> fileName = docxFileNameForSlug(slug);
-        if (fileName.isEmpty()) {
+        String folder = SLUG_TO_IMAGE_FOLDER.get(slug);
+        if (folder == null) {
             return Optional.empty();
         }
 
-        return loadParagraphs(fileName.get()).map(this::parseParagraphs);
+        return loadDocxFromImageFolder(folder).map(this::parseParagraphs);
     }
 
     public Optional<String> loadContentHtml(String slug) {
         return loadParsed(slug).map(ProductDocxData::getContentHtml);
     }
 
-    private Optional<String> docxFileNameForSlug(String slug) {
-        for (Map.Entry<String, String> entry : SLUG_BY_DOCX.entrySet()) {
-            if (entry.getValue().equals(slug)) {
-                return Optional.of(entry.getKey() + ".docx");
-            }
-        }
-        return Optional.empty();
-    }
+    private Optional<List<String>> loadDocxFromImageFolder(String folder) {
+        try {
+            Resource[] resources = resolver.getResources("classpath:static/images/" + folder + "/*.docx");
+            Resource selected = null;
+            long newest = -1L;
 
-    private Optional<List<String>> loadParagraphs(String fileName) {
-        return loadParagraphsFromResource(DOCX_DIR + fileName);
+            for (Resource resource : resources) {
+                String filename = resource.getFilename();
+                if (filename == null || filename.startsWith("~$")) {
+                    continue;
+                }
+                long modified = resource.lastModified();
+                if (modified >= newest) {
+                    newest = modified;
+                    selected = resource;
+                }
+            }
+
+            if (selected == null) {
+                return Optional.empty();
+            }
+
+            String filename = selected.getFilename();
+            return loadParagraphsFromResource("static/images/" + folder + "/" + filename);
+        } catch (IOException ignored) {
+            return Optional.empty();
+        }
     }
 
     private Optional<List<String>> loadParagraphsFromResource(String resourcePath) {
@@ -246,10 +270,10 @@ public class ProductContentLoader {
 
         if (sectionTwo >= 0 && sectionThree > sectionTwo) {
             String sectionName = SECTION_TWO.matcher(paragraphs.get(sectionTwo)).replaceFirst("$1").trim().toLowerCase();
-            List<String> items = collectBulletItems(paragraphs, sectionTwo + 1, sectionThree);
-            if (sectionName.contains("đặc điểm")) {
+            List<String> items = collectSectionItems(paragraphs, sectionTwo + 1, sectionThree);
+            if (sectionName.contains("đặc điểm") || sectionName.contains("nổi bật")) {
                 data.setHighlights(items);
-            } else if (sectionName.contains("thành phần")) {
+            } else if (sectionName.contains("thành phần") || sectionName.contains("công dụng")) {
                 data.setBenefits(items);
             } else {
                 data.setBenefits(items);
@@ -258,7 +282,7 @@ public class ProductContentLoader {
 
         if (sectionThree >= 0) {
             int usageEnd = sectionFour >= 0 ? sectionFour : paragraphs.size();
-            data.setUsage(collectBulletItems(paragraphs, sectionThree + 1, usageEnd));
+            data.setUsage(collectSectionItems(paragraphs, sectionThree + 1, usageEnd));
         }
 
         if (sectionFour >= 0) {
@@ -377,6 +401,28 @@ public class ProductContentLoader {
         return -1;
     }
 
+    private List<String> collectSectionItems(List<String> paragraphs, int start, int end) {
+        List<String> items = new ArrayList<>();
+
+        for (int index = start; index < end; index++) {
+            String text = paragraphs.get(index).trim();
+            if (text.isEmpty() || isSectionHeader(text) || isNumberedSectionStart(text)) {
+                continue;
+            }
+            if (isBulletLine(text)) {
+                items.add(stripBullet(text));
+            } else {
+                items.add(text);
+            }
+        }
+
+        return items;
+    }
+
+    private boolean isNumberedSectionStart(String text) {
+        return text.matches("^\\d+[.,]?\\s*.+");
+    }
+
     private List<String> collectBulletItems(List<String> paragraphs, int start, int end) {
         List<String> items = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -409,6 +455,8 @@ public class ProductContentLoader {
         boolean inSpecs = false;
         boolean inDescription = false;
         boolean inHighlights = false;
+        boolean inBenefits = false;
+        List<String> ingredientBenefits = new ArrayList<>();
         StringBuilder paragraph = new StringBuilder();
 
         for (int index = startIndex + 1; index < paragraphs.size(); index++) {
@@ -420,6 +468,7 @@ public class ProductContentLoader {
                 inSpecs = true;
                 inDescription = false;
                 inHighlights = false;
+                inBenefits = false;
                 continue;
             }
 
@@ -428,6 +477,16 @@ public class ProductContentLoader {
                 inSpecs = false;
                 inDescription = true;
                 inHighlights = false;
+                inBenefits = false;
+                continue;
+            }
+
+            if (normalized.contains("thành phần")) {
+                flushDescriptionParagraph(paragraph, description, inDescription);
+                inSpecs = false;
+                inDescription = false;
+                inHighlights = false;
+                inBenefits = true;
                 continue;
             }
 
@@ -436,6 +495,7 @@ public class ProductContentLoader {
                 inSpecs = false;
                 inDescription = false;
                 inHighlights = true;
+                inBenefits = false;
                 continue;
             }
 
@@ -476,6 +536,15 @@ public class ProductContentLoader {
                 continue;
             }
 
+            if (inBenefits) {
+                if (isBulletLine(text)) {
+                    ingredientBenefits.add(stripBullet(text));
+                } else if (!isSectionHeader(text) && !text.isBlank()) {
+                    ingredientBenefits.add(text);
+                }
+                continue;
+            }
+
             if (inDescription) {
                 if (isBulletLine(text)) {
                     flushDescriptionParagraph(paragraph, description, inDescription);
@@ -499,6 +568,15 @@ public class ProductContentLoader {
             List<String> merged = new ArrayList<>(data.getHighlights());
             merged.addAll(highlights);
             data.setHighlights(merged);
+        }
+        if (!ingredientBenefits.isEmpty()) {
+            if (data.getBenefits() == null || data.getBenefits().isEmpty()) {
+                data.setBenefits(ingredientBenefits);
+            } else {
+                List<String> mergedBenefits = new ArrayList<>(data.getBenefits());
+                mergedBenefits.addAll(ingredientBenefits);
+                data.setBenefits(mergedBenefits);
+            }
         }
     }
 

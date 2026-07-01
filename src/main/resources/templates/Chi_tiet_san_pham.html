@@ -31,6 +31,11 @@
                     <h2 id="productTitle">Đang tải...</h2>
                     <div class="detail-price" id="productPrice"></div>
 
+                    <div class="variant-picker" id="variantPicker" hidden>
+                        <span class="variant-label" id="variantLabel">Quy cách</span>
+                        <div class="variant-options" id="variantOptions"></div>
+                    </div>
+
                     <div class="summary-box" id="benefitBox">
                         <h3>Công dụng</h3>
                         <ul class="summary-list" id="benefitList"></ul>
@@ -95,14 +100,114 @@ let currentGallery = [];
 let currentGalleryIndex = 0;
 let galleryAutoTimer = null;
 let thumbScrollTimer = null;
+let basePrice = 0;
+let selectedVariant = null;
+let variantConfig = null;
+
+const WEIGHT_VARIANTS = [
+    { id: "100g", label: "100g", multiplier: 1 },
+    { id: "50g", label: "50g", multiplier: 0.5 }
+];
+
+const THUNG_VARIANTS = [
+    { id: "40hu", label: "40 hũ", price: 1200000 },
+    { id: "60hu", label: "60 hũ", price: 1700000 }
+];
+
+function supportsWeightVariants(product) {
+    const type = normalizeProductType(product.type);
+    return type === "yen-tinh-che" || product.type === "yen-tho";
+}
+
+function getVariantConfig(product) {
+    if (product.slug === "thung-yen-gia-si") {
+        return { kind: "thung", label: "Quy cách", options: THUNG_VARIANTS };
+    }
+    if (supportsWeightVariants(product)) {
+        return { kind: "weight", label: "Khối lượng", options: WEIGHT_VARIANTS };
+    }
+    return null;
+}
+
+function getVariantPrice(variant) {
+    if (!variant || !variantConfig) {
+        return basePrice;
+    }
+    if (variantConfig.kind === "weight") {
+        return Math.round(basePrice * (variant.multiplier || 1));
+    }
+    return variant.price ?? basePrice;
+}
+
+function getCurrentPrice() {
+    return getVariantPrice(selectedVariant);
+}
+
+function updateDisplayedPrice() {
+    const priceEl = document.getElementById("productPrice");
+    if (priceEl) {
+        priceEl.textContent = formatPrice(getCurrentPrice());
+    }
+}
+
+function selectVariant(variantId) {
+    if (!variantConfig) {
+        return;
+    }
+    const variant = variantConfig.options.find(option => option.id === variantId);
+    if (!variant) {
+        return;
+    }
+    selectedVariant = variant;
+    document.querySelectorAll(".variant-option").forEach(button => {
+        button.classList.toggle("active", button.dataset.variantId === variantId);
+    });
+    updateDisplayedPrice();
+}
+
+function renderVariantPicker(product) {
+    const picker = document.getElementById("variantPicker");
+    const optionsEl = document.getElementById("variantOptions");
+    const labelEl = document.getElementById("variantLabel");
+    variantConfig = getVariantConfig(product);
+    selectedVariant = null;
+
+    if (!variantConfig || !picker || !optionsEl) {
+        picker?.setAttribute("hidden", "");
+        return;
+    }
+
+    basePrice = Number(product.price) || 0;
+    if (labelEl) {
+        labelEl.textContent = variantConfig.label;
+    }
+
+    optionsEl.innerHTML = variantConfig.options.map(option => `
+        <button type="button" class="variant-option" data-variant-id="${option.id}">${option.label}</button>
+    `).join("");
+
+    optionsEl.querySelectorAll(".variant-option").forEach(button => {
+        button.addEventListener("click", () => selectVariant(button.dataset.variantId));
+    });
+
+    const defaultVariant = variantConfig.kind === "weight"
+        ? variantConfig.options.find(option => option.id === "100g") || variantConfig.options[0]
+        : variantConfig.options[0];
+    picker.removeAttribute("hidden");
+    selectVariant(defaultVariant.id);
+}
 
 function getCartProductPayload(product) {
+    const variantLabel = selectedVariant?.label;
+    const price = getCurrentPrice();
+    const cartId = variantLabel ? `${product.id}-${selectedVariant.id}` : String(product.id);
+
     return {
-        id: product.id,
+        id: cartId,
         slug: product.slug || "",
-        title: product.title,
+        title: variantLabel ? `${product.title} (${variantLabel})` : product.title,
         desc: product.desc || product.shortDesc || "Sản phẩm yến sào cao cấp Kingnest.",
-        price: product.price,
+        price: price,
         image: product.image || "/images/yentinh/tinh_che_L1.png"
     };
 }
@@ -361,7 +466,9 @@ function renderProduct(product) {
     setPurchaseQuantity(1);
     document.title = `${product.title} - Yến Sào An Thịnh Nhân`;
     document.getElementById("productTitle").textContent = product.title;
-    document.getElementById("productPrice").textContent = formatPrice(product.price);
+    basePrice = Number(product.price) || 0;
+    document.getElementById("productPrice").textContent = formatPrice(basePrice);
+    renderVariantPicker(product);
 
     const category = document.getElementById("productCategory");
     if (product.category) {
@@ -407,6 +514,9 @@ function renderProduct(product) {
 
 function renderProductError(message) {
     stopGalleryTimers();
+    variantConfig = null;
+    selectedVariant = null;
+    document.getElementById("variantPicker")?.setAttribute("hidden", "");
     document.getElementById("productTitle").textContent = "Không tìm thấy sản phẩm";
     document.getElementById("productPrice").textContent = "";
     document.getElementById("descriptionBlock").innerHTML = `<p>${message}</p>`;

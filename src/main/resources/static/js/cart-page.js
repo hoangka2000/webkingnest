@@ -25,6 +25,8 @@
             subtotal: 0,
             total: 0
         };
+        let currentOrderCode = "";
+        let isSubmitting = false;
 
         function getUrlParams() {
             return new URLSearchParams(window.location.search);
@@ -116,8 +118,9 @@
                 showPaymentSection(false);
             } else if (safeStep === 3) {
                 showPaymentSection(true);
-                if (orderCodeInline) {
-                    orderCodeInline.textContent = generateOrderCode();
+                if (orderCodeInline && !currentOrderCode) {
+                    currentOrderCode = generateOrderCode();
+                    orderCodeInline.textContent = currentOrderCode;
                 }
             }
 
@@ -212,6 +215,67 @@
             return validateCustomerForm();
         }
 
+        function getCouponValue() {
+            const coupon = checkoutMeta.coupon;
+            if (!coupon || coupon === "No coupon applied") {
+                return "";
+            }
+            return coupon;
+        }
+
+        function buildOrderPayload(paymentMethod) {
+            return {
+                orderCode: currentOrderCode,
+                customerName: document.getElementById("customerName").value.trim(),
+                customerEmail: document.getElementById("customerEmail").value.trim(),
+                customerPhone: document.getElementById("customerPhone").value.trim(),
+                customerAddress: document.getElementById("customerAddress").value.trim(),
+                customerNote: document.getElementById("customerNote").value.trim(),
+                coupon: getCouponValue(),
+                paymentMethod,
+                items: cartApi.getCart().map((item) => ({
+                    id: item.id,
+                    quantity: item.quantity
+                }))
+            };
+        }
+
+        async function submitOrder(paymentMethod) {
+            if (!validatePayment() || isSubmitting) {
+                return false;
+            }
+
+            if (!currentOrderCode) {
+                currentOrderCode = generateOrderCode();
+                if (orderCodeInline) {
+                    orderCodeInline.textContent = currentOrderCode;
+                }
+            }
+
+            isSubmitting = true;
+
+            try {
+                const response = await fetch("/api/orders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json"
+                    },
+                    body: JSON.stringify(buildOrderPayload(paymentMethod))
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Không thể ghi nhận đơn hàng");
+                }
+                return true;
+            } catch (error) {
+                alert(error.message || "Có lỗi xảy ra khi gửi đơn hàng");
+                return false;
+            } finally {
+                isSubmitting = false;
+            }
+        }
+
         function generateOrderCode() {
             const now = new Date();
             const y = String(now.getFullYear()).slice(-2);
@@ -243,17 +307,19 @@
             setStep(3);
         });
 
-        document.getElementById("confirmPaidBtn")?.addEventListener("click", () => {
-            if (!validatePayment()) {
+        document.getElementById("confirmPaidBtn")?.addEventListener("click", async () => {
+            const success = await submitOrder("BANK_TRANSFER");
+            if (!success) {
                 return;
             }
-            alert("Cảm ơn bạn! Đơn hàng đã được ghi nhận. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.");
+            alert("Cảm ơn bạn! Đơn hàng đã được ghi nhận và gửi tới cửa hàng. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.");
             cartApi.clearCart();
             window.location.href = "/gio-hang?step=1";
         });
 
-        document.getElementById("codBtn")?.addEventListener("click", () => {
-            if (!validatePayment()) {
+        document.getElementById("codBtn")?.addEventListener("click", async () => {
+            const success = await submitOrder("COD");
+            if (!success) {
                 return;
             }
             alert("Đã ghi nhận đơn hàng thanh toán khi nhận hàng. Cảm ơn bạn!");

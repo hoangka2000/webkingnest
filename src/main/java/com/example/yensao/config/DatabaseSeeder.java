@@ -48,10 +48,28 @@ public class DatabaseSeeder implements CommandLineRunner {
             newsArticleRepository.saveAll(buildNewsArticles());
         }
         normalizeProductTypes();
+        removeRetiredProducts();
         syncProductsFromDocx();
         syncYenChungFromDocx();
         syncProductImages();
         normalizeNewsArticles();
+    }
+
+    private static final List<String> RETIRED_PRODUCT_SLUGS = List.of(
+            "yen-tinh-che-cao-cap-100g",
+            "yen-rut-long-cao-cap-100g",
+            "yen-vien-ruby-cao-cap",
+            "hop-qua-yen-chung-thuong-hang-kingnest-6-hu",
+            "hop-qua-yen-chung-dong-trung-ha-thao-6-hu",
+            "hop-qua-yen-chung-nhan-sam-6-hu",
+            "yen-tinh-che-xo-roi-dap-chan",
+            "yen-tho-nguyen-to-100g"
+    );
+
+    private void removeRetiredProducts() {
+        for (String slug : RETIRED_PRODUCT_SLUGS) {
+            productRepository.findBySlug(slug).ifPresent(productRepository::delete);
+        }
     }
 
     private void syncProductImages() {
@@ -130,6 +148,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .orElseGet(() -> createProductFromDocx(slug, data));
 
             boolean changed = applyDocxData(product, data);
+            changed = applyProductDefaults(product, slug) || changed;
             if (changed || product.getId() == null) {
                 productRepository.save(product);
             }
@@ -148,6 +167,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .orElseGet(() -> createProductFromDocx(slug, data));
 
             boolean changed = applyDocxData(product, data);
+            changed = applyProductDefaults(product, slug) || changed;
             if (changed || product.getId() == null) {
                 productRepository.save(product);
             }
@@ -160,8 +180,14 @@ public class DatabaseSeeder implements CommandLineRunner {
         entity.setSlug(slug);
         entity.setCategory(defaults.category());
         entity.setProductType(defaults.productType());
-        entity.setImage(defaults.image());
-        entity.setGallery(List.of(defaults.image()));
+        String image = productImageService.resolve(slug)
+                .map(ProductImageService.ProductImages::listImage)
+                .orElse(defaults.image());
+        List<String> gallery = productImageService.resolve(slug)
+                .map(ProductImageService.ProductImages::gallery)
+                .orElse(List.of(image));
+        entity.setImage(image);
+        entity.setGallery(gallery);
         entity.setNeed(defaults.need());
         entity.setStatus(defaults.status());
         entity.setBadge(defaults.badge());
@@ -221,6 +247,40 @@ public class DatabaseSeeder implements CommandLineRunner {
         return changed;
     }
 
+    private boolean applyProductDefaults(ProductEntity product, String slug) {
+        DocxProductDefaults defaults = docxDefaults(slug);
+        boolean changed = false;
+
+        if (!defaults.category().equals(product.getCategory())) {
+            product.setCategory(defaults.category());
+            changed = true;
+        }
+
+        String normalizedType = ProductTypeUtil.normalize(defaults.productType());
+        if (!normalizedType.equals(product.getProductType())) {
+            product.setProductType(normalizedType);
+            changed = true;
+        }
+
+        if (!nullSafeList(defaults.need()).equals(nullSafeList(product.getNeed()))) {
+            product.setNeed(defaults.need());
+            changed = true;
+        }
+
+        if (!nullSafeList(defaults.status()).equals(nullSafeList(product.getStatus()))) {
+            product.setStatus(defaults.status());
+            changed = true;
+        }
+
+        String badge = defaults.badge();
+        if (badge != null && !badge.equals(product.getBadge())) {
+            product.setBadge(badge);
+            changed = true;
+        }
+
+        return changed;
+    }
+
     private List<String> nullSafeList(List<String> values) {
         return values == null ? List.of() : values;
     }
@@ -233,48 +293,68 @@ public class DatabaseSeeder implements CommandLineRunner {
         return switch (slug) {
             case "chan-yen-ria-sach" -> new DocxProductDefaults(
                     "Chân rìa tinh", "yen-tinh-che",
-                    "/images/yentinh/chan_ria_yen.png",
-                    List.of("daily", "family", "elder"), List.of("best", "premium"), null, null);
+                    "/images/yentinh/chanria/trungbay.png",
+                    List.of("daily", "family", "elder"), List.of("best", "premium"), null, 2800000L);
             case "chan-yen-sach-nho" -> new DocxProductDefaults(
                     "Chân rìa tinh", "yen-tinh-che",
-                    "/images/yentinh/chan_tinh_nho.png",
-                    List.of("daily", "family"), List.of("best"), null, null);
+                    "/images/yentinh/chantinhnho/trungbay.png",
+                    List.of("daily", "family"), List.of("best"), null, 2600000L);
             case "yen-tinh-che-gan-tuyet" -> new DocxProductDefaults(
                     "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/tinh_che_L1.png",
-                    List.of("gift", "premium"), List.of("premium"), "Cao cấp", null);
+                    "/images/yentinh/gantuyet/trungbay.png",
+                    List.of("gift", "premium"), List.of("premium"), "Cao cấp", 3500000L);
             case "yen-tinh-che-hoa-hong" -> new DocxProductDefaults(
                     "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/hoa_hong.png",
-                    List.of("gift", "family"), List.of("premium"), null, null);
+                    "/images/yentinh/hoahong/trungbay.png",
+                    List.of("gift", "family"), List.of("premium"), null, 2800000L);
             case "hong-yen-tinh-che" -> new DocxProductDefaults(
                     "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/hoa_hong.png",
-                    List.of("gift", "premium"), List.of("premium"), "Cao cấp", null);
-            case "yen-tinh-che-xo-roi-dap-chan" -> new DocxProductDefaults(
-                    "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/keo_soi.png",
-                    List.of("daily", "family"), List.of("best"), null, null);
+                    "/images/yentinh/hong_yen/trungbay.png",
+                    List.of("gift", "premium"), List.of("premium"), "Cao cấp", 4500000L);
             case "yen-tinh-che-soi-ngan-20-to" -> new DocxProductDefaults(
                     "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/keo_soi.png",
-                    List.of("gift", "family"), List.of("best"), null, null);
+                    "/images/yentinh/keosoi/trungbay.png",
+                    List.of("daily", "family"), List.of("best"), null, 2800000L);
             case "yen-tho-vip" -> new DocxProductDefaults(
                     "Yến thô", "yen-tho",
-                    "/images/sanpham/yen-tho-nguyen-to.jpg",
-                    List.of("family", "premium"), List.of("premium"), null, null);
+                    "/images/yentho/tho_vip/trungbay.png",
+                    List.of("family", "premium"), List.of("premium"), null, 2400000L);
+            case "yen-tho-gan-gia" -> new DocxProductDefaults(
+                    "Yến thô", "yen-tho",
+                    "/images/yentho/gan_gia/trungbay.png",
+                    List.of("family", "premium"), List.of("best"), null, 2300000L);
             case "yen-tinh-che-loai-1" -> new DocxProductDefaults(
                     "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/tinh_che_L1.png",
-                    List.of("gift", "premium"), List.of("premium"), "Cao cấp nhất", null);
+                    "/images/yentinh/tinhche1/trungbay.png",
+                    List.of("gift", "premium"), List.of("premium"), "Cao cấp nhất", 3200000L);
             case "yen-tinh-che-loai-2" -> new DocxProductDefaults(
                     "Yến tinh chế", "yen-tinh-che",
-                    "/images/yentinh/tinh_che_L1.png",
-                    List.of("daily", "family"), List.of("best"), null, null);
+                    "/images/yentinh/tinh_L2/trungbay.png",
+                    List.of("daily", "family"), List.of("best"), null, 2800000L);
             case "yen-vien-xu-baby" -> new DocxProductDefaults(
                     "Yến viên", "yen-tinh-che",
-                    "/images/yentinh/keo_soi.png",
-                    List.of("daily", "family"), List.of("new"), null, null);
+                    "/images/yentinh/xu_baby/trungbay.png",
+                    List.of("daily", "family"), List.of("new"), null, 2200000L);
+            case "yen-rut-long-xuong-cao-cap" -> new DocxProductDefaults(
+                    "Yến rút lông", "yen-tinh-che",
+                    "/images/yentinh/long_xuong/trungbay.png",
+                    List.of("gift", "premium"), List.of("premium"), null, 3800000L);
+            case "yen-rut-long-kho-cao-cap" -> new DocxProductDefaults(
+                    "Yến rút lông", "yen-tinh-che",
+                    "/images/yentinh/long_kho/trungbay.png",
+                    List.of("gift", "premium"), List.of("premium"), "Cao cấp", 4000000L);
+            case "hop-qua-yen-chung-6-hu" -> new DocxProductDefaults(
+                    "Yến chưng", "hop-qua",
+                    "/images/hopqua/hop6hu/trungbay.png",
+                    List.of("gift", "family", "elder"), List.of("best", "premium"), null, 300000L);
+            case "hop-qua-yen-chung-10-hu" -> new DocxProductDefaults(
+                    "Yến chưng", "hop-qua",
+                    "/images/hopqua/hop10hu/trungbay.png",
+                    List.of("gift", "family", "elder"), List.of("premium"), null, 400000L);
+            case "thung-yen-gia-si" -> new DocxProductDefaults(
+                    "Yến chưng", "hop-qua",
+                    "/images/hopqua/thungyen/trungbay.png",
+                    List.of("family", "premium", "gift"), List.of("best"), null, 1200000L);
             case "yen-chung-dong-trung-ha-thao-6-hu-70ml" -> new DocxProductDefaults(
                     "Yến chưng", "yen-chung",
                     "/images/yenchung/dong_trung_ha_thao.png",
@@ -351,42 +431,6 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private List<ProductEntity> buildProducts() {
         return List.of(
-                product("hop-qua-yen-chung-thuong-hang-kingnest-6-hu",
-                        "Hộp quà yến chưng Thượng Hạng Kingnest (6 hũ)",
-                        "Bộ quà tặng yến chưng cao cấp, phù hợp biếu tặng gia đình, đối tác và người thân.",
-                        "Hộp quà", 2880000L, "/images/sanpham/hop-qua-thuong-hang.jpg",
-                        List.of("/images/sanpham/hop-qua-thuong-hang.jpg", "/images/yenchung/dong_trung_ha_thao.png", "/images/yenchung/nhan_sam.png"),
-                        List.of("Phù hợp biếu tặng gia đình, đối tác và người thân.", "Thiết kế hộp quà sang trọng, chỉn chu.", "Tiện dùng, dễ bảo quản, phù hợp nhiều dịp."),
-                        List.of("Dùng trực tiếp theo hướng dẫn trên bao bì.", "Bảo quản nơi khô ráo, thoáng mát hoặc theo khuyến nghị của sản phẩm."),
-                        Map.of("Tên sản phẩm", "Hộp quà yến chưng Thượng Hạng Kingnest", "Quy cách", "6 hũ", "Thương hiệu", "Kingnest", "Phù hợp", "Biếu tặng, chăm sóc sức khỏe gia đình"),
-                        List.of("Bộ quà tặng yến chưng cao cấp, phù hợp biếu tặng gia đình, đối tác và người thân."),
-                        List.of("Đóng gói sang trọng", "Dễ tặng, dễ sử dụng", "Phù hợp nhiều nhóm khách hàng"),
-                        "hop-qua", List.of("gift", "family", "elder"), List.of("best", "premium", "new"), "Bán chạy"),
-
-                product("hop-qua-yen-chung-dong-trung-ha-thao-6-hu",
-                        "Hộp quà yến chưng Đông Trùng Hạ Thảo (6 hũ)",
-                        "Hộp quà sang trọng kết hợp yến chưng và đông trùng hạ thảo, phù hợp chăm sóc sức khỏe.",
-                        "Hộp quà", 2450000L, "/images/sanpham/hop-qua-dong-trung.jpg",
-                        List.of("/images/sanpham/hop-qua-dong-trung.jpg", "/images/yenchung/dong_trung_ha_thao.png"),
-                        List.of("Kết hợp yến chưng và đông trùng hạ thảo.", "Phù hợp làm quà chăm sóc sức khỏe.", "Hương vị sang trọng, dễ dùng."),
-                        List.of("Dùng trực tiếp theo hướng dẫn trên bao bì.", "Lắc nhẹ trước khi dùng nếu cần."),
-                        Map.of("Tên sản phẩm", "Hộp quà yến chưng Đông Trùng Hạ Thảo", "Quy cách", "6 hũ", "Thương hiệu", "Kingnest"),
-                        List.of("Hộp quà sang trọng kết hợp yến chưng và đông trùng hạ thảo, phù hợp chăm sóc sức khỏe."),
-                        List.of("Thiết kế đẹp", "Phù hợp biếu tặng", "Dòng cao cấp"),
-                        "hop-qua", List.of("gift", "elder", "tired"), List.of("best", "premium"), "Bán chạy"),
-
-                product("hop-qua-yen-chung-nhan-sam-6-hu",
-                        "Hộp quà yến chưng Nhân Sâm (6 hũ)",
-                        "Hộp quà yến chưng nhân sâm thanh nhẹ, thiết kế đẹp, phù hợp làm quà biếu.",
-                        "Hộp quà", 2150000L, "/images/sanpham/hop-qua-nhan-sam.jpg",
-                        List.of("/images/sanpham/hop-qua-nhan-sam.jpg", "/images/yenchung/nhan_sam.png"),
-                        List.of("Hương nhân sâm ấm nhẹ.", "Phù hợp làm quà biếu.", "Thiết kế đẹp, dễ chọn."),
-                        List.of("Dùng trực tiếp theo hướng dẫn trên bao bì."),
-                        Map.of("Tên sản phẩm", "Hộp quà yến chưng Nhân Sâm", "Quy cách", "6 hũ", "Thương hiệu", "Kingnest"),
-                        List.of("Hộp quà yến chưng nhân sâm thanh nhẹ, thiết kế đẹp, phù hợp làm quà biếu."),
-                        List.of("Dễ dùng", "Mẫu hộp sang", "Phù hợp gia đình"),
-                        "hop-qua", List.of("gift", "elder", "family"), List.of("best"), "Bán chạy"),
-
                 product("yen-chung-nhan-sam-6-hu-70ml",
                         "Yến chưng Nhân Sâm (6 hũ x 70ml)",
                         "Dòng yến chưng tiện dùng mỗi ngày, kết hợp hương nhân sâm ấm nhẹ.",
@@ -398,30 +442,6 @@ public class DatabaseSeeder implements CommandLineRunner {
                         List.of("Dòng yến chưng tiện dùng mỗi ngày, kết hợp hương nhân sâm ấm nhẹ."),
                         List.of("Tiện lợi", "Dễ dùng", "Phù hợp dùng hằng ngày"),
                         "yen-chung", List.of("daily", "family", "tired"), List.of("best", "new"), "Bán chạy"),
-
-                product("yen-tinh-che-cao-cap-100g",
-                        "Yến tinh chế cao cấp (100g)",
-                        "Yến tinh chế sạch, tiện chế biến, phù hợp cho gia đình sử dụng lâu dài.",
-                        "Yến tinh chế", 2750000L, "/images/sanpham/yen-tinh-che-cao-cap.jpg",
-                        List.of("/images/sanpham/yen-tinh-che-cao-cap.jpg", "/images/yentinh/tinh_che_L1.png"),
-                        List.of("Yến tinh chế sạch, tiện chế biến.", "Phù hợp cho gia đình sử dụng lâu dài.", "Dễ chưng và dễ kết hợp nguyên liệu."),
-                        List.of("Ngâm yến trong nước sạch đến khi nở.", "Chưng cách thủy cùng đường phèn hoặc nguyên liệu yêu thích."),
-                        Map.of("Tên sản phẩm", "Yến tinh chế cao cấp", "Quy cách", "100g", "Thành phần", "Yến sào tinh chế"),
-                        List.of("Yến tinh chế sạch, tiện chế biến, phù hợp cho gia đình sử dụng lâu dài."),
-                        List.of("Tiện chế biến", "Sợi yến sạch", "Phù hợp chưng tại nhà"),
-                        "yen-tinh-che", List.of("gift", "family", "premium"), List.of("premium"), "Cao cấp nhất"),
-
-                product("yen-tho-nguyen-to-100g",
-                        "Yến thô nguyên tổ (100g)",
-                        "Yến thô nguyên tổ giữ trọn kết cấu tự nhiên, phù hợp người thích tự sơ chế.",
-                        "Yến thô", 2250000L, "/images/sanpham/yen-tho-nguyen-to.jpg",
-                        List.of("/images/sanpham/yen-tho-nguyen-to.jpg", "/images/yentinh/hoa_hong.png"),
-                        List.of("Giữ trọn kết cấu tự nhiên.", "Phù hợp người thích tự sơ chế.", "Có thể dùng chưng yến tại nhà."),
-                        List.of("Làm sạch lông và tạp chất trước khi chưng.", "Ngâm nở, sau đó chưng cách thủy."),
-                        Map.of("Tên sản phẩm", "Yến thô nguyên tổ", "Quy cách", "100g", "Thành phần", "Tổ yến thô"),
-                        List.of("Yến thô nguyên tổ giữ trọn kết cấu tự nhiên, phù hợp người thích tự sơ chế."),
-                        List.of("Nguyên bản", "Tự sơ chế theo nhu cầu", "Phù hợp người sành yến"),
-                        "yen-tho", List.of("family", "daily"), List.of("best"), "Bán chạy"),
 
                 product("yen-chung-duong-phen-6-hu-70ml",
                         "Yến chưng Đường Phèn (6 hũ x 70ml)",
@@ -530,30 +550,6 @@ public class DatabaseSeeder implements CommandLineRunner {
                         List.of("Dòng ăn kiêng kết hợp đông trùng hạ thảo cao cấp, thanh nhẹ, phù hợp người hạn chế đường."),
                         List.of("Cao cấp", "Ít đường", "Dễ dùng"),
                         "yen-chung", List.of("daily", "diet"), List.of("premium"), null),
-
-                product("yen-rut-long-cao-cap-100g",
-                        "Yến rút lông cao cấp (100g)",
-                        "Tổ yến rút lông sạch, giữ dáng đẹp, phù hợp biếu tặng và sử dụng cao cấp.",
-                        "Yến rút lông", 3200000L, "/images/sanpham/yen-rut-long-cao-cap.jpg",
-                        List.of("/images/sanpham/yen-rut-long-cao-cap.jpg", "/images/yentinh/hoa_hong.png"),
-                        List.of("Tổ yến rút lông sạch, giữ dáng đẹp.", "Phù hợp biếu tặng và sử dụng cao cấp.", "Tiện chưng tại nhà."),
-                        List.of("Ngâm nở trước khi chưng.", "Chưng cách thủy 20–25 phút tùy lượng yến."),
-                        Map.of("Tên sản phẩm", "Yến rút lông cao cấp", "Quy cách", "100g"),
-                        List.of("Tổ yến rút lông sạch, giữ dáng đẹp, phù hợp biếu tặng và sử dụng cao cấp."),
-                        List.of("Giữ dáng tổ", "Sạch lông", "Dòng cao cấp"),
-                        "yen-tinh-che", List.of("gift", "family"), List.of("premium"), null),
-
-                product("yen-vien-ruby-cao-cap",
-                        "Yến viên Ruby cao cấp",
-                        "Dòng yến viên tiện lợi, đóng gói đẹp, phù hợp làm quà tặng.",
-                        "Yến viên", 1650000L, "/images/sanpham/yen-vien-ruby.jpg",
-                        List.of("/images/sanpham/yen-vien-ruby.jpg", "/images/yentinh/keo_soi.png"),
-                        List.of("Dòng yến viên tiện lợi.", "Đóng gói đẹp, phù hợp làm quà tặng.", "Dễ bảo quản."),
-                        List.of("Sử dụng theo hướng dẫn trên bao bì."),
-                        Map.of("Tên sản phẩm", "Yến viên Ruby cao cấp", "Thương hiệu", "Kingnest"),
-                        List.of("Dòng yến viên tiện lợi, đóng gói đẹp, phù hợp làm quà tặng."),
-                        List.of("Tiện lợi", "Đóng gói đẹp", "Phù hợp quà tặng"),
-                        "yen-tinh-che", List.of("gift", "family"), List.of("new", "premium"), null),
 
                 product("chan-yen-ria-sach",
                         "Chân yến rìa sạch",

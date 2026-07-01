@@ -5,6 +5,9 @@
 <meta charset="utf-8"/>
 <title>Yến Sào An Thịnh Nhân</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/responsive.css">
 <link rel="stylesheet" href="/css/mobile-theme.css">
 <style>
@@ -283,6 +286,7 @@ body {
 .section-8 {
     --section-ratio: 1672 / 941;
     background-image: url("/images/banner/bg-certificate.png");
+    overflow: visible;
 }
 
 .section-6 {
@@ -1717,8 +1721,10 @@ from {
 /* ================= SECTION 6 - TƯ VẤN & KIẾN THỨC (SECTION 4 CŨ) ================= */
 
 
-.section-6 .knowledge-content {
-    padding-top: 16.8% !important;
+@media (min-width: 1181px) {
+    .section-6 .knowledge-content {
+        padding-top: 16.8% !important;
+    }
 }
 
 .section-6 .knowledge-grid {
@@ -1902,8 +1908,103 @@ from {
 
 
 
-/* ================= SECTION 8 - CHỨNG NHẬN (SECTION 6 CŨ) ================= */
+/* ================= SECTION 8 - CHỨNG NHẬN & THÀNH TỰU ================= */
 
+.certificate-content {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding-top: 24%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.certificate-carousel {
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.certificate-viewport {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255, 248, 236, 0.72), rgba(245, 232, 210, 0.58));
+    border: 1.5px solid rgba(184, 137, 73, 0.38);
+    padding: clamp(10px, 1vw, 18px) 0;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        0 10px 24px rgba(110, 78, 34, 0.1);
+}
+
+.certificate-track {
+    width: 100%;
+    display: flex;
+    gap: clamp(10px, 1.1vw, 18px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 0 clamp(10px, 1vw, 16px);
+}
+
+.certificate-track::-webkit-scrollbar {
+    display: none;
+}
+
+.certificate-card {
+    flex: 0 0 calc((100% - 6.6%) / 4);
+    scroll-snap-align: start;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 253, 247, 0.96);
+    box-shadow: 0 8px 18px rgba(110, 78, 34, 0.12);
+    border: 1.5px solid rgba(184, 137, 73, 0.42);
+}
+
+.certificate-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4.2;
+    object-fit: contain;
+    display: block;
+    background: linear-gradient(180deg, #fffdf7, #f8f0e4);
+}
+
+.certificate-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+    width: clamp(38px, 3vw, 54px);
+    height: clamp(38px, 3vw, 54px);
+    border: 1.5px solid #d6a14e;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #8f1015, #68070a);
+    color: #f8dfad;
+    font-size: clamp(28px, 2.2vw, 40px);
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(104, 7, 10, 0.24);
+    transition: 0.24s ease;
+}
+
+.certificate-nav:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.certificate-prev {
+    left: -4.2%;
+}
+
+.certificate-next {
+    right: -4.2%;
+}
 
 
 /* ================= 12. BONG BÓNG TƯ VẤN — xem /css/floating-consult.css ================= */
@@ -1958,18 +2059,39 @@ from {
 
     .section-4 .best-seller-content {
         position: relative !important;
-        padding: 48px 0 24px !important;
+        padding: 12px 0 24px !important;
     }
 
     .section-5 .category-content {
         position: relative !important;
-        padding: 48px 0 24px !important;
+        padding: 12px 0 24px !important;
     }
 
     .section-5 .category-btn-wrap {
         position: static !important;
         margin: 16px auto 0 !important;
         padding: 0 16px;
+    }
+
+    .section-8 .certificate-content {
+        position: relative !important;
+        padding: 12px 0 28px !important;
+    }
+
+    .section-8 .certificate-carousel {
+        width: 94% !important;
+    }
+
+    .section-8 .certificate-card {
+        flex: 0 0 72% !important;
+    }
+
+    .section-8 .certificate-prev {
+        left: -2% !important;
+    }
+
+    .section-8 .certificate-next {
+        right: -2% !important;
     }
 
     .knowledge-grid {
@@ -2014,6 +2136,7 @@ from {
 </section>
 
 <section class="bg-section section-2" id="product-seller">
+<th:block th:replace="~{fragments/mobile-section-head :: mobileSectionHead('KINGNEST COLLECTION', 'Danh mục nổi bật')}"></th:block>
 <div class="seller-category-content">
 <div class="seller-category-grid">
 <div class="seller-category-card">
@@ -2053,6 +2176,7 @@ from {
 </section>
 
 <section class="bg-section section-3" id="choose">
+<th:block th:replace="~{fragments/mobile-section-head :: mobileSectionHead('KINGNEST', 'Chọn theo nhu cầu')}"></th:block>
 <div class="choose-content">
 <div class="choose-grid" id="chooseGrid">
 <div class="choose-card">
@@ -2125,6 +2249,7 @@ from {
 </section>
 
 <section class="bg-section section-4" id="best-seller">
+<th:block th:replace="~{fragments/mobile-section-head :: mobileSectionHead('KINGNEST', 'Khám phá hương vị Yến Chưng')}"></th:block>
 <div class="best-seller-content">
 <div class="best-carousel">
 <button class="best-nav best-prev" onclick="scrollBestSeller(-1)" type="button">‹</button>
@@ -2143,6 +2268,7 @@ from {
 </section>
 
 <section class="bg-section section-5" id="category">
+<th:block th:replace="~{fragments/mobile-section-head :: mobileSectionHead('KINGNEST PREMIUM', 'Bộ sưu tập Yến Tinh cao cấp')}"></th:block>
 <div class="category-content">
 <div class="category-carousel">
 <button class="category-nav category-prev" onclick="scrollCategory(-1)" type="button">‹</button>
@@ -2157,7 +2283,37 @@ from {
 </div>
 </section>
 
+<section class="bg-section section-8" id="certificate">
+<th:block th:replace="~{fragments/mobile-section-head :: mobileSectionHead('KINGNEST CERTIFICATE', 'Chứng nhận & Thành tựu')}"></th:block>
+<div class="certificate-content">
+<div class="certificate-carousel">
+<button aria-label="Chứng nhận trước" class="certificate-nav certificate-prev" onclick="scrollCertificates(-1)" type="button">‹</button>
+<div class="certificate-viewport">
+<div class="certificate-track" id="certificateTrack">
+<article class="certificate-card">
+<img alt="Chứng nhận ISO 22000:2018" loading="lazy" src="/images/certificate/ChatGPT%20Image%2022_08_59%201%20thg%207,%202026%20(2).png">
+</article>
+<article class="certificate-card">
+<img alt="Chứng nhận Thương hiệu mạnh quốc gia" loading="lazy" src="/images/certificate/ChatGPT%20Image%2022_09_00%201%20thg%207,%202026%20(3).png">
+</article>
+<article class="certificate-card">
+<img alt="Chứng nhận Bộ Khoa học và Công nghệ" loading="lazy" src="/images/certificate/ChatGPT%20Image%2022_09_00%201%20thg%207,%202026%20(4).png">
+</article>
+<article class="certificate-card">
+<img alt="Chứng nhận HACCP Codex Alimentarius" loading="lazy" src="/images/certificate/ChatGPT%20Image%2022_09_01%201%20thg%207,%202026%20(5).png">
+</article>
+<article class="certificate-card">
+<img alt="Chứng nhận chất lượng Kingnest" loading="lazy" src="/images/certificate/ChatGPT%20Image%2022_09_01%201%20thg%207,%202026%20(6).png">
+</article>
+</div>
+</div>
+<button aria-label="Chứng nhận sau" class="certificate-nav certificate-next" onclick="scrollCertificates(1)" type="button">›</button>
+</div>
+</div>
+</section>
+
 <section class="bg-section section-6" id="knowledge">
+<th:block th:replace="~{fragments/mobile-section-head :: mobileSectionHead('KINGNEST', 'Kiến thức yến sào')}"></th:block>
 <div class="knowledge-content">
 <div class="knowledge-grid">
 <div class="knowledge-card">
@@ -2208,8 +2364,6 @@ from {
 
 <section class="bg-section section-7" id="why"></section>
 
-<section class="bg-section section-8" id="certificate"></section>
-
 
 
 
@@ -2222,6 +2376,7 @@ from {
 <script>
 let currentBestPage = 0;
 let currentCategoryIndex = 2;
+let currentCertificateIndex = 0;
 let categoryAnimating = false;
 
 const BEST_PRODUCT_ICON = "/images/icon/icon_yen_chung.png";
@@ -2430,6 +2585,171 @@ function renderCategoryProducts() {
 }
 
 
+function getCertificateOriginalCards() {
+    const track = document.getElementById("certificateTrack");
+    return track ? Array.from(track.querySelectorAll(".certificate-card:not(.certificate-card-clone)")) : [];
+}
+
+let certificateLoopReady = false;
+let certificateAutoTimer = null;
+let certificateScrollEndTimer = null;
+let certificateCarouselBound = false;
+const CERTIFICATE_AUTO_MS = 3000;
+
+function initCertificateInfiniteTrack() {
+    const track = document.getElementById("certificateTrack");
+    if (!track) {
+        return;
+    }
+
+    track.querySelectorAll(".certificate-card-clone").forEach((node) => node.remove());
+
+    const originals = getCertificateOriginalCards();
+    if (originals.length === 0) {
+        return;
+    }
+
+    originals.forEach((card) => {
+        const clone = card.cloneNode(true);
+        clone.classList.add("certificate-card-clone");
+        clone.setAttribute("aria-hidden", "true");
+        track.appendChild(clone);
+    });
+
+    certificateLoopReady = true;
+    currentCertificateIndex = 0;
+    track.scrollTo({ left: originals[0].offsetLeft, behavior: "auto" });
+}
+
+function syncCertificateIndexByScroll() {
+    const track = document.getElementById("certificateTrack");
+    const cards = getCertificateOriginalCards();
+
+    if (!track || cards.length === 0) {
+        return;
+    }
+
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    cards.forEach((card, index) => {
+        const distance = Math.abs(track.scrollLeft - card.offsetLeft);
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+        }
+    });
+
+    currentCertificateIndex = closestIndex;
+}
+
+function handleCertificateScrollLoop() {
+    const track = document.getElementById("certificateTrack");
+    const originals = getCertificateOriginalCards();
+    const clone = track?.querySelector(".certificate-card-clone");
+
+    if (!track || originals.length === 0 || !clone) {
+        return;
+    }
+
+    if (Math.abs(track.scrollLeft - clone.offsetLeft) < 6) {
+        track.scrollTo({ left: originals[0].offsetLeft, behavior: "auto" });
+        currentCertificateIndex = 0;
+        return;
+    }
+
+    syncCertificateIndexByScroll();
+}
+
+function scrollCertificates(direction, smooth = true) {
+    const track = document.getElementById("certificateTrack");
+    const originals = getCertificateOriginalCards();
+    const clone = track?.querySelector(".certificate-card-clone");
+
+    if (!track || originals.length === 0) {
+        return;
+    }
+
+    const behavior = smooth ? "smooth" : "auto";
+
+    if (direction > 0) {
+        if (currentCertificateIndex >= originals.length - 1) {
+            currentCertificateIndex = 0;
+            if (clone) {
+                track.scrollTo({ left: clone.offsetLeft, behavior });
+            }
+            return;
+        }
+
+        currentCertificateIndex += 1;
+        track.scrollTo({ left: originals[currentCertificateIndex].offsetLeft, behavior });
+        return;
+    }
+
+    currentCertificateIndex = (currentCertificateIndex - 1 + originals.length) % originals.length;
+    track.scrollTo({ left: originals[currentCertificateIndex].offsetLeft, behavior });
+}
+
+function advanceCertificateAuto() {
+    scrollCertificates(1, true);
+}
+
+function stopCertificateAutoScroll() {
+    if (certificateAutoTimer) {
+        clearInterval(certificateAutoTimer);
+        certificateAutoTimer = null;
+    }
+}
+
+function startCertificateAutoScroll() {
+    stopCertificateAutoScroll();
+    certificateAutoTimer = setInterval(advanceCertificateAuto, CERTIFICATE_AUTO_MS);
+}
+
+function setupCertificateCarousel() {
+    initCertificateInfiniteTrack();
+
+    const track = document.getElementById("certificateTrack");
+    const carousel = document.querySelector(".certificate-carousel");
+
+    if (!track) {
+        return;
+    }
+
+    if (!certificateCarouselBound) {
+        certificateCarouselBound = true;
+
+        track.addEventListener("scroll", () => {
+            window.requestAnimationFrame(() => {
+                clearTimeout(certificateScrollEndTimer);
+                certificateScrollEndTimer = setTimeout(handleCertificateScrollLoop, 120);
+            });
+        }, { passive: true });
+
+        track.addEventListener("scrollend", handleCertificateScrollLoop);
+
+        if (carousel) {
+            carousel.addEventListener("mouseenter", stopCertificateAutoScroll);
+            carousel.addEventListener("mouseleave", startCertificateAutoScroll);
+            carousel.addEventListener("focusin", stopCertificateAutoScroll);
+            carousel.addEventListener("focusout", startCertificateAutoScroll);
+            carousel.addEventListener("touchstart", stopCertificateAutoScroll, { passive: true });
+            carousel.addEventListener("touchend", () => {
+                setTimeout(startCertificateAutoScroll, CERTIFICATE_AUTO_MS);
+            }, { passive: true });
+        }
+    }
+
+    startCertificateAutoScroll();
+}
+
+function resetCertificateCarousel() {
+    certificateLoopReady = false;
+    stopCertificateAutoScroll();
+    initCertificateInfiniteTrack();
+    startCertificateAutoScroll();
+}
+
 function getBestSellerPages() {
     const total = bestSellerProducts.length;
     const visibleCount = 4;
@@ -2558,6 +2878,12 @@ function scrollCategory(direction) {
 
 window.addEventListener("DOMContentLoaded", () => {
     initHeroSlider();
+    setupCertificateCarousel();
+
+    window.addEventListener("resize", () => {
+        resetCertificateCarousel();
+    });
+
     loadHomeProducts().finally(() => {
         if (typeof window.kingnestSetupCarouselAuto === "function") {
             window.kingnestSetupCarouselAuto();

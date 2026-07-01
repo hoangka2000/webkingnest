@@ -9,7 +9,7 @@
     }
 
     function getScrollStep(track) {
-        const card = track.querySelector(".best-product-card, .category-card, .choose-card");
+        const card = track.querySelector(".best-product-card, .category-card, .choose-card, .certificate-card");
         if (!card) {
             return track.clientWidth * 0.85;
         }

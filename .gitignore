@@ -11,6 +11,10 @@ data/*.lock.db
 # Build
 target/
 
+# Local secrets (Gmail app password, etc.)
+application-local.properties
+src/main/resources/application-local.properties
+
 # Word temp files
 ~$*.docx
 **/~$*.docx

@@ -26,6 +26,15 @@
     --kn-gradient-warm: linear-gradient(180deg, rgba(251, 244, 232, 0.88) 0%, rgba(248, 241, 230, 0.82) 100%);
     --kn-gradient-gold: linear-gradient(135deg, rgba(216, 166, 58, 0.18), rgba(255, 248, 236, 0.9));
     --kn-mobile-surface: rgba(255, 253, 247, 0.88);
+    --kn-frame-cream: #fffbf2;
+    --kn-frame-gold: #c9a24d;
+    --kn-frame-gold-soft: rgba(201, 162, 77, 0.55);
+    --kn-title-burgundy: #601c21;
+    --kn-section-title-green: #0b2e26;
+}
+
+.mobile-section-head {
+    display: none;
 }
 
 @media (max-width: 1180px) {
@@ -91,6 +100,51 @@
     }
 
     /* ── Tiêu đề section dùng chung ── */
+    .mobile-section-head {
+        display: block;
+        padding: 12px 20px 4px;
+        text-align: center;
+    }
+
+    .mobile-section-head .mobile-section-title {
+        margin: 0 0 2px;
+        padding: 0 4px;
+        font-family: "Great Vibes", "Segoe Script", "Brush Script MT", cursive;
+        font-size: clamp(28px, 7.2vw, 36px);
+        font-weight: 400;
+        line-height: 1.05;
+        letter-spacing: 0.02em;
+        color: var(--kn-section-title-green);
+        -webkit-text-fill-color: var(--kn-section-title-green);
+        text-shadow: none;
+    }
+
+    .mobile-section-head .mobile-section-title::after {
+        content: "";
+        display: block;
+        width: min(156px, 74%);
+        height: 2px;
+        margin: 5px auto 0;
+        border-radius: 99px;
+        background: var(--kn-section-title-green);
+    }
+
+    .section-2::before,
+    .section-3::before,
+    .section-4::before,
+    .section-5::before,
+    .section-6::before,
+    .section-8::before,
+    .section-2::after,
+    .section-3::after,
+    .section-4::after,
+    .section-5::after,
+    .section-6::after,
+    .section-8::after {
+        content: none !important;
+        display: none !important;
+    }
+
     .mobile-section-title {
         display: block;
         margin: 0 0 20px;
@@ -195,9 +249,18 @@
         background-position: center center !important;
     }
 
-    .section-7,
-    .section-8 {
+    .section-7 {
         display: none !important;
+    }
+
+    .section-8 {
+        display: block !important;
+        background: var(--kn-gradient-cream) !important;
+        border-top: 1px solid rgba(216, 166, 58, 0.22);
+        border-bottom: 1px solid rgba(216, 166, 58, 0.15);
+        min-height: auto !important;
+        aspect-ratio: auto !important;
+        height: auto !important;
     }
 
     .section-2,
@@ -210,38 +273,23 @@
         border-bottom: 1px solid rgba(216, 166, 58, 0.15);
     }
 
-    .section-2::before {
-        content: "Danh mục nổi bật";
+    .section-8 .certificate-content {
+        position: relative !important;
+        padding: 0 0 28px !important;
     }
 
-    .section-3::before {
-        content: "Chọn theo nhu cầu";
+    .section-8 .certificate-carousel {
+        width: 92% !important;
     }
 
-    .section-4::before {
-        content: "Khám phá hương vị Yến Chưng";
+    .section-8 .certificate-card {
+        flex: 0 0 72% !important;
     }
 
-    .section-5::before {
-        content: "Bộ sưu tập Yến Tinh cao cấp";
-    }
-
-    .section-6::before {
-        content: "Kiến thức yến sào";
-    }
-
-    .section-2::before,
-    .section-3::before,
-    .section-4::before,
-    .section-5::before,
-    .section-6::before {
-        display: block;
-        padding: 28px 16px 0;
-        text-align: center;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(22px, 6vw, 28px);
-        font-weight: 500;
-        color: var(--kn-burgundy-text);
+    .section-8 .certificate-nav {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 22px !important;
     }
 
     .section-2 .seller-category-grid {
@@ -317,6 +365,129 @@
 
     .knowledge-decor {
         display: none !important;
+    }
+
+    /* ══════════════════ TRANG CHỦ: KIẾN THỨC YẾN SÀO (hàng ngang) ══════════════════ */
+
+    .section-6 {
+        min-height: auto !important;
+    }
+
+    .section-6 .mobile-section-head {
+        padding: 4px 20px 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .section-6 .mobile-section-head .mobile-section-title {
+        margin-bottom: 2px !important;
+    }
+
+    .section-6 .knowledge-content {
+        padding: 6px 12px 20px !important;
+        margin-top: 0 !important;
+    }
+
+    .section-6 .knowledge-grid {
+        margin-top: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    .section-6 .knowledge-card {
+        display: grid !important;
+        grid-template-columns: 84px minmax(0, 1fr) !important;
+        grid-template-rows: auto !important;
+        align-items: stretch !important;
+        min-height: 0 !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+
+    .section-6 .knowledge-card:hover {
+        transform: none !important;
+    }
+
+    .section-6 .knowledge-img {
+        position: relative !important;
+        width: 84px !important;
+        height: 84px !important;
+        min-height: 84px !important;
+        max-height: 84px !important;
+        aspect-ratio: auto !important;
+        grid-column: 1;
+        grid-row: 1;
+        flex: none !important;
+    }
+
+    .section-6 .knowledge-img img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+
+    .section-6 .knowledge-tag {
+        top: 4px !important;
+        left: 4px !important;
+        min-width: 0 !important;
+        height: auto !important;
+        padding: 2px 5px !important;
+        font-size: 8px !important;
+        border-radius: 4px !important;
+        line-height: 1.2 !important;
+    }
+
+    .section-6 .knowledge-info {
+        grid-column: 2;
+        grid-row: 1;
+        min-height: 0 !important;
+        padding: 8px 10px 8px 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        text-align: left !important;
+    }
+
+    .section-6 .knowledge-info h3 {
+        margin: 0 0 4px !important;
+        font-size: clamp(12px, 3.2vw, 14px) !important;
+        line-height: 1.25 !important;
+        text-align: left !important;
+    }
+
+    .section-6 .knowledge-line {
+        display: none !important;
+    }
+
+    .section-6 .knowledge-info p {
+        margin: 0 0 4px !important;
+        font-size: clamp(10px, 2.7vw, 11px) !important;
+        line-height: 1.35 !important;
+        text-align: left !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .section-6 .knowledge-link {
+        margin-top: 2px !important;
+        font-size: 11px !important;
+        text-align: left !important;
+    }
+
+    .section-6 .knowledge-btn-wrap {
+        margin-top: 8px !important;
+        padding: 0 !important;
+    }
+
+    .section-6 .knowledge-main-btn {
+        height: 36px !important;
+        font-size: 12px !important;
     }
 
     /* ══════════════════ TRANG CHỦ: CHỌN THEO NHU CẦU (hàng ngang) ══════════════════ */
@@ -790,20 +961,37 @@
 
     .product-card {
         border-radius: 10px !important;
+        min-height: 0 !important;
     }
 
     .product-img {
         aspect-ratio: 1 / 1 !important;
     }
 
+    .product-info {
+        min-height: 0 !important;
+        padding: 8px 8px 10px !important;
+        justify-content: flex-start !important;
+        gap: 4px !important;
+    }
+
+    .product-card-footer {
+        margin-top: 0 !important;
+        min-height: 0 !important;
+        padding-top: 2px !important;
+    }
+
     .product-title {
         font-size: 11px !important;
         padding: 0 8px !important;
         line-height: 1.3 !important;
+        margin-bottom: 2px !important;
     }
 
-    .product-price {
+    .product-price,
+    .price {
         font-size: 12px !important;
+        margin-bottom: 4px !important;
     }
 
     .detail-btn {
