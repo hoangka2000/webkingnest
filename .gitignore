@@ -1,0 +1,19 @@
+# Local env
+.env
+.env.local
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+kingnest_backup.sql
+public/images/
+
+# OS / IDE
+.DS_Store
+*.iml
+.idea/
+.vscode/
+
+# Word temp files
+~$*.docx
+**/~$*.docx

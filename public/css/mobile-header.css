@@ -1,0 +1,220 @@
+/* =========================================================
+   HEADER THỐNG NHẤT — điện thoại & iPad (≤1180px)
+   ☰ | Logo + tên | GIỎ HÀNG
+   ========================================================= */
+
+@media (max-width: 1180px) {
+    .main-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: clamp(64px, 8.5vw, 78px) !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        z-index: 10070 !important;
+        background:
+            radial-gradient(circle at center, rgba(145, 18, 18, 0.35), transparent 45%),
+            linear-gradient(90deg, #4b0000 0%, #760707 45%, #4b0000 100%) !important;
+        border-top: 2px solid #b88949 !important;
+        border-bottom: 2px solid #b88949 !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28) !important;
+    }
+
+    .main-header .header-inner {
+        width: min(97%, 1100px) !important;
+        height: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 clamp(4px, 1vw, 8px) !important;
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr) auto !important;
+        grid-template-areas: "toggle brand actions" !important;
+        align-items: center !important;
+        justify-content: unset !important;
+        flex-wrap: nowrap !important;
+        gap: clamp(6px, 1.2vw, 12px) !important;
+    }
+
+    .main-header .mobile-nav-toggle {
+        grid-area: toggle !important;
+        justify-self: start !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: clamp(40px, 5.2vw, 48px) !important;
+        height: clamp(40px, 5.2vw, 48px) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 1.5px solid #d8a63a !important;
+        border-radius: 10px !important;
+        background: rgba(75, 0, 0, 0.92) !important;
+        color: #f5d98b !important;
+        font-size: clamp(18px, 2.4vw, 22px) !important;
+        line-height: 1 !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+        z-index: 10002 !important;
+    }
+
+    .main-header .brand-text {
+        display: block !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    .main-header .brand-divider {
+        display: block !important;
+        width: 1px !important;
+        height: clamp(30px, 4.2vw, 42px) !important;
+        background: rgba(240, 198, 112, 0.78) !important;
+        flex-shrink: 0 !important;
+    }
+
+    .main-header .header-brand {
+        grid-area: brand !important;
+        justify-self: center !important;
+        width: auto !important;
+        max-width: calc(100vw - 168px) !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: clamp(6px, 1vw, 10px) !important;
+        min-width: 0 !important;
+        text-decoration: none !important;
+        flex: none !important;
+    }
+
+    .main-header .logo-box {
+        width: clamp(50px, 6.8vw, 70px) !important;
+        height: clamp(34px, 4.8vw, 48px) !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .main-header .logo-box img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+    }
+
+    .main-header .brand-text h1 {
+        margin: 0 !important;
+        font-family: Georgia, "Times New Roman", serif !important;
+        font-size: clamp(11px, 2.6vw, 16px) !important;
+        font-weight: 500 !important;
+        color: #f7ddb0 !important;
+        line-height: 1.15 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .main-header .brand-text p {
+        display: none !important;
+    }
+
+    .main-header .header-actions {
+        grid-area: actions !important;
+        justify-self: end !important;
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
+    }
+
+    .main-header .header-actions .search-button {
+        display: none !important;
+    }
+
+    .main-header .cart-button {
+        height: clamp(34px, 4.6vw, 44px) !important;
+        min-width: 0 !important;
+        padding: 0 clamp(8px, 1.4vw, 14px) !important;
+        border: 1px solid rgba(232, 198, 126, 0.88) !important;
+        border-radius: 8px !important;
+        background: linear-gradient(180deg, #f5d98b 0%, #e8c56a 45%, #c99334 100%) !important;
+        color: #6b100f !important;
+        text-transform: none !important;
+        font-family: Georgia, "Times New Roman", serif !important;
+        font-size: clamp(9px, 1.35vw, 13px) !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: clamp(4px, 0.7vw, 7px) !important;
+        white-space: nowrap !important;
+        text-decoration: none !important;
+        box-shadow: 0 2px 8px rgba(80, 40, 0, 0.18) !important;
+    }
+
+    .main-header .cart-button .cart-button-icon {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: clamp(15px, 2vw, 18px) !important;
+        height: clamp(15px, 2vw, 18px) !important;
+        flex-shrink: 0 !important;
+        color: #fff !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+    }
+
+    .main-header .cart-button .cart-badge {
+        top: -6px !important;
+        right: -8px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        line-height: 16px !important;
+        font-size: 9px !important;
+        background: #14532d !important;
+        color: #fff !important;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --site-header-height: 62px;
+    }
+
+    .main-header {
+        height: 62px !important;
+    }
+
+    .main-header .mobile-nav-toggle {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 18px !important;
+    }
+
+    .main-header .logo-box {
+        width: 46px !important;
+        height: 32px !important;
+    }
+
+    .main-header .brand-divider {
+        height: 28px !important;
+    }
+
+    .main-header .brand-text h1 {
+        font-size: 10px !important;
+        max-width: 46vw;
+    }
+
+    .main-header .header-brand {
+        max-width: calc(100vw - 152px) !important;
+        gap: 6px !important;
+    }
+
+    .main-header .cart-button {
+        height: 34px !important;
+        padding: 0 8px !important;
+        font-size: 9px !important;
+        gap: 4px !important;
+    }
+}

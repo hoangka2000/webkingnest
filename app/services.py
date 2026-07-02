@@ -1,0 +1,410 @@
+import json
+import logging
+import random
+import smtplib
+from datetime import datetime
+from email.mime.text import MIMEText
+from typing import Any
+from urllib.parse import quote, urlencode
+
+from sqlalchemy.orm import Session
+
+from app.cdn import cdn_url
+from app.config import get_settings
+from app.database import NewsArticle, Order, Product, parse_json_field
+from app.schemas import CreateOrderRequest
+
+logger = logging.getLogger(__name__)
+
+COUPON_DISCOUNTS = {
+    "KINGNEST10": 0.10,
+    "FACEBOOK5": 0.05,
+}
+
+NEWS_IMAGE_KEYS = {
+    "cach-che-bien-yen-sao-dung-cach": "che_bien",
+    "tam-nhin-thuong-hieu-yen-sao-an-thinh-nhan": "tam_nhin",
+    "y-nghia-thuong-hieu-kingnest-an-thinh-nhan": "y_nghia",
+    "su-menh-cua-yen-sao-an-thinh-nhan": "su_menh",
+    "vi-sao-nen-lua-chon-yen-sao-kingnest-an-thinh-nhan": "chon_Kingnest",
+    "thong-diep-thuong-hieu-yen-sao-an-thinh-nhan": "thong_diep",
+    "tac-dung-lam-dep-da-tu-yen-sao": "lam_dep",
+    "cach-bao-quan-yen-sao-sau-khi-chung": "bao_quan",
+    "loi-ich-cua-yen-cho-tre-nho": "tre_em",
+    "cach-phan-biet-yen-sao-that-gia": "phan_biet",
+    "cong-dung-tuyet-voi-cua-yen-sao": "cong_dung",
+}
+
+
+def normalize_product_type(product_type: str | None) -> str:
+    if not product_type:
+        return ""
+    if product_type in {"yen-vien", "yen-rut-long"}:
+        return "yen-tinh-che"
+    return product_type
+
+
+def _product_images(product: Product) -> tuple[str, list[str]]:
+    gallery = parse_json_field(product.gallery, [])
+    if not isinstance(gallery, list):
+        gallery = []
+    image = product.image or (gallery[0] if gallery else "")
+    if not gallery and image:
+        gallery = [image]
+    return cdn_url(image), [cdn_url(item) for item in gallery]
+
+
+def product_listing_map(product: Product) -> dict[str, Any]:
+    image, _ = _product_images(product)
+    return {
+        "id": product.id,
+        "slug": product.slug,
+        "title": product.title,
+        "desc": product.short_desc,
+        "price": product.price,
+        "image": image,
+        "type": normalize_product_type(product.product_type),
+        "need": parse_json_field(product.need, []),
+        "status": parse_json_field(product.status, []),
+        "badge": product.badge,
+    }
+
+
+def product_detail_map(product: Product) -> dict[str, Any]:
+    image, gallery = _product_images(product)
+    data = product_listing_map(product)
+    data.update(
+        {
+            "category": product.category,
+            "gallery": gallery,
+            "benefits": parse_json_field(product.benefits, []),
+            "usage": parse_json_field(product.usage, []),
+            "specs": parse_json_field(product.specs, {}),
+            "description": parse_json_field(product.description, []),
+            "highlights": parse_json_field(product.highlights, []),
+            "contentHtml": product.content_html,
+            "image": image,
+        }
+    )
+    return data
+
+
+def find_product(db: Session, id_or_slug: str) -> Product | None:
+    if id_or_slug.isdigit():
+        return db.get(Product, int(id_or_slug))
+    return db.query(Product).filter(Product.slug == id_or_slug).first()
+
+
+def list_products(db: Session) -> list[dict[str, Any]]:
+    return [product_listing_map(p) for p in db.query(Product).all()]
+
+
+def get_product_detail(db: Session, id_or_slug: str) -> dict[str, Any] | None:
+    product = find_product(db, id_or_slug)
+    return product_detail_map(product) if product else None
+
+
+def news_image(slug: str, detail: bool = False) -> str:
+    key = NEWS_IMAGE_KEYS.get(slug, slug)
+    folder = "chi_tiet" if detail else "ds_tintuc"
+    return cdn_url(f"/images/tin_tuc/{folder}/{key}.png")
+
+
+def news_summary(article: NewsArticle) -> dict[str, Any]:
+    return {
+        "slug": article.slug,
+        "title": article.title,
+        "category": article.category,
+        "desc": article.excerpt,
+        "image": news_image(article.slug),
+        "date": article.published_year,
+    }
+
+
+def news_detail(article: NewsArticle) -> dict[str, Any]:
+    data = news_summary(article)
+    data.update(
+        {
+            "image": news_image(article.slug, detail=True),
+            "success": True,
+            "contentHtml": article.content_html,
+        }
+    )
+    return data
+
+
+def list_news(db: Session) -> list[dict[str, Any]]:
+    articles = db.query(NewsArticle).order_by(NewsArticle.sort_order.asc()).all()
+    return [news_summary(a) for a in articles]
+
+
+def get_news_detail(db: Session, slug: str) -> dict[str, Any] | None:
+    article = db.query(NewsArticle).filter(NewsArticle.slug == slug).first()
+    return news_detail(article) if article else None
+
+
+def normalize_coupon(coupon: str | None) -> str | None:
+    if not coupon or not coupon.strip():
+        return None
+    return coupon.strip().upper()
+
+
+def calculate_discount(subtotal: int, coupon: str | None) -> int:
+    if not coupon or subtotal <= 0:
+        return 0
+    rate = COUPON_DISCOUNTS.get(coupon)
+    if rate is None:
+        return 0
+    return round(subtotal * rate)
+
+
+def parse_product_quantities(products_param: str | None) -> dict[str, int]:
+    result: dict[str, int] = {}
+    if not products_param:
+        return result
+    for entry in products_param.split(","):
+        entry = entry.strip()
+        if not entry or ":" not in entry:
+            continue
+        product_id, qty_raw = entry.split(":", 1)
+        product_id = product_id.strip()
+        try:
+            qty = int(qty_raw.strip())
+        except ValueError:
+            continue
+        if product_id and qty > 0:
+            result[product_id] = result.get(product_id, 0) + qty
+    return result
+
+
+def build_checkout_page_url(products_param: str, coupon: str | None) -> str:
+    base = get_settings().resolved_checkout_base_url()
+    params = {"step": "2", "products": products_param}
+    if coupon and coupon.strip():
+        params["coupon"] = coupon.strip()
+    return f"{base}/gio-hang?{urlencode(params, quote_via=quote)}"
+
+
+def build_checkout(db: Session, products_param: str | None, coupon: str | None) -> dict[str, Any]:
+    requested = parse_product_quantities(products_param)
+    line_items: list[dict[str, Any]] = []
+    missing: list[str] = []
+    subtotal = 0
+
+    for product_key, quantity in requested.items():
+        product = get_product_detail(db, product_key)
+        if not product:
+            missing.append(product_key)
+            continue
+        price = int(product.get("price") or 0)
+        line_total = price * quantity
+        subtotal += line_total
+        line_items.append(
+            {
+                "id": product["id"],
+                "slug": product["slug"],
+                "title": product["title"],
+                "desc": product.get("desc"),
+                "price": price,
+                "image": product.get("image"),
+                "quantity": quantity,
+                "lineTotal": line_total,
+            }
+        )
+
+    normalized_coupon = normalize_coupon(coupon)
+    discount = calculate_discount(subtotal, normalized_coupon)
+    total = max(0, subtotal - discount)
+
+    return {
+        "success": bool(line_items) and not missing,
+        "products": line_items,
+        "productQuantities": requested,
+        "coupon": normalized_coupon or "No coupon applied",
+        "couponApplied": bool(normalized_coupon and discount > 0),
+        "subtotal": subtotal,
+        "discount": discount,
+        "shipping": 0,
+        "total": total,
+        "currency": "VND",
+        "missingProducts": missing,
+        "checkoutUrl": build_checkout_page_url(products_param or "", coupon),
+    }
+
+
+def generate_order_code(db: Session) -> str:
+    date_part = datetime.now().strftime("%y%m%d")
+    for _ in range(10):
+        suffix = random.randint(1000, 9999)
+        code = f"ORC-{date_part}-{suffix}"
+        exists = db.query(Order).filter(Order.order_code == code).first()
+        if not exists:
+            return code
+    raise RuntimeError("Không thể tạo mã đơn hàng")
+
+
+def resolve_order_code(db: Session, requested: str | None) -> str:
+    if requested and requested.strip():
+        code = requested.strip()
+        exists = db.query(Order).filter(Order.order_code == code).first()
+        if not exists:
+            return code
+    return generate_order_code(db)
+
+
+def parse_payment_method(value: str | None) -> str:
+    if not value or not value.strip():
+        return "BANK_TRANSFER"
+    method = value.strip().upper()
+    if method not in {"BANK_TRANSFER", "COD", "MOMO"}:
+        raise ValueError("Phương thức thanh toán không hợp lệ")
+    return method
+
+
+def create_order(db: Session, request: CreateOrderRequest) -> Order:
+    if not all(
+        [
+            request.customer_name.strip(),
+            str(request.customer_email).strip(),
+            request.customer_phone.strip(),
+            request.customer_address.strip(),
+        ]
+    ):
+        raise ValueError("Vui lòng nhập đầy đủ thông tin khách hàng")
+
+    if not request.items:
+        raise ValueError("Giỏ hàng trống")
+
+    payment_method = parse_payment_method(request.payment_method)
+    line_items: list[dict[str, Any]] = []
+    subtotal = 0
+
+    for item in request.items:
+        if not item.id or item.quantity <= 0:
+            continue
+        product = get_product_detail(db, item.id)
+        if not product:
+            raise ValueError(f"Sản phẩm không tồn tại: {item.id}")
+        price = int(product.get("price") or 0)
+        line_total = price * item.quantity
+        subtotal += line_total
+        line_items.append(
+            {
+                "id": product["id"],
+                "slug": product["slug"],
+                "title": product["title"],
+                "price": price,
+                "quantity": item.quantity,
+                "lineTotal": line_total,
+            }
+        )
+
+    if not line_items:
+        raise ValueError("Không có sản phẩm hợp lệ trong đơn hàng")
+
+    coupon = normalize_coupon(request.coupon)
+    discount = calculate_discount(subtotal, coupon)
+    total = max(0, subtotal - discount)
+    status = "COD_PENDING" if payment_method == "COD" else "CONFIRMED"
+
+    order = Order(
+        order_code=resolve_order_code(db, request.order_code),
+        customer_name=request.customer_name.strip(),
+        customer_email=str(request.customer_email).strip(),
+        customer_phone=request.customer_phone.strip(),
+        customer_address=request.customer_address.strip(),
+        customer_note=(request.customer_note or "").strip() or None,
+        coupon=coupon,
+        subtotal=subtotal,
+        discount=discount,
+        total=total,
+        payment_method=payment_method,
+        status=status,
+        email_sent=False,
+        created_at=datetime.now(),
+        items_json=json.dumps(line_items, ensure_ascii=False),
+    )
+    db.add(order)
+    db.flush()
+    send_order_email(order, line_items)
+    return order
+
+
+def order_response(order: Order) -> dict[str, Any]:
+    return {
+        "success": True,
+        "orderCode": order.order_code,
+        "status": order.status,
+        "paymentMethod": order.payment_method,
+        "emailSent": order.email_sent,
+        "subtotal": order.subtotal,
+        "discount": order.discount,
+        "total": order.total,
+        "coupon": order.coupon or "",
+    }
+
+
+def _payment_label(method: str) -> str:
+    return {
+        "COD": "Thanh toán khi nhận hàng (COD)",
+        "MOMO": "MoMo",
+        "BANK_TRANSFER": "Khách xác nhận đã chuyển khoản",
+    }.get(method, method)
+
+
+def send_order_email(order: Order, line_items: list[dict[str, Any]]) -> None:
+    settings = get_settings()
+    if not (settings.mail_username and settings.mail_password and settings.mail_notify_to):
+        logger.warning("Bỏ qua gửi email: chưa cấu hình MAIL_USERNAME/MAIL_PASSWORD/MAIL_NOTIFY_TO")
+        return
+
+    subject_payment = {
+        "COD": "COD",
+        "MOMO": "MoMo",
+        "BANK_TRANSFER": "Đã chuyển khoản",
+    }.get(order.payment_method, order.payment_method)
+
+    subject = f"[Kingnest] Đơn mới {order.order_code} - {subject_payment}"
+    lines = [
+        "Có đơn hàng mới từ website Kingnest",
+        "=====================================\n",
+        f"Mã đơn: {order.order_code}",
+        f"Thời gian: {order.created_at.strftime('%d/%m/%Y %H:%M')}",
+        f"Thanh toán: {_payment_label(order.payment_method)}",
+        f"Trạng thái: {order.status}\n",
+        "--- Khách hàng ---",
+        f"Họ tên: {order.customer_name}",
+        f"Email: {order.customer_email}",
+        f"SĐT: {order.customer_phone}",
+        f"Địa chỉ: {order.customer_address}",
+    ]
+    if order.customer_note:
+        lines.append(f"Ghi chú: {order.customer_note}")
+    lines.append("\n--- Sản phẩm ---")
+    for item in line_items:
+        lines.append(
+            f"- {item.get('title', 'Sản phẩm')} x{item.get('quantity', 1)} = "
+            f"{int(item.get('lineTotal', 0)):,} đ".replace(",", ".")
+        )
+    lines.append("")
+    lines.append(f"Thành tiền: {order.subtotal:,} đ".replace(",", "."))
+    if order.discount:
+        coupon = f" ({order.coupon})" if order.coupon else ""
+        lines.append(f"Giảm giá{coupon}: -{order.discount:,} đ".replace(",", "."))
+    lines.append(f"TỔNG THANH TOÁN: {order.total:,} đ".replace(",", "."))
+
+    message = MIMEText("\n".join(lines), "plain", "utf-8")
+    message["Subject"] = subject
+    message["From"] = f"{settings.mail_from_name} <{settings.mail_username}>"
+    message["To"] = settings.mail_notify_to
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(settings.mail_username, settings.mail_password)
+            server.send_message(message)
+        order.email_sent = True
+        logger.info("Đã gửi email đơn %s tới %s", order.order_code, settings.mail_notify_to)
+    except Exception:
+        logger.exception("Gửi email đơn %s thất bại", order.order_code)
+        order.email_sent = False

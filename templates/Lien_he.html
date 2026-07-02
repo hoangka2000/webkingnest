@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="vi" >
+<head>
+    <meta charset="UTF-8">
+    <title>Liên hệ - Yến Sào An Thịnh Nhân</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/mobile-theme.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: #f8f1e6;
+            color: #2d231d;
+            font-family: Arial, sans-serif;
+            padding-bottom: clamp(86px, 7.5vw, 130px);
+        }
+
+        /* ================= HEADER ================= */
+
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: clamp(72px, 5.6vw, 92px);
+            z-index: 9999;
+            background:
+                radial-gradient(circle at center, rgba(145, 18, 18, 0.35), transparent 45%),
+                linear-gradient(90deg, #4b0000 0%, #760707 45%, #4b0000 100%);
+            border-top: 2px solid #b88949;
+            border-bottom: 2px solid #b88949;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+        }
+
+        .header-inner {
+            width: 92%;
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: clamp(14px, 1.8vw, 34px);
+        }
+
+        .header-brand {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: clamp(12px, 1.3vw, 22px);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-box {
+            width: clamp(82px, 7.5vw, 125px);
+            height: clamp(54px, 5vw, 82px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            overflow: visible;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent;
+            display: block;
+        }
+
+        .brand-divider {
+            width: 1px;
+            height: clamp(42px, 3.6vw, 58px);
+            background: rgba(240, 198, 112, 0.75);
+        }
+
+        .brand-text h1 {
+            margin: 0 0 4px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(17px, 1.5vw, 25px);
+            font-weight: 500;
+            color: #f7ddb0;
+            white-space: nowrap;
+        }
+
+        .brand-text p {
+            margin: 0;
+            font-size: clamp(11px, 0.9vw, 15px);
+            color: #e8c99a;
+            white-space: nowrap;
+        }
+
+        .main-nav {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(14px, 1.6vw, 34px);
+            flex: 1;
+        }
+
+        .main-nav > a,
+        .nav-dropdown > a {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(13px, 1vw, 17px);
+            color: #f7ddb0;
+            white-space: nowrap;
+        }
+
+        .main-nav > a:hover,
+        .nav-dropdown > a:hover,
+        .main-nav > a.active {
+            color: #ffd36b;
+        }
+
+        .main-nav > a.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 24%;
+            width: 100%;
+            height: 2px;
+            background: #d8a63a;
+            border-radius: 99px;
+        }
+
+        .nav-dropdown {
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-dropdown span {
+            margin-left: 6px;
+            color: #d8a63a;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 230px;
+            background: rgba(75, 0, 0, 0.96);
+            border: 1px solid rgba(216, 166, 58, 0.45);
+            border-radius: 8px;
+            padding: 10px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: 0.25s ease;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 18px;
+            text-decoration: none;
+            color: #f7ddb0;
+            font-size: 15px;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(216, 166, 58, 0.16);
+            color: #ffd36b;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: clamp(10px, 1vw, 16px);
+            flex-shrink: 0;
+        }
+
+        .search-button {
+            width: clamp(42px, 3.4vw, 56px);
+            height: clamp(42px, 3.4vw, 56px);
+            border: 1px solid rgba(232, 198, 126, 0.75);
+            border-radius: 8px;
+            background: rgba(70, 0, 0, 0.22);
+            color: #f7ddb0;
+            font-size: clamp(20px, 1.8vw, 30px);
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .cart-button {
+            position: relative;
+            height: clamp(42px, 3.4vw, 56px);
+            min-width: clamp(120px, 9.5vw, 150px);
+            padding: 0 clamp(18px, 1.6vw, 28px);
+            border: 1px solid rgba(232, 198, 126, 0.85);
+            border-radius: 8px;
+            background: linear-gradient(180deg, #f5d98b, #c99334);
+            color: #6b100f;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(14px, 1.1vw, 18px);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: 0.25s ease;
+        }
+
+        /* ================= HERO LIÊN HỆ ================= */
+
+        .contact-hero {
+            position: relative;
+            min-height: clamp(300px, 26vw, 520px);
+            padding: clamp(58px, 5vw, 90px) 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                linear-gradient(180deg, rgba(255, 248, 236, 0.34), rgba(255, 248, 236, 0.88)),
+                url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009592/kingnest/banner/bg-knowledge.png');
+            background-size: cover;
+            background-position: center center;
+            overflow: hidden;
+        }
+
+        .contact-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 22%, rgba(255,255,255,0.45), transparent 32%),
+                linear-gradient(90deg, rgba(255,248,236,0.78), rgba(255,248,236,0.36), rgba(255,248,236,0.78));
+            pointer-events: none;
+        }
+
+        .contact-hero-inner {
+            position: relative;
+            z-index: 2;
+            width: min(92%, 1180px);
+            text-align: center;
+        }
+
+        .contact-kicker {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: clamp(12px, 1.2vw, 22px);
+            color: #b88949;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(13px, 1vw, 18px);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .contact-kicker::before,
+        .contact-kicker::after {
+            content: "";
+            width: clamp(54px, 5vw, 96px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #b88949);
+        }
+
+        .contact-kicker::after {
+            background: linear-gradient(90deg, #b88949, transparent);
+        }
+
+        .contact-hero h1 {
+            margin: 0 auto;
+            max-width: 980px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(42px, 5vw, 86px);
+            line-height: 1.08;
+            font-weight: 500;
+            color: #7d171b;
+        }
+
+        .breadcrumb {
+            margin-top: clamp(16px, 1.4vw, 26px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: clamp(13px, 0.95vw, 16px);
+            color: #6a5b4c;
+        }
+
+        .breadcrumb a {
+            color: #8b1b1e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ================= CONTACT BODY ================= */
+
+        .contact-section {
+            position: relative;
+            padding: clamp(58px, 5.2vw, 96px) 0;
+            background:
+                radial-gradient(circle at top left, rgba(216, 173, 97, 0.16), transparent 30%),
+                linear-gradient(180deg, #fff8ec 0%, #f8f1e6 100%);
+        }
+
+        .contact-wrap {
+            width: min(92%, 1280px);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: clamp(28px, 3.4vw, 62px);
+            align-items: start;
+        }
+
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(18px, 1.4vw, 26px);
+        }
+
+        .contact-info-card {
+            position: relative;
+            min-height: 142px;
+            padding: clamp(22px, 2vw, 34px);
+            border: 1.5px solid rgba(184, 137, 73, 0.48);
+            border-radius: clamp(16px, 1.35vw, 24px);
+            background: rgba(255, 253, 247, 0.92);
+            box-shadow: 0 16px 34px rgba(110, 78, 34, 0.1);
+            display: grid;
+            grid-template-columns: clamp(58px, 4.5vw, 78px) 1fr;
+            gap: clamp(16px, 1.2vw, 24px);
+            align-items: center;
+            overflow: hidden;
+            transition: 0.25s ease;
+        }
+
+        .contact-info-card:hover,
+        .form-card:hover,
+        .map-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 44px rgba(110, 78, 34, 0.16);
+        }
+
+        .contact-icon {
+            width: clamp(56px, 4.3vw, 76px);
+            height: clamp(56px, 4.3vw, 76px);
+            border-radius: 50%;
+            border: 1.5px solid #b88949;
+            color: #b88949;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(25px, 2vw, 38px);
+            background: rgba(255, 248, 235, 0.9);
+        }
+
+        .contact-info-card h3 {
+            margin: 0 0 8px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(20px, 1.5vw, 30px);
+            color: #064c3d;
+        }
+
+        .contact-info-card a,
+        .contact-info-card p {
+            margin: 0;
+            color: #4d433b;
+            text-decoration: none;
+            font-size: clamp(15px, 1.05vw, 18px);
+            line-height: 1.55;
+        }
+
+        .contact-info-card a:hover {
+            color: #9b1117;
+        }
+
+        .form-card {
+            padding: clamp(26px, 2.7vw, 50px);
+            border: 1.5px solid rgba(184, 137, 73, 0.48);
+            border-radius: clamp(18px, 1.5vw, 28px);
+            background:
+                linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(255, 248, 236, 0.93)),
+                radial-gradient(circle at top right, rgba(216, 173, 97, 0.16), transparent 34%);
+            box-shadow: 0 18px 42px rgba(110, 78, 34, 0.12);
+            transition: 0.25s ease;
+        }
+
+        .form-card h2 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(30px, 3vw, 52px);
+            line-height: 1.18;
+            color: #7d171b;
+            font-weight: 500;
+        }
+
+        .form-card .form-desc {
+            margin: clamp(12px, 1.1vw, 18px) 0 clamp(22px, 2vw, 34px);
+            color: #4d433b;
+            font-size: clamp(15px, 1.05vw, 18px);
+            line-height: 1.7;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: clamp(14px, 1.2vw, 22px);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(14px, 1.1vw, 20px);
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: 700;
+            color: #064c3d;
+            font-size: clamp(14px, 1vw, 17px);
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            border: 1.4px solid rgba(184, 137, 73, 0.45);
+            border-radius: 12px;
+            background: rgba(255, 253, 247, 0.92);
+            color: #2d231d;
+            font-size: 15px;
+            outline: none;
+            padding: 14px 16px;
+            transition: 0.2s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .field textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field textarea:focus {
+            border-color: #9b1117;
+            box-shadow: 0 0 0 3px rgba(155, 17, 23, 0.08);
+        }
+
+        .submit-btn {
+            width: fit-content;
+            min-width: clamp(170px, 13vw, 230px);
+            height: clamp(44px, 3.4vw, 58px);
+            padding: 0 28px;
+            border-radius: 9px;
+            border: 1.5px solid #b88949;
+            background: linear-gradient(180deg, #a8141a, #7d080d);
+            color: #fff4dc;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(15px, 1.05vw, 19px);
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.25s ease;
+        }
+
+        .submit-btn:hover,
+        .cart-button:hover,
+        .search-button:hover,
+        .floating-action-btn:hover {
+            transform: translateY(-2px) scale(1.04);
+            filter: brightness(1.08);
+        }
+
+        .form-message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(6, 76, 61, 0.08);
+            border: 1px solid rgba(6, 76, 61, 0.2);
+            color: #064c3d;
+            line-height: 1.55;
+        }
+
+        .form-message.is-show {
+            display: block;
+        }
+
+        .map-wrap {
+            width: min(92%, 1280px);
+            margin: clamp(34px, 3vw, 58px) auto 0;
+        }
+
+        .map-card {
+            overflow: hidden;
+            min-height: clamp(300px, 28vw, 520px);
+            border: 1.5px solid rgba(184, 137, 73, 0.48);
+            border-radius: clamp(18px, 1.5vw, 28px);
+            background:
+                linear-gradient(180deg, rgba(255, 253, 247, 0.82), rgba(255, 248, 236, 0.92)),
+                url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009597/kingnest/banner/bg-product-seller.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 18px 42px rgba(110, 78, 34, 0.12);
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            transition: 0.25s ease;
+        }
+
+        .map-text {
+            padding: clamp(26px, 2.7vw, 50px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .map-text h2 {
+            margin: 0 0 14px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(28px, 2.6vw, 46px);
+            line-height: 1.2;
+            color: #7d171b;
+            font-weight: 500;
+        }
+
+        .map-text p {
+            color: #4d433b;
+            line-height: 1.75;
+            font-size: clamp(15px, 1.05vw, 18px);
+            margin: 0 0 20px;
+        }
+
+        .map-link {
+            width: fit-content;
+            min-width: 180px;
+            height: 44px;
+            padding: 0 22px;
+            border-radius: 9px;
+            border: 1.4px solid #b88949;
+            background: rgba(255, 253, 247, 0.82);
+            color: #8b1b1e;
+            text-decoration: none;
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .map-frame {
+            min-height: 100%;
+            background: rgba(255, 248, 236, 0.76);
+        }
+
+        .map-frame iframe {
+            width: 100%;
+            height: 100%;
+            min-height: clamp(300px, 28vw, 520px);
+            border: 0;
+            display: block;
+            filter: sepia(0.15) saturate(0.88);
+        }
+
+        /* ================= FOOTER CONTACT GIỐNG CÁC FILE TRƯỚC ================= */
+
+        .about-contact {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1672 / 941;
+            background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009672/kingnest/banner/gth_section4.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center top;
+            overflow: hidden;
+        }
+
+        .contact-panel {
+            position: absolute;
+            right: 3%;
+            top: 10%;
+            width: 42%;
+            color: #f8e4b2;
+            z-index: 5;
+        }
+
+        .contact-panel h2 {
+            margin: 0;
+            text-align: center;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(38px, 4.2vw, 78px);
+            line-height: 1.16;
+            font-weight: 500;
+            color: #d8b45d;
+        }
+
+        .decor-line {
+            width: clamp(210px, 24vw, 430px);
+            height: 1px;
+            margin: clamp(16px, 1.3vw, 26px) auto;
+            background: linear-gradient(90deg, transparent, #b88949, transparent);
+            position: relative;
+        }
+
+        .decor-line::after {
+            content: "✥";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #c99b4e;
+            background: rgba(4, 42, 28, 0.7);
+            padding: 0 10px;
+            font-size: clamp(15px, 1.2vw, 22px);
+        }
+
+        .contact-list {
+            margin-top: clamp(18px, 1.6vw, 30px);
+            display: grid;
+            gap: clamp(13px, 1vw, 20px);
+        }
+
+        .contact-row {
+            display: grid;
+            grid-template-columns: clamp(44px, 3.8vw, 68px) 1fr;
+            align-items: center;
+            gap: clamp(14px, 1.2vw, 22px);
+            padding-bottom: clamp(10px, 0.8vw, 16px);
+            border-bottom: 1px dashed rgba(216, 180, 93, 0.38);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(17px, 1.45vw, 27px);
+            color: #f8e4b2;
+        }
+
+        .contact-row span:first-child {
+            width: clamp(42px, 3.5vw, 62px);
+            height: clamp(42px, 3.5vw, 62px);
+            border: 1.4px solid #b88949;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d8b45d;
+            font-size: clamp(20px, 1.7vw, 32px);
+        }
+
+        /* Floating tư vấn: /css/floating-consult.css */
+
+        @media (max-width: 1180px) {
+            body {
+                padding-bottom: 120px;
+            }
+
+            .contact-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .map-card {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-hero {
+                min-height: 300px;
+                padding: 48px 16px;
+            }
+
+            .contact-info-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                justify-items: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .submit-btn {
+                width: 100%;
+            }
+
+            .about-contact {
+                aspect-ratio: auto;
+                min-height: 650px;
+                background-size: cover;
+                background-position: center top;
+            }
+
+            .contact-panel {
+                position: relative;
+                right: auto;
+                top: auto;
+                width: 88%;
+                margin: 0 auto;
+                padding-top: 62px;
+                text-align: center;
+            }
+
+            .contact-panel h2 {
+                font-size: 34px;
+            }
+
+            .contact-row {
+                grid-template-columns: 42px 1fr;
+                font-size: 15px;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+{% include "fragments/header.html" %}
+
+<main>
+    <section class="contact-section">
+        <div class="contact-wrap">
+            <div class="contact-info-grid">
+                <article class="contact-info-card">
+                    <div class="contact-icon">☎</div>
+                    <div>
+                        <h3>Hotline</h3>
+                        <a href="tel:0564165414">0564175414</a>
+                    </div>
+                </article>
+
+                <article class="contact-info-card">
+                    <div class="contact-icon">✉</div>
+                    <div>
+                        <h3>Email</h3>
+                        <a href="mailto:nguyendanghoang551@gmail.com">nguyendanghoang551@gmail.com</a>
+                    </div>
+                </article>
+
+                <article class="contact-info-card">
+                    <div class="contact-icon">⌖</div>
+                    <div>
+                        <h3>Địa chỉ</h3>
+                        <p>65 Lê Trọng Tấn, Phường Bắc Cam Ranh, Cam Ranh, Khánh Hòa</p>
+                    </div>
+                </article>
+
+                <article class="contact-info-card">
+                    <div class="contact-icon">◷</div>
+                    <div>
+                        <h3>Thời gian hỗ trợ</h3>
+                        <p>Mở cửa: 8:00 – 22:00 hàng ngày</p>
+                    </div>
+                </article>
+            </div>
+
+            <article class="form-card">
+                <h2>Liên hệ với chúng tôi</h2>
+                <p class="form-desc">
+                    Đừng ngần ngại gửi cho Kingnest ý kiến, yêu cầu tư vấn sản phẩm, báo giá sỉ hoặc nhu cầu đặt quà tặng.
+                </p>
+
+                <form class="contact-form" onsubmit="submitContactForm(event)">
+                    <div class="form-row">
+                        <div class="field">
+                            <label for="fullname">Họ và tên</label>
+                            <input id="fullname" name="fullname" type="text" placeholder="Nhập họ và tên" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="phone">Số điện thoại</label>
+                            <input id="phone" name="phone" type="tel" placeholder="Nhập số điện thoại" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" placeholder="Nhập email của bạn">
+                    </div>
+
+                    <div class="field">
+                        <label for="message">Nội dung cần tư vấn</label>
+                        <textarea id="message" name="message" placeholder="Ví dụ: Tôi muốn tư vấn yến chưng thùng 40/120 hũ..." required></textarea>
+                    </div>
+
+                    <button class="submit-btn" type="submit">
+                        Gửi ngay <span>→</span>
+                    </button>
+
+                    <div class="form-message" id="formMessage">
+                        Cảm ơn bạn đã để lại thông tin. Kingnest sẽ liên hệ tư vấn trong thời gian sớm nhất.
+                    </div>
+                </form>
+            </article>
+        </div>
+
+        <div class="map-wrap">
+            <article class="map-card">
+                <div class="map-text">
+                    <h2>Ghé thăm Kingnest</h2>
+                    <p>
+                        Kingnest luôn sẵn sàng hỗ trợ khách hàng chọn sản phẩm phù hợp để dùng hằng ngày, biếu tặng hoặc nhập sỉ.
+                    </p>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=65%20L%C3%AA%20Tr%E1%BB%8Dng%20T%E1%BA%A5n%20B%E1%BA%AFc%20Cam%20Ranh%20Cam%20Ranh%20Kh%C3%A1nh%20H%C3%B2a" target="_blank" rel="noopener">
+                        Mở bản đồ <span>↗</span>
+                    </a>
+                </div>
+
+                <div class="map-frame">
+                    <iframe
+                        title="Bản đồ Kingnest"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=65%20L%C3%AA%20Tr%E1%BB%8Dng%20T%E1%BA%A5n%20B%E1%BA%AFc%20Cam%20Ranh%20Cam%20Ranh%20Kh%C3%A1nh%20H%C3%B2a&output=embed">
+                    </iframe>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="about-contact" id="contact">
+        <div class="contact-panel">
+            <h2>Liên Hệ & Đồng Hành<br>Cùng Kingnest</h2>
+            <div class="decor-line"></div>
+
+            <div class="contact-list">
+                <div class="contact-row">
+                    <span>⌖</span>
+                    <span>65 Lê Trọng Tấn, Bắc Cam Ranh, Cam Ranh, Khánh Hòa</span>
+                </div>
+
+                <div class="contact-row">
+                    <span>☎</span>
+                    <span>Hotline: 0564175414</span>
+                </div>
+
+                <div class="contact-row">
+                    <span>✉</span>
+                    <span>Email: nguyendanghoang551@gmail.com</span>
+                </div>
+
+                <div class="contact-row">
+                    <span>◷</span>
+                    <span>Thời gian hỗ trợ: 8:00 – 22:00</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+function submitContactForm(event) {
+    event.preventDefault();
+
+    const formMessage = document.getElementById("formMessage");
+
+    if (formMessage) {
+        formMessage.classList.add("is-show");
+    }
+
+    event.target.reset();
+}
+</script>
+
+</body>
+</html>

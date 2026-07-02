@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="vi" >
+<head>
+    <meta charset="UTF-8">
+    <title>Giới thiệu - Yến Sào An Thịnh Nhân</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/mobile-theme.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: #f8f1e6;
+            color: #2d231d;
+            font-family: Arial, sans-serif;
+            padding-bottom: clamp(86px, 7.5vw, 130px);
+        }
+
+        /* ================= HEADER GIỮ NGUYÊN PHONG CÁCH TRANG CHỦ ================= */
+
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: clamp(72px, 5.6vw, 92px);
+            z-index: 9999;
+            background:
+                radial-gradient(circle at center, rgba(145, 18, 18, 0.35), transparent 45%),
+                linear-gradient(90deg, #4b0000 0%, #760707 45%, #4b0000 100%);
+            border-top: 2px solid #b88949;
+            border-bottom: 2px solid #b88949;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+        }
+
+        .header-inner {
+            width: 92%;
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: clamp(14px, 1.8vw, 34px);
+        }
+
+        .header-brand {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: clamp(12px, 1.3vw, 22px);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-box {
+            width: clamp(82px, 7.5vw, 125px);
+            height: clamp(54px, 5vw, 82px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            overflow: visible;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent;
+            display: block;
+        }
+
+        .brand-divider {
+            width: 1px;
+            height: clamp(42px, 3.6vw, 58px);
+            background: rgba(240, 198, 112, 0.75);
+        }
+
+        .brand-text h1 {
+            margin: 0 0 4px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(17px, 1.5vw, 25px);
+            font-weight: 500;
+            color: #f7ddb0;
+            white-space: nowrap;
+        }
+
+        .brand-text p {
+            margin: 0;
+            font-size: clamp(11px, 0.9vw, 15px);
+            color: #e8c99a;
+            white-space: nowrap;
+        }
+
+        .main-nav {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(18px, 1.9vw, 38px);
+            flex: 1;
+        }
+
+        .main-nav > a,
+        .nav-dropdown > a {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(13px, 1vw, 17px);
+            color: #f7ddb0;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .main-nav > a:hover,
+        .nav-dropdown > a:hover,
+        .main-nav > a.active {
+            color: #ffd36b;
+        }
+
+        .main-nav > a.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 24%;
+            width: 100%;
+            height: 2px;
+            background: #d8a63a;
+            border-radius: 99px;
+        }
+
+        .nav-dropdown {
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-dropdown span {
+            margin-left: 6px;
+            color: #d8a63a;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 230px;
+            background: rgba(75, 0, 0, 0.96);
+            border: 1px solid rgba(216, 166, 58, 0.45);
+            border-radius: 8px;
+            padding: 10px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: 0.25s ease;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 18px;
+            text-decoration: none;
+            color: #f7ddb0;
+            font-size: 15px;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(216, 166, 58, 0.16);
+            color: #ffd36b;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: clamp(10px, 1vw, 16px);
+            flex-shrink: 0;
+        }
+
+        .search-button {
+            width: clamp(42px, 3.4vw, 56px);
+            height: clamp(42px, 3.4vw, 56px);
+            border: 1px solid rgba(232, 198, 126, 0.75);
+            border-radius: 8px;
+            background: rgba(70, 0, 0, 0.22);
+            color: #f7ddb0;
+            font-size: clamp(20px, 1.8vw, 30px);
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .cart-button {
+            position: relative;
+            height: clamp(42px, 3.4vw, 56px);
+            min-width: clamp(120px, 9.5vw, 150px);
+            padding: 0 clamp(18px, 1.6vw, 28px);
+            border: 1px solid rgba(232, 198, 126, 0.85);
+            border-radius: 8px;
+            background: linear-gradient(180deg, #f5d98b, #c99334);
+            color: #6b100f;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(14px, 1.1vw, 18px);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: 0.25s ease;
+        }
+
+        .search-button:hover,
+        .cart-button:hover,
+        .about-btn:hover,
+        .floating-action-btn:hover {
+            transform: translateY(-2px) scale(1.04);
+            filter: brightness(1.06);
+        }
+
+        /* ================= SECTION GIỚI THIỆU - CHỈ GIỮ BUTTON ================= */
+
+        .about-section {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1672 / 941;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center top;
+            overflow: hidden;
+        }
+
+        .gth-section-1 {
+            background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009672/kingnest/banner/gth_section4.png');
+        }
+
+        .gth-section-2 {
+            background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009648/kingnest/banner/gth_section2.png');
+        }
+
+        .gth-section-3 {
+            background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009664/kingnest/banner/gth_section3.png');
+        }
+
+        .gth-section-4 {
+            background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009672/kingnest/banner/gth_section4.png');
+        }
+
+        .about-btn-wrap {
+            position: absolute;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /*
+            Chỉnh vị trí button bằng phần trăm:
+            left: vị trí ngang
+            top: vị trí dọc
+            transform: căn giữa nút theo điểm đặt
+        */
+
+        .gth-section-1 .about-btn-wrap {
+            left: 72%;
+            top: 90%;
+            transform: translate(-50%, -50%);
+        }
+
+        .gth-section-2 .about-btn-wrap {
+            left: 14%;
+            top: 83%;
+            transform: translate(-50%, -50%);
+        }
+
+        
+
+        .about-btn {
+            min-width: clamp(155px, 14.5vw, 260px);
+            height: clamp(38px, 3.2vw, 58px);
+            padding: 0 clamp(18px, 1.8vw, 34px);
+
+            border-radius: 6px;
+            border: 1.5px solid #c99b4e;
+
+            background: linear-gradient(180deg, #a8141a, #7d080d);
+            color: #fff4dc;
+
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 0.9vw, 16px);
+
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(13px, 1.05vw, 19px);
+            font-weight: 600;
+            letter-spacing: 0.2px;
+
+            box-shadow:
+                0 10px 22px rgba(85, 0, 0, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+            transition: 0.25s ease;
+            white-space: nowrap;
+        }
+
+        /* Floating tư vấn: /css/floating-consult.css */
+
+        @media (max-width: 980px) {
+            .about-section {
+                aspect-ratio: 1672 / 941;
+                background-size: 100% 100%;
+            }
+
+            .about-btn {
+                min-width: clamp(135px, 22vw, 220px);
+                height: clamp(34px, 5vw, 48px);
+                font-size: clamp(12px, 1.9vw, 16px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .logo-box {
+                width: 56px;
+                height: 42px;
+            }
+
+            .brand-divider {
+                height: 38px;
+            }
+
+            .brand-text h1 {
+                font-size: 16px;
+                white-space: normal;
+            }
+
+            .brand-text p {
+                font-size: 11px;
+                white-space: normal;
+            }
+
+            .main-nav {
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+
+            .main-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .dropdown-menu {
+                display: none;
+            }
+
+            
+
+            
+
+            .about-btn {
+                min-width: 120px;
+                height: 34px;
+                padding: 0 14px;
+                font-size: 12px;
+                border-radius: 5px;
+            }
+        }
+    
+/* ================= SECTION 4 - LIÊN HỆ BAN ĐẦU ================= */
+
+.about-contact {
+    background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009672/kingnest/banner/gth_section4.png');
+}
+
+.contact-left {
+    position: absolute;
+    left: 8%;
+    top: 20%;
+    width: 34%;
+    text-align: center;
+    color: #f5dca8;
+    z-index: 5;
+}
+
+.contact-logo {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(42px, 4vw, 78px);
+    font-weight: 600;
+    color: #d8b45d;
+    line-height: 1;
+}
+
+.contact-left h3 {
+    margin-top: clamp(16px, 1.4vw, 26px);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(18px, 1.5vw, 28px);
+    font-weight: 500;
+    color: #f5dca8;
+}
+
+.contact-left p {
+    margin-top: clamp(26px, 2vw, 42px);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(18px, 1.5vw, 28px);
+    line-height: 1.45;
+    color: #f8e4b2;
+}
+
+.contact-panel {
+    position: absolute;
+    right: 3%;
+    top: 10%;
+    width: 42%;
+    color: #f8e4b2;
+    z-index: 5;
+}
+
+.contact-panel h2 {
+    margin: 0;
+    text-align: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(38px, 4.2vw, 78px);
+    line-height: 1.16;
+    font-weight: 500;
+    color: #d8b45d;
+}
+
+.decor-line {
+    width: clamp(210px, 24vw, 430px);
+    height: 1px;
+    margin: clamp(16px, 1.3vw, 26px) auto;
+    background: linear-gradient(90deg, transparent, #b88949, transparent);
+    position: relative;
+}
+
+.decor-line::after {
+    content: "✥";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #c99b4e;
+    background: rgba(4, 42, 28, 0.7);
+    padding: 0 10px;
+    font-size: clamp(15px, 1.2vw, 22px);
+}
+
+.contact-list {
+    margin-top: clamp(18px, 1.6vw, 30px);
+    display: grid;
+    gap: clamp(13px, 1vw, 20px);
+}
+
+.contact-row {
+    display: grid;
+    grid-template-columns: clamp(44px, 3.8vw, 68px) 1fr;
+    align-items: center;
+    gap: clamp(14px, 1.2vw, 22px);
+    padding-bottom: clamp(10px, 0.8vw, 16px);
+    border-bottom: 1px dashed rgba(216, 180, 93, 0.38);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(17px, 1.45vw, 27px);
+    color: #f8e4b2;
+}
+
+.contact-row span:first-child {
+    width: clamp(42px, 3.5vw, 62px);
+    height: clamp(42px, 3.5vw, 62px);
+    border: 1.4px solid #b88949;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d8b45d;
+    font-size: clamp(20px, 1.7vw, 32px);
+}
+
+.bottom-values {
+    position: absolute;
+    left: 50%;
+    bottom: 3.4%;
+    transform: translateX(-50%);
+    width: 48%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(216, 180, 93, 0.35);
+    color: #f8e4b2;
+    z-index: 5;
+}
+
+.bottom-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 1vw, 18px);
+    padding: clamp(12px, 1vw, 20px);
+    border-right: 1px solid rgba(216, 180, 93, 0.35);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(13px, 1.05vw, 20px);
+    text-transform: uppercase;
+}
+
+.bottom-value:last-child {
+    border-right: none;
+}
+
+.bottom-value span {
+    font-size: clamp(24px, 2.2vw, 40px);
+    color: #d8b45d;
+}
+
+@media (max-width: 980px) {
+    .contact-left,
+    .contact-panel {
+        position: relative;
+        inset: auto;
+        width: 90%;
+        margin: 0 auto;
+        padding-top: 64px;
+        text-align: center;
+    }
+
+    .about-contact {
+        aspect-ratio: auto;
+        min-height: 860px;
+        background-size: cover;
+        background-position: center top;
+    }
+
+    .contact-panel {
+        padding-top: 42px;
+    }
+
+    .bottom-values {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        transform: none;
+        width: 90%;
+        margin: 46px auto 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .contact-left,
+    .contact-panel {
+        width: 88%;
+        padding-top: 52px;
+    }
+
+    .contact-panel h2 {
+        font-size: 34px;
+    }
+
+    .contact-row {
+        grid-template-columns: 42px 1fr;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .bottom-values {
+        grid-template-columns: 1fr;
+    }
+
+    .bottom-value {
+        border-right: none;
+        border-bottom: 1px solid rgba(216, 180, 93, 0.35);
+    }
+}
+
+
+/* =========================================================
+   TRANG GIỚI THIỆU KIỂU BÀI VIẾT - GIỐNG TRANG THÔNG ĐIỆP
+   Giữ header và thanh liên hệ cố định như file ban đầu.
+   ========================================================= */
+
+.intro-hero {
+    position: relative;
+    min-height: clamp(300px, 27vw, 520px);
+    padding: clamp(58px, 5vw, 90px) 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(180deg, rgba(255, 248, 236, 0.28), rgba(255, 248, 236, 0.86)),
+        url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009648/kingnest/banner/gth_section2.png');
+    background-size: cover;
+    background-position: center center;
+    overflow: hidden;
+}
+
+.intro-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 22%, rgba(255,255,255,0.45), transparent 32%),
+        linear-gradient(90deg, rgba(255,248,236,0.78), rgba(255,248,236,0.36), rgba(255,248,236,0.78));
+    pointer-events: none;
+}
+
+.intro-hero-inner {
+    position: relative;
+    z-index: 2;
+    width: min(92%, 1180px);
+    text-align: center;
+}
+
+.intro-hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: clamp(12px, 1.2vw, 22px);
+    color: #b88949;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(13px, 1vw, 18px);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.intro-hero-kicker::before,
+.intro-hero-kicker::after {
+    content: "";
+    width: clamp(54px, 5vw, 96px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b88949);
+}
+
+.intro-hero-kicker::after {
+    background: linear-gradient(90deg, #b88949, transparent);
+}
+
+.intro-hero h1 {
+    margin: 0 auto;
+    max-width: 980px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(34px, 4.4vw, 76px);
+    line-height: 1.12;
+    font-weight: 500;
+    color: #7d171b;
+}
+
+.breadcrumb {
+    margin-top: clamp(16px, 1.4vw, 26px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: clamp(13px, 0.95vw, 16px);
+    color: #6a5b4c;
+}
+
+.breadcrumb a {
+    color: #8b1b1e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.article-section {
+    padding: clamp(52px, 5.2vw, 96px) 0;
+    background:
+        radial-gradient(circle at top left, rgba(216, 173, 97, 0.14), transparent 32%),
+        linear-gradient(180deg, #fff8ec 0%, #f8f1e6 100%);
+}
+
+.article-wrap {
+    width: min(92%, 1180px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(270px, 24vw, 360px);
+    gap: clamp(28px, 3.2vw, 56px);
+    align-items: start;
+}
+
+.article-card {
+    border: 1.5px solid rgba(184, 137, 73, 0.42);
+    border-radius: clamp(16px, 1.3vw, 24px);
+    background: rgba(255, 253, 247, 0.92);
+    box-shadow: 0 18px 42px rgba(110, 78, 34, 0.12);
+    overflow: hidden;
+}
+
+.article-cover {
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    background: #eadcc6;
+    overflow: hidden;
+}
+
+.article-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.article-body {
+    padding: clamp(26px, 3vw, 54px);
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(18px, 1.6vw, 28px);
+    color: #a47a38;
+    font-size: clamp(13px, 0.95vw, 16px);
+}
+
+.article-body h2 {
+    margin: 0 0 clamp(14px, 1.4vw, 24px);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 2.6vw, 46px);
+    line-height: 1.2;
+    font-weight: 500;
+    color: #7d171b;
+}
+
+.article-body p {
+    margin: 0 0 clamp(16px, 1.4vw, 24px);
+    font-size: clamp(15px, 1.05vw, 18px);
+    line-height: 1.85;
+    color: #39322c;
+    text-align: justify;
+}
+
+.quote-box {
+    margin: clamp(24px, 2.2vw, 38px) 0;
+    padding: clamp(22px, 2vw, 36px);
+    border-left: 4px solid #b88949;
+    border-radius: 14px;
+    background: linear-gradient(90deg, rgba(216, 173, 97, 0.18), rgba(255, 248, 236, 0.78));
+}
+
+.quote-box strong {
+    display: block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(20px, 1.7vw, 30px);
+    line-height: 1.45;
+    color: #064c3d;
+    font-weight: 600;
+}
+
+.value-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.4vw, 24px);
+    margin: clamp(26px, 2.4vw, 42px) 0;
+}
+
+.value-item {
+    min-height: 150px;
+    padding: clamp(18px, 1.6vw, 28px);
+    border: 1.3px solid rgba(184, 137, 73, 0.42);
+    border-radius: 16px;
+    background: rgba(255, 248, 236, 0.88);
+    text-align: center;
+    transition: 0.25s ease;
+}
+
+.value-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 28px rgba(110, 78, 34, 0.13);
+}
+
+.value-icon {
+    width: clamp(46px, 3.6vw, 62px);
+    height: clamp(46px, 3.6vw, 62px);
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    border: 1.4px solid #b88949;
+    color: #b88949;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(22px, 1.8vw, 32px);
+}
+
+.value-item h3 {
+    margin: 0 0 8px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(17px, 1.25vw, 22px);
+    color: #064c3d;
+}
+
+.value-item p {
+    margin: 0;
+    font-size: clamp(13px, 0.9vw, 15px);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.article-btn-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: clamp(24px, 2.4vw, 42px);
+}
+
+.article-btn {
+    min-width: clamp(170px, 13vw, 240px);
+    height: clamp(42px, 3.3vw, 58px);
+    padding: 0 24px;
+    border-radius: 9px;
+    border: 1.5px solid #b88949;
+    background: linear-gradient(180deg, #a8141a, #7d080d);
+    color: #fff4dc;
+    text-decoration: none;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(14px, 1vw, 18px);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: 0.25s ease;
+}
+
+.article-btn.outline {
+    background: rgba(255, 250, 240, 0.76);
+    color: #8b1b1e;
+}
+
+.article-sidebar {
+    position: sticky;
+    top: clamp(96px, 7vw, 128px);
+    display: grid;
+    gap: 18px;
+}
+
+.side-card {
+    border: 1.4px solid rgba(184, 137, 73, 0.42);
+    border-radius: 18px;
+    background: rgba(255, 253, 247, 0.9);
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(110, 78, 34, 0.1);
+}
+
+.side-card h3 {
+    padding: 18px 20px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+    color: #7d171b;
+    border-bottom: 1px solid rgba(184, 137, 73, 0.26);
+}
+
+.side-link {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 12px;
+    padding: 14px;
+    text-decoration: none;
+    color: #2d231d;
+    border-bottom: 1px solid rgba(184, 137, 73, 0.18);
+}
+
+.side-link img {
+    width: 76px;
+    height: 76px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #eadcc6;
+}
+
+.side-link span {
+    align-self: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+    line-height: 1.35;
+    color: #064c3d;
+    font-weight: 600;
+}
+
+.related-loading,
+.related-empty {
+    padding: 16px 20px;
+    color: #6b6258;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.support-card {
+    padding: 22px;
+    text-align: center;
+    background:
+        linear-gradient(180deg, rgba(125, 23, 27, 0.92), rgba(77, 0, 0, 0.94)),
+        url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009672/kingnest/banner/gth_section4.png');
+    background-size: cover;
+    background-position: center;
+    color: #fff4dc;
+}
+
+.support-card h3 {
+    padding: 0;
+    border: 0;
+    color: #f5d98b;
+    font-size: 24px;
+}
+
+.support-card p {
+    margin: 12px 0 18px;
+    line-height: 1.55;
+    font-size: 15px;
+}
+
+.support-card a {
+    height: 42px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #f5d98b, #c99334);
+    color: #6b100f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px;
+    text-decoration: none;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 700;
+}
+
+/* Giữ section liên hệ như ban đầu */
+.about-contact {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1672 / 941;
+    background-image: url('https://res.cloudinary.com/ln22f4im/image/upload/v1783009672/kingnest/banner/gth_section4.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center top;
+    overflow: hidden;
+}
+
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .header-inner { width: 94%; gap: clamp(10px, 1.15vw, 22px); }
+    .main-nav { gap: clamp(12px, 1.25vw, 24px); }
+    .main-nav > a, .nav-dropdown > a { font-size: clamp(12px, 0.92vw, 15px); }
+}
+
+@media (max-width: 1180px) {
+    /* Header: xem mobile-header.css */
+
+    .article-wrap {
+        grid-template-columns: 1fr;
+        width: min(92%, 900px);
+    }
+
+    .article-sidebar {
+        position: static;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .about-contact {
+        aspect-ratio: 1672 / 941;
+        background-size: 100% 100%;
+    }
+
+    .contact-panel {
+        right: 3.2% !important;
+        top: 7.2% !important;
+        width: 48% !important;
+    }
+
+    .contact-panel h2 {
+        font-size: clamp(28px, 4.4vw, 46px) !important;
+        line-height: 1.12 !important;
+    }
+
+    .contact-row {
+        grid-template-columns: clamp(34px, 4.3vw, 46px) 1fr !important;
+        gap: clamp(8px, 1.1vw, 14px) !important;
+        padding-bottom: clamp(7px, 0.9vw, 12px) !important;
+        font-size: clamp(13px, 2vw, 18px) !important;
+        line-height: 1.25 !important;
+    }
+}
+
+@media (max-width: 1180px) {
+    .main-nav { justify-content: flex-start; gap: 20px; }
+    .brand-text h1 { white-space: normal; font-size: 18px; }
+    .brand-text p { white-space: normal; }
+
+    .intro-hero {
+        min-height: 320px;
+        padding: 54px 16px;
+    }
+
+    .article-cover { aspect-ratio: 16 / 9; }
+
+    .article-body { padding: 24px 18px; }
+
+    .article-body p {
+        text-align: left;
+        line-height: 1.72;
+    }
+
+    .value-grid { grid-template-columns: 1fr; }
+
+    .article-sidebar { grid-template-columns: 1fr; }
+
+    .article-btn-row { flex-direction: column; }
+
+    .article-btn { width: 100%; }
+
+    .about-contact {
+        aspect-ratio: auto;
+        min-height: 650px;
+        background-size: cover;
+        background-position: center top;
+    }
+
+    .contact-panel {
+        position: relative !important;
+        right: auto !important;
+        top: auto !important;
+        width: 88% !important;
+        margin: 0 auto !important;
+        padding-top: 62px !important;
+        text-align: center !important;
+    }
+
+    .contact-panel h2 { font-size: 34px !important; }
+
+    .contact-row {
+        grid-template-columns: 42px 1fr !important;
+        font-size: 15px !important;
+        text-align: left !important;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+{% include "fragments/header.html" %}
+
+
+<main>
+    
+
+    <section class="article-section" id="article">
+        <div class="article-wrap">
+            <article class="article-card">
+                <div class="article-cover">
+                    <img src="https://res.cloudinary.com/ln22f4im/image/upload/v1783009648/kingnest/banner/gth_section2.png" alt="Thông điệp thương hiệu Yến Sào An Thịnh Nhân">
+                </div>
+
+                <div class="article-body">
+                    <div class="article-meta">
+                        <span>Yến Sào An Thịnh Nhân</span>
+                        <span>•</span>
+                        <span>Giới thiệu thương hiệu</span>
+                    </div>
+
+                    <h2>Trân quý sức khỏe khách hàng như chính sức khỏe của bản thân</h2>
+
+                    <p>
+                        Yến Sào An Thịnh Nhân hướng đến việc mang những sản phẩm yến sào sạch, an toàn và có giá trị dinh dưỡng thực chất đến từng gia đình. Mỗi sản phẩm được xây dựng trên tinh thần chọn lọc kỹ lưỡng, chế biến cẩn trọng và đặt trải nghiệm của khách hàng ở vị trí trung tâm.
+                    </p>
+
+                    <p>
+                        Thương hiệu theo đuổi sự minh bạch trong nguồn gốc, sự chỉn chu trong quy trình và sự tinh tế trong cách đóng gói. Không chỉ là một sản phẩm chăm sóc sức khỏe, yến sào còn là món quà thể hiện sự quan tâm dành cho cha mẹ, người thân, đối tác và những người mình trân trọng.
+                    </p>
+
+                    <div class="quote-box">
+                        <strong>“Trao sản phẩm yến chất lượng là trao đi sự chăm sóc bền vững, tinh tế và đáng tin cậy.”</strong>
+                    </div>
+
+                    <p>
+                        Giống như chim yến cần mẫn tạo nên tổ yến từ tinh túy của tự nhiên, An Thịnh Nhân mong muốn phát triển bằng sự tận tâm, trách nhiệm và tinh thần học hỏi không ngừng. Từ yến thô, yến tinh chế đến yến chưng sẵn, mỗi dòng sản phẩm đều được hoàn thiện để phù hợp hơn với nhu cầu sử dụng hiện đại.
+                    </p>
+
+                    <div class="value-grid">
+                        <div class="value-item">
+                            <div class="value-icon">♧</div>
+                            <h3>Yến sạch</h3>
+                            <p>Nguồn gốc rõ ràng, chọn lọc kỹ trước khi đến tay khách hàng.</p>
+                        </div>
+
+                        <div class="value-item">
+                            <div class="value-icon">♢</div>
+                            <h3>Chất lượng</h3>
+                            <p>Quy trình chế biến cẩn trọng, giữ trọn giá trị tự nhiên của yến.</p>
+                        </div>
+
+                        <div class="value-item">
+                            <div class="value-icon">▣</div>
+                            <h3>Tinh tế</h3>
+                            <p>Phù hợp sử dụng hằng ngày hoặc làm quà tặng sức khỏe cao cấp.</p>
+                        </div>
+                    </div>
+
+                    <p>
+                        Với tinh thần đó, Kingnest – Yến Sào An Thịnh Nhân luôn nỗ lực lan tỏa giá trị yến Việt đến nhiều khách hàng hơn, để sản phẩm yến sào không còn là món quà xa lạ mà trở thành lựa chọn chăm sóc sức khỏe gần gũi, thiết thực và sang trọng.
+                    </p>
+
+                    <div class="article-btn-row">
+                        <a href="/san-pham" class="article-btn">Xem sản phẩm <span>→</span></a>
+                        <a href="https://www.facebook.com/share/194mLCUAQU/?mibextid=wwXIfr" class="article-btn outline" target="_blank" rel="noopener">Liên hệ Facebook <span>→</span></a>
+                    </div>
+                </div>
+            </article>
+
+            <aside class="article-sidebar">
+                <div class="side-card">
+                    <h3>Có thể bạn thích</h3>
+                    <div id="relatedPosts">
+                        <p class="related-loading">Đang tải gợi ý...</p>
+                    </div>
+                </div>
+
+                <div class="side-card support-card">
+                    <h3>Cần tư vấn chọn yến?</h3>
+                    <p>Kingnest hỗ trợ chọn sản phẩm phù hợp cho gia đình, biếu tặng hoặc nhập sỉ.</p>
+                    <a href="https://www.facebook.com/share/194mLCUAQU/?mibextid=wwXIfr" target="_blank" rel="noopener">Liên hệ Facebook</a>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <section class="about-section gth-section-4 about-contact" id="contact">
+        <div class="contact-panel">
+            <h2>Liên Hệ & Đồng Hành<br>Cùng Kingnest</h2>
+            <div class="decor-line"></div>
+
+            <div class="contact-list">
+                <div class="contact-row">
+                    <span>⌖</span>
+                    <span>Cam Ranh, Khánh Hòa</span>
+                </div>
+
+                <div class="contact-row">
+                    <span>☎</span>
+                    <span>Hotline: 0564 175 414</span>
+                </div>
+
+                <div class="contact-row">
+                    <span>✉</span>
+                    <span>Email: nguyendanghoang551@gmail.com</span>
+                </div>
+
+                <div class="contact-row">
+                    <span>◷</span>
+                    <span>Thời gian hỗ trợ: 8:00 – 22:00</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+const ABOUT_RELATED_SLUGS = [
+    "tam-nhin-thuong-hieu-yen-sao-an-thinh-nhan",
+    "thong-diep-thuong-hieu-yen-sao-an-thinh-nhan",
+    "vi-sao-nen-lua-chon-yen-sao-kingnest-an-thinh-nhan"
+];
+
+function newsDetailUrl(slug) {
+    return `/tin-tuc-chi-tiet?slug=${encodeURIComponent(slug)}`;
+}
+
+function renderAboutRelatedPosts(articles) {
+    const container = document.getElementById("relatedPosts");
+    if (!container) {
+        return;
+    }
+
+    const picked = [];
+    const seen = new Set();
+
+    ABOUT_RELATED_SLUGS.forEach(slug => {
+        const article = articles.find(item => item.slug === slug);
+        if (article && !seen.has(article.slug)) {
+            picked.push(article);
+            seen.add(article.slug);
+        }
+    });
+
+    articles.forEach(article => {
+        if (picked.length >= 3) {
+            return;
+        }
+        if (!seen.has(article.slug)) {
+            picked.push(article);
+            seen.add(article.slug);
+        }
+    });
+
+    const items = picked.map(article => `
+        <a class="side-link" href="${newsDetailUrl(article.slug)}">
+            <img src="${article.image || "https://res.cloudinary.com/ln22f4im/image/upload/v1783010457/kingnest/tin_tuc/ds_tintuc/tam_nhin.png"}" alt="${article.title}" loading="lazy" onerror="this.src='https://res.cloudinary.com/ln22f4im/image/upload/v1783010457/kingnest/tin_tuc/ds_tintuc/tam_nhin.png';">
+            <span>${article.title}</span>
+        </a>
+    `);
+
+    items.push(`
+        <a class="side-link" href="/san-pham">
+            <img src="https://res.cloudinary.com/ln22f4im/image/upload/v1783010172/kingnest/icon/icon_yen_chung.png" alt="Sản phẩm Kingnest">
+            <span>Khám phá bộ sưu tập yến sào cao cấp</span>
+        </a>
+    `);
+
+    container.innerHTML = items.join("");
+}
+
+async function loadAboutRelatedPosts() {
+    const container = document.getElementById("relatedPosts");
+    if (!container) {
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/news", { headers: { "Accept": "application/json" } });
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !Array.isArray(data.articles) || data.articles.length === 0) {
+            container.innerHTML = `<p class="related-empty">Chưa có bài viết gợi ý.</p>`;
+            return;
+        }
+
+        renderAboutRelatedPosts(data.articles);
+    } catch (error) {
+        container.innerHTML = `<p class="related-empty">Không tải được gợi ý. Hãy thử tải lại trang.</p>`;
+    }
+}
+
+window.addEventListener("DOMContentLoaded", loadAboutRelatedPosts);
+</script>
+
+</body>
+</html>

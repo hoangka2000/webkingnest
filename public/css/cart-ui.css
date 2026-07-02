@@ -1,0 +1,64 @@
+/* Header cart button badge */
+.cart-button {
+    position: relative;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cart-button-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: #fff;
+}
+
+.cart-button-icon svg {
+    display: block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #14532d;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 18px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.cart-badge[hidden] {
+    display: none !important;
+}
+
+/* Product card cart icon */
+.cart-circle {
+    line-height: 0;
+}
+
+.cart-circle svg {
+    display: block;
+    width: clamp(16px, 1.15vw, 20px);
+    height: clamp(16px, 1.15vw, 20px);
+}
+
+@media (min-width: 981px) {
+    .product-grid.view-list .cart-circle {
+        grid-column: 3;
+    }
+
+    .product-grid.view-list .cart-circle::before {
+        content: none !important;
+        display: none !important;
+    }
+}
