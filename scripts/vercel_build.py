@@ -13,7 +13,8 @@ def main() -> None:
         Path("app/main.py"),
         Path("templates/Trangchu.html"),
         Path("public/css/responsive.css"),
-        Path("requirements.txt"),
+        Path("cloudinary_manifest.json"),
+        Path("pyproject.toml"),
     ]
     missing = [str(path) for path in required if not path.exists()]
     if missing:
