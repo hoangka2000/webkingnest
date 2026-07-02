@@ -32,7 +32,7 @@ public class NewsArticleEntity {
 
     private String publishedYear = "2026";
 
-    @Column(columnDefinition = "CLOB", nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String contentHtml;
 
     private int sortOrder;

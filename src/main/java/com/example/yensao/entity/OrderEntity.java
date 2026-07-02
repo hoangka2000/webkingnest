@@ -37,7 +37,7 @@ public class OrderEntity {
     @Column(length = 1000)
     private String customerNote;
 
-    @Column(nullable = false, columnDefinition = "CLOB")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String itemsJson;
 
     private String coupon;

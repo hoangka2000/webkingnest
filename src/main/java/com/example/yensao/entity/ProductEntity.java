@@ -37,43 +37,43 @@ public class ProductEntity {
     @Column(nullable = false)
     private String image;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> gallery;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> benefits;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> usage;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringMapConverter.class)
     private Map<String, String> specs;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> description;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> highlights;
 
     private String productType;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> need;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverters.StringListConverter.class)
     private List<String> status;
 
     private String badge;
 
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "TEXT")
     private String contentHtml;
 
     public Long getId() {
