@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
@@ -32,6 +32,7 @@ from app.services import (
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = ROOT / "templates"
 PUBLIC_DIR = ROOT / "public"
+FAVICON_PATH = PUBLIC_DIR / "favicon.png"
 IS_VERCEL = os.getenv("VERCEL") == "1"
 API_CACHE = "public, s-maxage=120, stale-while-revalidate=600"
 
@@ -210,6 +211,18 @@ def api_create_order(payload: CreateOrderRequest):
             return order_response(order)
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"success": False, "message": str(exc)})
+
+
+def _favicon_response() -> Response:
+    if FAVICON_PATH.is_file():
+        return FileResponse(FAVICON_PATH, media_type="image/png")
+    return Response(status_code=404)
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.png", include_in_schema=False)
+def favicon() -> Response:
+    return _favicon_response()
 
 
 @app.get("/robots.txt", response_class=Response)

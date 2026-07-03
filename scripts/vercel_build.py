@@ -13,6 +13,7 @@ def main() -> None:
         Path("app/main.py"),
         Path("templates/Trangchu.html"),
         Path("public/css/responsive.css"),
+        Path("public/favicon.png"),
         Path("cloudinary_manifest.json"),
         Path("pyproject.toml"),
     ]
