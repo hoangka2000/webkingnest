@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     mail_notify_to: str = ""
     mail_from_name: str = "Kingnest Đơn Hàng"
     site_url: str = ""
+    google_site_verification: str = ""
 
     def resolved_database_url(self) -> str:
         for candidate in (self.database_url, self.db_url, os.getenv("DATABASE_URL", "")):

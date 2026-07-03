@@ -134,6 +134,9 @@ def site_base_url() -> str:
 
 
 def google_site_verification() -> str:
+    value = get_settings().google_site_verification.strip()
+    if value:
+        return value
     return os.getenv("GOOGLE_SITE_VERIFICATION", "").strip()
 
 
