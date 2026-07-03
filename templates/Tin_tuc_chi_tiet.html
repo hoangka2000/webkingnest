@@ -2,7 +2,7 @@
 <html lang="vi" >
 <head>
     <meta charset="UTF-8">
-    <title>Tin chi tiết - Yến Sào An Thịnh Nhân</title>
+    {% include "fragments/seo_meta.html" %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/responsive.css">
     <link rel="stylesheet" href="/css/mobile-theme.css">
@@ -786,8 +786,8 @@
 <main>
     <section class="detail-hero">
         <div class="detail-hero-inner">
-            <div class="detail-kicker" id="detailCategory">Kingnest News</div>
-            <h1 id="detailHeroTitle">Tin tức Kingnest</h1>
+            <div class="detail-kicker" id="detailCategory">{% if initial_article %}{{ initial_article.category }}{% else %}Kingnest News{% endif %}</div>
+            <h1 id="detailHeroTitle">{% if initial_article %}{{ initial_article.title }}{% else %}Tin tức Kingnest{% endif %}</h1>
 
             <div class="breadcrumb">
                 <a href="Trangchu.html">Trang chủ</a>
@@ -803,19 +803,22 @@
         <div class="article-wrap">
             <article class="article-card">
                 <div class="article-cover">
-                    <img id="articleCover" src="https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077837/bg-knowledge_sekf40.png" alt="Tin tức Kingnest">
+                    <img id="articleCover" src="{% if initial_article %}{{ initial_article.image }}{% else %}https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077837/bg-knowledge_sekf40.png{% endif %}" alt="{% if initial_article %}{{ initial_article.title }}{% else %}Tin tức Kingnest{% endif %}">
                 </div>
 
                 <div class="article-body">
                     <div class="article-meta">
                         <span>Yến Sào An Thịnh Nhân</span>
                         <span>•</span>
-                        <span id="articleCategory">Tin tức</span>
+                        <span id="articleCategory">{% if initial_article %}{{ initial_article.category }}{% else %}Tin tức{% endif %}</span>
                         <span>•</span>
-                        <span id="articleDate">2026</span>
+                        <span id="articleDate">{% if initial_article %}{{ initial_article.date }}{% else %}2026{% endif %}</span>
                     </div>
 
-                    <h2 id="articleTitle">Tin tức Kingnest</h2>
+                    <h2 id="articleTitle">{% if initial_article %}{{ initial_article.title }}{% else %}Tin tức Kingnest{% endif %}</h2>
+                    {% if initial_article and initial_article.desc %}
+                    <p id="articleExcerpt">{{ initial_article.desc }}</p>
+                    {% endif %}
 
                     <div id="articleContent"></div>
 

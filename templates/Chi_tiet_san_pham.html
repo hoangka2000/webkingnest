@@ -2,11 +2,11 @@
 <html lang="vi" >
 <head>
     <meta charset="UTF-8">
+    {% include "fragments/seo_meta.html" %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/responsive.css">
     <link rel="stylesheet" href="/css/mobile-theme.css">
     <link rel="stylesheet" href="/css/product-detail.css">
-    <title>Chi tiết sản phẩm - Yến Sào An Thịnh Nhân</title>
 </head>
 <body class="product-detail-page">
 {% include "fragments/header.html" %}
@@ -18,7 +18,7 @@
                 <div class="product-gallery">
                     <div class="gallery-main">
                         <button type="button" class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Ảnh trước">‹</button>
-                        <img id="mainImage" src="https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077780/trungbay_bge5ic.jpg" alt="">
+                        <img id="mainImage" src="{% if initial_product %}{{ initial_product.image }}{% else %}https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077780/trungbay_bge5ic.jpg{% endif %}" alt="{% if initial_product %}{{ initial_product.title }}{% else %}Sản phẩm yến sào Kingnest{% endif %}">
                         <button type="button" class="gallery-nav gallery-next" id="galleryNext" aria-label="Ảnh sau">›</button>
                     </div>
                     <div class="gallery-thumbs-wrap">
@@ -27,9 +27,12 @@
                 </div>
 
                 <div class="product-summary">
-                    <span class="product-category" id="productCategory"></span>
-                    <h2 id="productTitle">Đang tải...</h2>
-                    <div class="detail-price" id="productPrice"></div>
+                    <span class="product-category" id="productCategory">{% if initial_product %}{{ initial_product.category or 'Sản phẩm yến sào' }}{% endif %}</span>
+                    <h1 id="productTitle">{% if initial_product %}{{ initial_product.title }}{% else %}Đang tải...{% endif %}</h1>
+                    <div class="detail-price" id="productPrice">{% if initial_product %}{{ initial_product.price }} VNĐ{% endif %}</div>
+                    {% if initial_product and initial_product.desc %}
+                    <p class="product-seo-text" id="productSeoText">{{ initial_product.desc }}</p>
+                    {% endif %}
 
                     <div class="variant-picker" id="variantPicker" hidden>
                         <span class="variant-label" id="variantLabel">Quy cách</span>

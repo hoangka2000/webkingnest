@@ -2,13 +2,21 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import check_database_connection, get_db
 from app.schemas import CreateOrderRequest
+from app.seo import (
+    article_seo_context,
+    build_sitemap_xml,
+    json_ld_blocks_for_page,
+    product_seo_context,
+    robots_txt,
+    seo_context_for,
+)
 from app.services import (
     build_checkout,
     create_order,
@@ -54,9 +62,52 @@ if PUBLIC_DIR.exists() and not IS_VERCEL:
 
 
 def render_page(template_name: str, request: Request, active_nav: str) -> HTMLResponse:
+    slug = (request.query_params.get("slug") or "").strip()
+    product_id = (request.query_params.get("id") or "").strip()
+    initial_product = None
+    initial_article = None
+    product_slug = ""
+    article_slug = ""
+
+    with get_db() as db:
+        if template_name == "Chi_tiet_san_pham.html":
+            key = slug or product_id
+            if key:
+                entity = find_product(db, key)
+                if entity:
+                    initial_product = product_detail_map(entity)
+                    product_slug = entity.slug
+        elif template_name == "Tin_tuc_chi_tiet.html" and slug:
+            article = get_news_detail(db, slug)
+            if article:
+                initial_article = article
+                article_slug = slug
+
+    if initial_product and product_slug:
+        seo = product_seo_context(initial_product, product_slug)
+    elif initial_article and article_slug:
+        seo = article_seo_context(initial_article, article_slug)
+    else:
+        seo = seo_context_for(template_name)
+
+    json_ld_blocks = json_ld_blocks_for_page(
+        template_name,
+        product=initial_product,
+        product_slug=product_slug,
+        article=initial_article,
+        article_slug=article_slug,
+    )
+
     return templates.TemplateResponse(
         template_name,
-        {"request": request, "active_nav": active_nav},
+        {
+            "request": request,
+            "active_nav": active_nav,
+            "seo": seo,
+            "json_ld_blocks": json_ld_blocks,
+            "initial_product": initial_product,
+            "initial_article": initial_article,
+        },
     )
 
 
@@ -159,6 +210,18 @@ def api_create_order(payload: CreateOrderRequest):
             return order_response(order)
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"success": False, "message": str(exc)})
+
+
+@app.get("/robots.txt", response_class=Response)
+def robots() -> Response:
+    return Response(content=robots_txt(), media_type="text/plain; charset=utf-8")
+
+
+@app.get("/sitemap.xml", response_class=Response)
+def sitemap() -> Response:
+    with get_db() as db:
+        xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + build_sitemap_xml(db)
+    return Response(content=xml, media_type="application/xml; charset=utf-8")
 
 
 @app.get("/health")

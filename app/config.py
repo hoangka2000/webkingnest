@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     mail_password: str = ""
     mail_notify_to: str = ""
     mail_from_name: str = "Kingnest Đơn Hàng"
+    site_url: str = ""
 
     def resolved_database_url(self) -> str:
         for candidate in (self.database_url, self.db_url, os.getenv("DATABASE_URL", "")):
@@ -52,6 +53,13 @@ class Settings(BaseSettings):
         if app_url:
             return app_url.rstrip("/")
         return self.checkout_base_url.rstrip("/")
+
+    def resolved_site_url(self) -> str:
+        for candidate in (self.site_url, os.getenv("SITE_URL", "")):
+            value = candidate.strip()
+            if value:
+                return value.rstrip("/")
+        return self.resolved_checkout_base_url()
 
 
 @lru_cache
