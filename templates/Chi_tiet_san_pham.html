@@ -18,7 +18,7 @@
                 <div class="product-gallery">
                     <div class="gallery-main">
                         <button type="button" class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Ảnh trước">‹</button>
-                        <img id="mainImage" src="https://res.cloudinary.com/ln22f4im/image/upload/v1783077780/trungbay_bge5ic.jpg" alt="">
+                        <img id="mainImage" src="https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077780/trungbay_bge5ic.jpg" alt="">
                         <button type="button" class="gallery-nav gallery-next" id="galleryNext" aria-label="Ảnh sau">›</button>
                     </div>
                     <div class="gallery-thumbs-wrap">
@@ -208,7 +208,7 @@ function getCartProductPayload(product) {
         title: variantLabel ? `${product.title} (${variantLabel})` : product.title,
         desc: product.desc || product.shortDesc || "Sản phẩm yến sào cao cấp Kingnest.",
         price: price,
-        image: product.image || "https://res.cloudinary.com/ln22f4im/image/upload/v1783077777/trungbay_n9dca4.jpg"
+        image: product.image || "https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077777/trungbay_n9dca4.jpg"
     };
 }
 
@@ -263,7 +263,7 @@ function getProductIdOrSlug() {
 
 function setImage(src, alt) {
     const img = document.getElementById("mainImage");
-    img.src = src || "https://res.cloudinary.com/ln22f4im/image/upload/v1783077777/trungbay_n9dca4.jpg";
+    img.src = src || "https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077777/trungbay_n9dca4.jpg";
     img.alt = alt || "Sản phẩm yến sào";
 }
 
@@ -446,11 +446,11 @@ function renderRelatedProducts(product) {
     }
 
     container.innerHTML = related.map(p => {
-        const imageSrc = p.image || "https://res.cloudinary.com/ln22f4im/image/upload/v1783077777/trungbay_n9dca4.jpg";
+        const imageSrc = p.image || "https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077777/trungbay_n9dca4.jpg";
         return `
             <a class="related-card" href="/chi-tiet-san-pham?slug=${encodeURIComponent(p.slug || "")}">
                 <div class="related-card-img">
-                    <img src="${imageSrc}" alt="${p.title}" loading="lazy" onerror="this.src='https://res.cloudinary.com/ln22f4im/image/upload/v1783077777/trungbay_n9dca4.jpg';">
+                    <img src="${imageSrc}" alt="${p.title}" loading="lazy" onerror="this.src='https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077777/trungbay_n9dca4.jpg';">
                 </div>
                 <div class="related-card-body">
                     <strong class="related-card-title">${p.title}</strong>
