@@ -44,15 +44,18 @@ class Settings(BaseSettings):
         )
 
     def resolved_checkout_base_url(self) -> str:
-        vercel_url = os.getenv("VERCEL_URL", "").strip()
-        if vercel_url:
-            return f"https://{vercel_url}"
-        render_url = os.getenv("RENDER_EXTERNAL_URL", "").strip()
-        if render_url:
-            return render_url.rstrip("/")
         app_url = os.getenv("APP_CHECKOUT_BASE_URL", "").strip()
         if app_url:
             return app_url.rstrip("/")
+        site_url = self.site_url.strip() or os.getenv("SITE_URL", "").strip()
+        if site_url:
+            return site_url.rstrip("/")
+        render_url = os.getenv("RENDER_EXTERNAL_URL", "").strip()
+        if render_url:
+            return render_url.rstrip("/")
+        vercel_url = os.getenv("VERCEL_URL", "").strip()
+        if vercel_url:
+            return f"https://{vercel_url}"
         return self.checkout_base_url.rstrip("/")
 
     def resolved_site_url(self) -> str:
