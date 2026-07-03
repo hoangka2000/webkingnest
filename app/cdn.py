@@ -14,7 +14,7 @@ class CdnSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     cloudinary_cloud_name: str = "ln22f4im"
-    cloudinary_folder: str = "kingnest"
+    cloudinary_folder: str = "Kingnest"
     cdn_base_url: str = ""
 
 
@@ -35,7 +35,7 @@ def cloudinary_base_url() -> str:
     if settings.cdn_base_url.strip():
         return settings.cdn_base_url.rstrip("/")
     cloud = settings.cloudinary_cloud_name.strip() or "ln22f4im"
-    folder = settings.cloudinary_folder.strip() or "kingnest"
+    folder = settings.cloudinary_folder.strip() or "Kingnest"
     return f"https://res.cloudinary.com/{cloud}/image/upload/{folder}"
 
 

@@ -23,7 +23,7 @@
             title: product.title || product.name || "Sản phẩm",
             desc: product.desc || product.shortDesc || "Sản phẩm yến sào cao cấp Kingnest.",
             price: Number(product.price) || 0,
-            image: product.image || "https://res.cloudinary.com/ln22f4im/image/upload/v1783011290/kingnest/yentinh/tinhche1/trungbay.jpg"
+            image: product.image || "https://res.cloudinary.com/ln22f4im/image/upload/v1783077777/trungbay_n9dca4.jpg"
         };
     }
 
