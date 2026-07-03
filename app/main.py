@@ -1,30 +1,47 @@
 import os
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import check_database_connection, get_db
 from app.schemas import CreateOrderRequest
 from app.services import (
     build_checkout,
     create_order,
+    find_product,
     get_news_detail,
-    get_product_detail,
+    get_related_products,
     list_news,
     list_products,
     order_response,
+    product_detail_map,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = ROOT / "templates"
 PUBLIC_DIR = ROOT / "public"
 IS_VERCEL = os.getenv("VERCEL") == "1"
+API_CACHE = "public, s-maxage=120, stale-while-revalidate=600"
 
 app = FastAPI(title="Kingnest")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+
+@app.exception_handler(SQLAlchemyError)
+async def database_exception_handler(_request: Request, _exc: SQLAlchemyError) -> JSONResponse:
+    hint = (
+        "Kiểm tra biến DATABASE_URL trên Vercel (PostgreSQL cloud)."
+        if IS_VERCEL
+        else "Kiểm tra PostgreSQL local (docker start kingnest-postgres) và chạy uvicorn."
+    )
+    return JSONResponse(
+        status_code=503,
+        content={"success": False, "message": f"Không kết nối được database. {hint}"},
+    )
 
 # Vercel serves public/ via CDN; mount css/js locally. Images are on Cloudinary.
 if PUBLIC_DIR.exists() and not IS_VERCEL:
@@ -79,25 +96,32 @@ for route_path, (template_name, active_nav) in PAGE_ROUTES.items():
 
 
 @app.get("/api/products")
-def api_products():
+def api_products(response: Response):
+    response.headers["Cache-Control"] = API_CACHE
     with get_db() as db:
         return {"success": True, "products": list_products(db)}
 
 
 @app.get("/api/products/{id_or_slug}")
-def api_product_detail(id_or_slug: str):
+def api_product_detail(id_or_slug: str, response: Response):
+    response.headers["Cache-Control"] = API_CACHE
     with get_db() as db:
-        product = get_product_detail(db, id_or_slug)
-        if not product:
+        entity = find_product(db, id_or_slug)
+        if not entity:
             return JSONResponse(
                 status_code=404,
                 content={"success": False, "message": f"Không tìm thấy sản phẩm: {id_or_slug}"},
             )
-        return {"success": True, "product": product}
+        return {
+            "success": True,
+            "product": product_detail_map(entity),
+            "related": get_related_products(db, entity),
+        }
 
 
 @app.get("/api/news")
-def api_news():
+def api_news(response: Response):
+    response.headers["Cache-Control"] = API_CACHE
     with get_db() as db:
         return {"success": True, "articles": list_news(db)}
 

@@ -104,6 +104,19 @@ def get_product_detail(db: Session, id_or_slug: str) -> dict[str, Any] | None:
     return product_detail_map(product) if product else None
 
 
+def get_related_products(db: Session, product: Product, limit: int = 4) -> list[dict[str, Any]]:
+    current_type = normalize_product_type(product.product_type)
+    others = db.query(Product).filter(Product.id != product.id).all()
+    if not current_type:
+        return [product_listing_map(item) for item in others[:limit]]
+    same_type = [
+        item
+        for item in others
+        if normalize_product_type(item.product_type) == current_type
+    ]
+    return [product_listing_map(item) for item in same_type[:limit]]
+
+
 def news_image(slug: str, detail: bool = False) -> str:
     key = NEWS_IMAGE_KEYS.get(slug, slug)
     folder = "chi_tiet" if detail else "ds_tintuc"

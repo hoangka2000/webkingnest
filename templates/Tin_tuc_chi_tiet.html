@@ -925,7 +925,7 @@ function renderArticleError(slug, message) {
         <div class="quote-box">
             <strong>Chưa tải được nội dung bài viết.</strong>
         </div>
-        <p>${message || "Hãy kiểm tra lại kết nối database và chạy ứng dụng Spring Boot."}</p>
+        <p>${message || "Hãy kiểm tra lại kết nối database và backend FastAPI."}</p>
     `;
     renderRelatedPosts(slug);
 }
@@ -959,7 +959,7 @@ async function renderArticleFromDatabase() {
     } catch (error) {
         renderArticleError(
             slug,
-            "Không gọi được API /api/news-content. Hãy chạy ứng dụng bằng Spring Boot để backend đọc dữ liệu từ database."
+            "Không gọi được API /api/news-content. Kiểm tra backend FastAPI và DATABASE_URL."
         );
     }
 }

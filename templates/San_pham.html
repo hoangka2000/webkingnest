@@ -1624,7 +1624,8 @@
             products = data.products || [];
             renderProducts();
         } catch (error) {
-            productGrid.innerHTML = `<p>Không tải được sản phẩm từ database. Hãy chạy ứng dụng Spring Boot.</p>`;
+            const detail = error && error.message ? ` ${error.message}` : "";
+            productGrid.innerHTML = `<p>Không tải được sản phẩm từ database.${detail}</p>`;
             emptyState.classList.remove("show");
         }
     }

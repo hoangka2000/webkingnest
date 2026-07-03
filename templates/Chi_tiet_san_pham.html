@@ -532,26 +532,21 @@ async function loadProductPage() {
     const key = slug || id || "chan-yen-ria-sach";
 
     try {
-        const [listResponse, detailResponse] = await Promise.all([
-            fetch("/api/products", { headers: { "Accept": "application/json" } }),
-            fetch(`/api/products/${encodeURIComponent(key)}`, { headers: { "Accept": "application/json" } })
-        ]);
-
-        const listData = await listResponse.json();
+        const detailResponse = await fetch(
+            `/api/products/${encodeURIComponent(key)}`,
+            { headers: { "Accept": "application/json" } }
+        );
         const detailData = await detailResponse.json();
-
-        if (listResponse.ok && listData.success) {
-            products = listData.products || [];
-        }
 
         if (!detailResponse.ok || !detailData.success) {
             renderProductError(detailData.message || "Không tải được sản phẩm từ database.");
             return;
         }
 
+        products = detailData.related || [];
         renderProduct(detailData.product);
     } catch (error) {
-        renderProductError("Không gọi được API sản phẩm. Hãy chạy ứng dụng Spring Boot.");
+        renderProductError("Không gọi được API sản phẩm. Kiểm tra backend FastAPI và DATABASE_URL.");
     }
 }
 
