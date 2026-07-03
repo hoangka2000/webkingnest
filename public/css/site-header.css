@@ -103,17 +103,26 @@
     height: 100%;
     display: flex;
     align-items: center;
+    justify-content: center;
     text-decoration: none;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(13px, 1vw, 17px);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
     color: #f7ddb0;
     white-space: nowrap;
-    transition: 0.25s ease;
+    padding-inline: 2px;
+    transition: color 0.25s ease;
 }
 
 .main-nav > a:hover,
 .main-nav > a.active {
     color: #ffd36b;
+}
+
+.main-nav > a.active {
+    font-weight: 600;
 }
 
 .main-nav > a.active::after {
@@ -171,6 +180,18 @@
 
 .cart-button:hover {
     filter: brightness(1.05);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.search-button:hover {
+    filter: brightness(1.05);
+    transform: translateY(-2px) scale(1.04);
+}
+
+@media (min-width: 1181px) {
+    .main-nav {
+        gap: 28px;
+    }
 }
 
 @media (min-width: 1181px) {
@@ -179,17 +200,25 @@
     }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1400px) and (min-width: 1181px) {
     .main-nav {
-        gap: clamp(16px, 1.8vw, 28px);
+        gap: 24px;
     }
 
     .main-nav > a {
-        font-size: clamp(12px, 0.95vw, 15px);
+        font-size: 15px;
     }
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1280px) and (min-width: 1181px) {
+    .main-nav {
+        gap: 20px;
+    }
+
+    .main-nav > a {
+        font-size: 14px;
+    }
+
     .brand-text p {
         display: none;
     }

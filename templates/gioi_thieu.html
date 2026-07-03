@@ -27,213 +27,8 @@
             padding-bottom: clamp(86px, 7.5vw, 130px);
         }
 
-        /* ================= HEADER GIỮ NGUYÊN PHONG CÁCH TRANG CHỦ ================= */
+        /* Header: /css/site-header.css via responsive.css */
 
-        .main-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: clamp(72px, 5.6vw, 92px);
-            z-index: 9999;
-            background:
-                radial-gradient(circle at center, rgba(145, 18, 18, 0.35), transparent 45%),
-                linear-gradient(90deg, #4b0000 0%, #760707 45%, #4b0000 100%);
-            border-top: 2px solid #b88949;
-            border-bottom: 2px solid #b88949;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
-        }
-
-        .header-inner {
-            width: 92%;
-            height: 100%;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: clamp(14px, 1.8vw, 34px);
-        }
-
-        .header-brand {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            gap: clamp(12px, 1.3vw, 22px);
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-
-        .logo-box {
-            width: clamp(82px, 7.5vw, 125px);
-            height: clamp(54px, 5vw, 82px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            overflow: visible;
-        }
-
-        .logo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: transparent;
-            display: block;
-        }
-
-        .brand-divider {
-            width: 1px;
-            height: clamp(42px, 3.6vw, 58px);
-            background: rgba(240, 198, 112, 0.75);
-        }
-
-        .brand-text h1 {
-            margin: 0 0 4px;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(17px, 1.5vw, 25px);
-            font-weight: 500;
-            color: #f7ddb0;
-            white-space: nowrap;
-        }
-
-        .brand-text p {
-            margin: 0;
-            font-size: clamp(11px, 0.9vw, 15px);
-            color: #e8c99a;
-            white-space: nowrap;
-        }
-
-        .main-nav {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(18px, 1.9vw, 38px);
-            flex: 1;
-        }
-
-        .main-nav > a,
-        .nav-dropdown > a {
-            position: relative;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(13px, 1vw, 17px);
-            color: #f7ddb0;
-            white-space: nowrap;
-            line-height: 1;
-        }
-
-        .main-nav > a:hover,
-        .nav-dropdown > a:hover,
-        .main-nav > a.active {
-            color: #ffd36b;
-        }
-
-        .main-nav > a.active::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: 24%;
-            width: 100%;
-            height: 2px;
-            background: #d8a63a;
-            border-radius: 99px;
-        }
-
-        .nav-dropdown {
-            height: 100%;
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-dropdown span {
-            margin-left: 6px;
-            color: #d8a63a;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            min-width: 230px;
-            background: rgba(75, 0, 0, 0.96);
-            border: 1px solid rgba(216, 166, 58, 0.45);
-            border-radius: 8px;
-            padding: 10px 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: 0.25s ease;
-            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 12px 18px;
-            text-decoration: none;
-            color: #f7ddb0;
-            font-size: 15px;
-        }
-
-        .dropdown-menu a:hover {
-            background: rgba(216, 166, 58, 0.16);
-            color: #ffd36b;
-        }
-
-        .nav-dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: clamp(10px, 1vw, 16px);
-            flex-shrink: 0;
-        }
-
-        .search-button {
-            width: clamp(42px, 3.4vw, 56px);
-            height: clamp(42px, 3.4vw, 56px);
-            border: 1px solid rgba(232, 198, 126, 0.75);
-            border-radius: 8px;
-            background: rgba(70, 0, 0, 0.22);
-            color: #f7ddb0;
-            font-size: clamp(20px, 1.8vw, 30px);
-            cursor: pointer;
-            transition: 0.25s ease;
-        }
-
-        .cart-button {
-            position: relative;
-            height: clamp(42px, 3.4vw, 56px);
-            min-width: clamp(120px, 9.5vw, 150px);
-            padding: 0 clamp(18px, 1.6vw, 28px);
-            border: 1px solid rgba(232, 198, 126, 0.85);
-            border-radius: 8px;
-            background: linear-gradient(180deg, #f5d98b, #c99334);
-            color: #6b100f;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(14px, 1.1vw, 18px);
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            white-space: nowrap;
-            transition: 0.25s ease;
-        }
-
-        .search-button:hover,
-        .cart-button:hover,
         .about-btn:hover,
         .floating-action-btn:hover {
             transform: translateY(-2px) scale(1.04);
@@ -343,44 +138,6 @@
         }
 
         @media (max-width: 600px) {
-            .logo-box {
-                width: 56px;
-                height: 42px;
-            }
-
-            .brand-divider {
-                height: 38px;
-            }
-
-            .brand-text h1 {
-                font-size: 16px;
-                white-space: normal;
-            }
-
-            .brand-text p {
-                font-size: 11px;
-                white-space: normal;
-            }
-
-            .main-nav {
-                justify-content: flex-start;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                scrollbar-width: none;
-            }
-
-            .main-nav::-webkit-scrollbar {
-                display: none;
-            }
-
-            .dropdown-menu {
-                display: none;
-            }
-
-            
-
-            
-
             .about-btn {
                 min-width: 120px;
                 height: 34px;
@@ -957,12 +714,6 @@
     overflow: hidden;
 }
 
-@media (min-width: 1025px) and (max-width: 1440px) {
-    .header-inner { width: 94%; gap: clamp(10px, 1.15vw, 22px); }
-    .main-nav { gap: clamp(12px, 1.25vw, 24px); }
-    .main-nav > a, .nav-dropdown > a { font-size: clamp(12px, 0.92vw, 15px); }
-}
-
 @media (max-width: 1180px) {
     /* Header: xem mobile-header.css */
 
@@ -1002,10 +753,6 @@
 }
 
 @media (max-width: 1180px) {
-    .main-nav { justify-content: flex-start; gap: 20px; }
-    .brand-text h1 { white-space: normal; font-size: 18px; }
-    .brand-text p { white-space: normal; }
-
     .intro-hero {
         min-height: 320px;
         padding: 54px 16px;
