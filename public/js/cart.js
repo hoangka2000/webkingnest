@@ -19,6 +19,9 @@
     function normalizeProduct(product) {
         return {
             id: String(product.id),
+            productId: product.productId ? String(product.productId) : String(product.id).split("-")[0],
+            variantId: product.variantId || "",
+            variantLabel: product.variantLabel || "",
             slug: product.slug || "",
             title: product.title || product.name || "Sản phẩm",
             desc: product.desc || product.shortDesc || "Sản phẩm yến sào cao cấp Kingnest.",

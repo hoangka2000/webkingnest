@@ -235,6 +235,9 @@
                 paymentMethod,
                 items: cartApi.getCart().map((item) => ({
                     id: item.id,
+                    productId: item.productId || String(item.id).split("-")[0],
+                    variantId: item.variantId || "",
+                    variantLabel: item.variantLabel || "",
                     quantity: item.quantity
                 }))
             };

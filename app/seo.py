@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database import NewsArticle, Product
+from app.services import public_product_slug
 
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 SCHEMA_CONTEXT = "https://schema.org"
@@ -398,7 +399,7 @@ def build_sitemap_xml(db: Session) -> str:
         _add_url(urlset, f"{base}{path}", changefreq, priority)
 
     for product in db.query(Product).order_by(Product.id.asc()).all():
-        slug = quote(product.slug, safe="")
+        slug = quote(public_product_slug(product.slug), safe="")
         _add_url(
             urlset,
             f"{base}/chi-tiet-san-pham?slug={slug}",

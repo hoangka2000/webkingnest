@@ -21,6 +21,16 @@ COUPON_DISCOUNTS = {
     "FACEBOOK5": 0.05,
 }
 
+YEN_CHUNG_PACK_PRICES = {
+    "10hu": 350000,
+    "30hu": 900000,
+}
+
+THUNG_PACK_PRICES = {
+    "40hu": 1200000,
+    "60hu": 1700000,
+}
+
 NEWS_IMAGE_KEYS = {
     "cach-che-bien-yen-sao-dung-cach": "che_bien",
     "tam-nhin-thuong-hieu-yen-sao-an-thinh-nhan": "tam_nhin",
@@ -44,6 +54,57 @@ def normalize_product_type(product_type: str | None) -> str:
     return product_type
 
 
+def public_product_slug(slug: str | None) -> str:
+    if not slug:
+        return ""
+    if slug.startswith("yen-chung-"):
+        return slug.replace("-6-hu", "-hu", 1)
+    return slug
+
+
+def _variant_id_from_cart_id(cart_id: str) -> str:
+    if not cart_id:
+        return ""
+    prefix, separator, suffix = cart_id.partition("-")
+    if separator and prefix.isdigit():
+        return suffix
+    return ""
+
+
+def _product_key_from_order_item(item_id: str, product_id: str | None) -> str:
+    if product_id and product_id.strip():
+        return product_id.strip()
+    prefix, separator, _suffix = item_id.partition("-")
+    if separator and prefix.isdigit():
+        return prefix
+    return item_id
+
+
+def _variant_label(variant_id: str) -> str:
+    return {
+        "10hu": "10 hũ",
+        "30hu": "30 hũ",
+        "40hu": "40 hũ",
+        "60hu": "60 hũ",
+        "100g": "100g",
+        "50g": "50g",
+    }.get(variant_id, "")
+
+
+def _variant_price(product: Product, base_price: int, variant_id: str) -> int:
+    product_type = normalize_product_type(product.product_type)
+    if product_type == "yen-chung" and product.slug != "hop-qua-yen-chung-6-hu":
+        return YEN_CHUNG_PACK_PRICES.get(variant_id, base_price)
+    if product.slug == "thung-yen-gia-si":
+        return THUNG_PACK_PRICES.get(variant_id, base_price)
+    if product_type == "yen-tinh-che":
+        if variant_id == "50g":
+            return round(base_price * 0.5)
+        if variant_id == "100g":
+            return base_price
+    return base_price
+
+
 def _product_images(product: Product) -> tuple[str, list[str]]:
     gallery = parse_json_field(product.gallery, [])
     if not isinstance(gallery, list):
@@ -58,7 +119,7 @@ def product_listing_map(product: Product) -> dict[str, Any]:
     image, _ = _product_images(product)
     return {
         "id": product.id,
-        "slug": product.slug,
+        "slug": public_product_slug(product.slug),
         "title": product.title,
         "desc": product.short_desc,
         "price": product.price,
@@ -92,7 +153,17 @@ def product_detail_map(product: Product) -> dict[str, Any]:
 def find_product(db: Session, id_or_slug: str) -> Product | None:
     if id_or_slug.isdigit():
         return db.get(Product, int(id_or_slug))
-    return db.query(Product).filter(Product.slug == id_or_slug).first()
+    product = db.query(Product).filter(Product.slug == id_or_slug).first()
+    if product:
+        return product
+    return next(
+        (
+            item
+            for item in db.query(Product).all()
+            if public_product_slug(item.slug) == id_or_slug
+        ),
+        None,
+    )
 
 
 def list_products(db: Session) -> list[dict[str, Any]]:
@@ -295,17 +366,27 @@ def create_order(db: Session, request: CreateOrderRequest) -> Order:
     for item in request.items:
         if not item.id or item.quantity <= 0:
             continue
-        product = get_product_detail(db, item.id)
-        if not product:
-            raise ValueError(f"Sản phẩm không tồn tại: {item.id}")
-        price = int(product.get("price") or 0)
+        product_key = _product_key_from_order_item(item.id, item.product_id)
+        product_entity = find_product(db, product_key)
+        if not product_entity:
+            raise ValueError(f"Sản phẩm không tồn tại: {product_key}")
+        product = product_detail_map(product_entity)
+        variant_id = (item.variant_id or _variant_id_from_cart_id(item.id)).strip()
+        variant_label = (item.variant_label or _variant_label(variant_id)).strip()
+        base_price = int(product.get("price") or 0)
+        price = _variant_price(product_entity, base_price, variant_id)
         line_total = price * item.quantity
         subtotal += line_total
+        title = product["title"]
+        if variant_label:
+            title = f"{title} ({variant_label})"
         line_items.append(
             {
                 "id": product["id"],
                 "slug": product["slug"],
-                "title": product["title"],
+                "variantId": variant_id,
+                "variantLabel": variant_label,
+                "title": title,
                 "price": price,
                 "quantity": item.quantity,
                 "lineTotal": line_total,

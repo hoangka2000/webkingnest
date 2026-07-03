@@ -18,6 +18,9 @@ class CamelModel(BaseModel):
 
 class OrderItemRequest(CamelModel):
     id: str
+    product_id: str | None = None
+    variant_id: str | None = None
+    variant_label: str | None = None
     quantity: int = Field(gt=0)
 
 

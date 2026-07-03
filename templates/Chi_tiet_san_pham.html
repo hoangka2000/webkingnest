@@ -117,14 +117,27 @@ const THUNG_VARIANTS = [
     { id: "60hu", label: "60 hũ", price: 1700000 }
 ];
 
+const YEN_CHUNG_VARIANTS = [
+    { id: "10hu", label: "10 hũ", price: 350000 },
+    { id: "30hu", label: "30 hũ", price: 900000 }
+];
+
 function supportsWeightVariants(product) {
     const type = normalizeProductType(product.type);
     return type === "yen-tinh-che" || product.type === "yen-tho";
 }
 
+function supportsYenChungVariants(product) {
+    const type = normalizeProductType(product.type);
+    return type === "yen-chung" && product.slug !== "hop-qua-yen-chung-6-hu";
+}
+
 function getVariantConfig(product) {
     if (product.slug === "thung-yen-gia-si") {
         return { kind: "thung", label: "Quy cách", options: THUNG_VARIANTS };
+    }
+    if (supportsYenChungVariants(product)) {
+        return { kind: "yen-chung-pack", label: "Chọn gói mua", options: YEN_CHUNG_VARIANTS, keepDisplayPrice: true };
     }
     if (supportsWeightVariants(product)) {
         return { kind: "weight", label: "Khối lượng", options: WEIGHT_VARIANTS };
@@ -149,7 +162,8 @@ function getCurrentPrice() {
 function updateDisplayedPrice() {
     const priceEl = document.getElementById("productPrice");
     if (priceEl) {
-        priceEl.textContent = formatPrice(getCurrentPrice());
+        const displayPrice = variantConfig?.keepDisplayPrice ? basePrice : getCurrentPrice();
+        priceEl.textContent = formatPrice(displayPrice);
     }
 }
 
@@ -186,7 +200,10 @@ function renderVariantPicker(product) {
     }
 
     optionsEl.innerHTML = variantConfig.options.map(option => `
-        <button type="button" class="variant-option" data-variant-id="${option.id}">${option.label}</button>
+        <button type="button" class="variant-option" data-variant-id="${option.id}">
+            <span>${option.label}</span>
+            ${option.price ? `<small>${formatPrice(option.price)}</small>` : ""}
+        </button>
     `).join("");
 
     optionsEl.querySelectorAll(".variant-option").forEach(button => {
@@ -207,6 +224,9 @@ function getCartProductPayload(product) {
 
     return {
         id: cartId,
+        productId: String(product.id),
+        variantId: selectedVariant?.id || "",
+        variantLabel: variantLabel || "",
         slug: product.slug || "",
         title: variantLabel ? `${product.title} (${variantLabel})` : product.title,
         desc: product.desc || product.shortDesc || "Sản phẩm yến sào cao cấp Kingnest.",

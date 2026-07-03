@@ -77,7 +77,7 @@ def render_page(template_name: str, request: Request, active_nav: str) -> HTMLRe
                 entity = find_product(db, key)
                 if entity:
                     initial_product = product_detail_map(entity)
-                    product_slug = entity.slug
+                    product_slug = initial_product["slug"]
         elif template_name == "Tin_tuc_chi_tiet.html" and slug:
             article = get_news_detail(db, slug)
             if article:
