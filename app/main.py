@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import quote
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
@@ -27,6 +28,7 @@ from app.services import (
     list_products,
     order_response,
     product_detail_map,
+    public_product_slug,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -76,6 +78,12 @@ def render_page(template_name: str, request: Request, active_nav: str) -> HTMLRe
             if key:
                 entity = find_product(db, key)
                 if entity:
+                    canonical_slug = public_product_slug(entity.slug)
+                    if slug and slug != canonical_slug:
+                        return RedirectResponse(
+                            url=f"/chi-tiet-san-pham?slug={quote(canonical_slug, safe='')}",
+                            status_code=301,
+                        )
                     initial_product = product_detail_map(entity)
                     product_slug = initial_product["slug"]
         elif template_name == "Tin_tuc_chi_tiet.html" and slug:

@@ -62,6 +62,27 @@ def public_product_slug(slug: str | None) -> str:
     return slug
 
 
+def slug_lookup_candidates(slug: str) -> list[str]:
+    if not slug:
+        return []
+
+    candidates: list[str] = []
+    seen: set[str] = set()
+
+    def add(value: str) -> None:
+        if value and value not in seen:
+            seen.add(value)
+            candidates.append(value)
+
+    add(slug)
+    add(public_product_slug(slug))
+    if slug.startswith("yen-chung-") and "-6-hu" not in slug and "-hu" in slug:
+        add(slug.replace("-hu", "-6-hu", 1))
+    if "-6-hu" in slug:
+        add(slug.replace("-6-hu", "-hu", 1))
+    return candidates
+
+
 def _variant_id_from_cart_id(cart_id: str) -> str:
     if not cart_id:
         return ""
@@ -153,17 +174,11 @@ def product_detail_map(product: Product) -> dict[str, Any]:
 def find_product(db: Session, id_or_slug: str) -> Product | None:
     if id_or_slug.isdigit():
         return db.get(Product, int(id_or_slug))
-    product = db.query(Product).filter(Product.slug == id_or_slug).first()
-    if product:
-        return product
-    return next(
-        (
-            item
-            for item in db.query(Product).all()
-            if public_product_slug(item.slug) == id_or_slug
-        ),
-        None,
-    )
+    for candidate in slug_lookup_candidates(id_or_slug):
+        product = db.query(Product).filter(Product.slug == candidate).first()
+        if product:
+            return product
+    return None
 
 
 def list_products(db: Session) -> list[dict[str, Any]]:
