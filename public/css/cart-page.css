@@ -217,6 +217,47 @@
     flex-wrap: wrap;
 }
 
+.cart-step-totals {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.cart-step-totals-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.cart-step-totals-row strong {
+    font-weight: 700;
+    color: #111827;
+}
+
+.cart-step-totals-row.cart-step-coupon strong {
+    color: #dc2626;
+}
+
+.cart-step-grand-total {
+    margin-top: 8px;
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 18px;
+    font-weight: 800;
+    color: #064c3d;
+}
+
+.cart-step-grand-total strong {
+    font-size: 18px;
+    font-weight: 800;
+    color: #064c3d;
+}
+
 .cart-continue {
     color: #064c3d;
     text-decoration: none;

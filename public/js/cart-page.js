@@ -12,6 +12,12 @@
 
         const stepNodes = Array.from(document.querySelectorAll("[data-step-target]"));
         const cartItemsBox = document.getElementById("cartItemsBox");
+        const cartStepTotals = document.getElementById("cartStepTotals");
+        const cartStepSubtotal = document.getElementById("cartStepSubtotal");
+        const cartStepCouponRow = document.getElementById("cartStepCouponRow");
+        const cartStepCouponLabel = document.getElementById("cartStepCouponLabel");
+        const cartStepDiscount = document.getElementById("cartStepDiscount");
+        const cartStepGrandTotal = document.getElementById("cartStepGrandTotal");
         const cartEmptyBox = document.getElementById("cartEmptyBox");
         const checkoutSummaryBody = document.getElementById("checkoutSummaryBody");
         const checkoutTotals = document.getElementById("checkoutTotals");
@@ -173,6 +179,41 @@
             `).join("");
         }
 
+        function renderCartTotals() {
+            const items = cartApi.getCart();
+            if (!cartStepTotals) {
+                return;
+            }
+
+            if (items.length === 0) {
+                cartStepTotals.hidden = true;
+                return;
+            }
+
+            const subtotal = cartApi.getCartTotal();
+            const discount = checkoutMeta.discount || 0;
+            const coupon = checkoutMeta.coupon;
+            const hasCoupon = Boolean(coupon && coupon !== "No coupon applied" && discount > 0);
+            const total = Math.max(0, subtotal - discount);
+
+            cartStepTotals.hidden = false;
+            if (cartStepSubtotal) {
+                cartStepSubtotal.textContent = cartApi.formatPrice(subtotal);
+            }
+            if (cartStepCouponRow) {
+                cartStepCouponRow.hidden = !hasCoupon;
+            }
+            if (hasCoupon && cartStepCouponLabel) {
+                cartStepCouponLabel.textContent = `Mã giảm giá (${coupon})`;
+            }
+            if (cartStepDiscount) {
+                cartStepDiscount.textContent = `- ${cartApi.formatPrice(discount)}`;
+            }
+            if (cartStepGrandTotal) {
+                cartStepGrandTotal.textContent = cartApi.formatPrice(total);
+            }
+        }
+
         function renderSummary() {
             const items = cartApi.getCart();
             const subtotal = checkoutMeta.subtotal || cartApi.getCartTotal();
@@ -204,6 +245,7 @@
 
         function renderAll() {
             renderCartItems();
+            renderCartTotals();
             renderSummary();
         }
 

@@ -35,6 +35,24 @@
             <a href="/san-pham">Tiếp tục mua sắm</a>
         </div>
         <div id="cartItemsBox"></div>
+        <div class="cart-step-totals" id="cartStepTotals" hidden>
+            <div class="cart-step-totals-row">
+                <span>Thành tiền</span>
+                <strong id="cartStepSubtotal">0 đ</strong>
+            </div>
+            <div class="cart-step-totals-row cart-step-coupon" id="cartStepCouponRow" hidden>
+                <span id="cartStepCouponLabel">Mã giảm giá</span>
+                <strong id="cartStepDiscount">0 đ</strong>
+            </div>
+            <div class="cart-step-totals-row">
+                <span>Phí vận chuyển</span>
+                <strong class="shipping-free">0 đ</strong>
+            </div>
+            <div class="cart-step-totals-row cart-step-grand-total">
+                <span>Tổng tiền thanh toán</span>
+                <strong id="cartStepGrandTotal">0 đ</strong>
+            </div>
+        </div>
         <div class="cart-actions-row">
             <a class="cart-continue" href="/san-pham">← Tiếp tục mua sắm</a>
             <button class="cart-next-btn" type="button" id="goToCheckoutBtn">Tiếp tục đặt hàng</button>
