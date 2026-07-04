@@ -132,7 +132,26 @@ function supportsYenChungVariants(product) {
     return type === "yen-chung" && product.slug !== "hop-qua-yen-chung-6-hu";
 }
 
+let pendingCatalogId = "";
+
 function getVariantConfig(product) {
+    const purchaseOptions = Array.isArray(product.purchaseOptions)
+        ? product.purchaseOptions.filter((option) => option.variantId)
+        : [];
+    if (purchaseOptions.length > 0) {
+        const isYenChung = supportsYenChungVariants(product);
+        return {
+            kind: isYenChung ? "yen-chung-pack" : "catalog",
+            label: isYenChung ? "Chọn gói mua" : "Quy cách",
+            options: purchaseOptions.map((option) => ({
+                id: option.variantId,
+                label: option.label,
+                price: option.price,
+                catalogId: option.id
+            })),
+            keepDisplayPrice: isYenChung
+        };
+    }
     if (product.slug === "thung-yen-gia-si") {
         return { kind: "thung", label: "Quy cách", options: THUNG_VARIANTS };
     }
@@ -215,12 +234,29 @@ function renderVariantPicker(product) {
         : variantConfig.options[0];
     picker.removeAttribute("hidden");
     selectVariant(defaultVariant.id);
+
+    if (pendingCatalogId) {
+        const requestedVariant = variantConfig.options.find((option) => (
+            option.catalogId === pendingCatalogId
+            || `${product.id}-${option.id}` === pendingCatalogId
+        ));
+        if (requestedVariant) {
+            selectVariant(requestedVariant.id);
+        }
+    }
+}
+
+function getCatalogId(product, variant) {
+    if (supportsYenChungVariants(product) && variant?.id) {
+        return variant.catalogId || `${product.id}-${variant.id}`;
+    }
+    return String(product.catalogId || product.id);
 }
 
 function getCartProductPayload(product) {
     const variantLabel = selectedVariant?.label;
     const price = getCurrentPrice();
-    const cartId = variantLabel ? `${product.id}-${selectedVariant.id}` : String(product.id);
+    const cartId = getCatalogId(product, selectedVariant);
 
     return {
         id: cartId,
@@ -280,7 +316,8 @@ function getProductIdOrSlug() {
     const params = new URLSearchParams(window.location.search);
     return {
         id: params.get("id"),
-        slug: params.get("slug")
+        slug: params.get("slug"),
+        catalogId: params.get("catalog_id")
     };
 }
 
@@ -551,8 +588,9 @@ function renderProductError(message) {
 }
 
 async function loadProductPage() {
-    const { id, slug } = getProductIdOrSlug();
-    const key = slug || id || "chan-yen-ria-sach";
+    const { id, slug, catalogId } = getProductIdOrSlug();
+    pendingCatalogId = catalogId || id || "";
+    const key = slug || pendingCatalogId || "chan-yen-ria-sach";
 
     try {
         const detailResponse = await fetch(

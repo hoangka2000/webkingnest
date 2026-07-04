@@ -83,22 +83,63 @@ def slug_lookup_candidates(slug: str) -> list[str]:
     return candidates
 
 
-def _variant_id_from_cart_id(cart_id: str) -> str:
-    if not cart_id:
-        return ""
-    prefix, separator, suffix = cart_id.partition("-")
+def parse_facebook_catalog_id(catalog_id: str) -> tuple[str, str]:
+    value = (catalog_id or "").strip()
+    if not value:
+        return "", ""
+    if value.isdigit():
+        return value, ""
+    prefix, separator, suffix = value.partition("-")
     if separator and prefix.isdigit():
-        return suffix
-    return ""
+        return prefix, suffix
+    return value, ""
+
+
+def facebook_catalog_id(product_id: int | str, variant_id: str = "") -> str:
+    base = str(product_id)
+    variant = (variant_id or "").strip()
+    return f"{base}-{variant}" if variant else base
+
+
+def supports_yen_chung_packs(product: Product) -> bool:
+    product_type = normalize_product_type(product.product_type)
+    return product_type == "yen-chung" and product.slug != "hop-qua-yen-chung-6-hu"
+
+
+def facebook_purchase_options(product: Product) -> list[dict[str, Any]]:
+    base_price = int(product.price)
+    if supports_yen_chung_packs(product):
+        return [
+            {
+                "id": facebook_catalog_id(product.id, variant_id),
+                "variantId": variant_id,
+                "label": label,
+                "title": f"{product.title} ({label})",
+                "price": YEN_CHUNG_PACK_PRICES[variant_id],
+            }
+            for variant_id, label in (("10hu", "10 hũ"), ("30hu", "30 hũ"))
+        ]
+    return [
+        {
+            "id": facebook_catalog_id(product.id),
+            "variantId": "",
+            "label": "",
+            "title": product.title,
+            "price": base_price,
+        }
+    ]
+
+
+def _variant_id_from_cart_id(cart_id: str) -> str:
+    _product_key, variant_id = parse_facebook_catalog_id(cart_id)
+    return variant_id
 
 
 def _product_key_from_order_item(item_id: str, product_id: str | None) -> str:
     if product_id and product_id.strip():
         return product_id.strip()
-    prefix, separator, _suffix = item_id.partition("-")
-    if separator and prefix.isdigit():
-        return prefix
-    return item_id
+    product_key, _variant_id = parse_facebook_catalog_id(item_id)
+    return product_key or item_id
 
 
 def _variant_label(variant_id: str) -> str:
@@ -138,8 +179,10 @@ def _product_images(product: Product) -> tuple[str, list[str]]:
 
 def product_listing_map(product: Product) -> dict[str, Any]:
     image, _ = _product_images(product)
+    purchase_options = facebook_purchase_options(product)
     return {
         "id": product.id,
+        "catalogId": purchase_options[0]["id"],
         "slug": public_product_slug(product.slug),
         "title": product.title,
         "desc": product.short_desc,
@@ -149,6 +192,7 @@ def product_listing_map(product: Product) -> dict[str, Any]:
         "need": parse_json_field(product.need, []),
         "status": parse_json_field(product.status, []),
         "badge": product.badge,
+        "purchaseOptions": purchase_options,
     }
 
 
@@ -172,9 +216,11 @@ def product_detail_map(product: Product) -> dict[str, Any]:
 
 
 def find_product(db: Session, id_or_slug: str) -> Product | None:
-    if id_or_slug.isdigit():
-        return db.get(Product, int(id_or_slug))
-    for candidate in slug_lookup_candidates(id_or_slug):
+    product_key, _variant_id = parse_facebook_catalog_id(id_or_slug)
+    lookup = product_key or id_or_slug
+    if lookup.isdigit():
+        return db.get(Product, int(lookup))
+    for candidate in slug_lookup_candidates(lookup):
         product = db.query(Product).filter(Product.slug == candidate).first()
         if product:
             return product
@@ -291,18 +337,29 @@ def build_checkout(db: Session, products_param: str | None, coupon: str | None) 
     subtotal = 0
 
     for product_key, quantity in requested.items():
-        product = get_product_detail(db, product_key)
-        if not product:
+        product_entity = find_product(db, product_key)
+        if not product_entity:
             missing.append(product_key)
             continue
-        price = int(product.get("price") or 0)
+        product = product_detail_map(product_entity)
+        variant_id = _variant_id_from_cart_id(product_key)
+        base_price = int(product.get("price") or 0)
+        price = _variant_price(product_entity, base_price, variant_id)
+        variant_label = _variant_label(variant_id)
+        title = product["title"]
+        if variant_label:
+            title = f"{title} ({variant_label})"
         line_total = price * quantity
         subtotal += line_total
+        catalog_id = facebook_catalog_id(product["id"], variant_id)
         line_items.append(
             {
-                "id": product["id"],
+                "id": catalog_id,
+                "productId": str(product["id"]),
+                "variantId": variant_id,
+                "variantLabel": variant_label,
                 "slug": product["slug"],
-                "title": product["title"],
+                "title": title,
                 "desc": product.get("desc"),
                 "price": price,
                 "image": product.get("image"),
@@ -397,7 +454,8 @@ def create_order(db: Session, request: CreateOrderRequest) -> Order:
             title = f"{title} ({variant_label})"
         line_items.append(
             {
-                "id": product["id"],
+                "id": facebook_catalog_id(product["id"], variant_id),
+                "productId": str(product["id"]),
                 "slug": product["slug"],
                 "variantId": variant_id,
                 "variantLabel": variant_label,
