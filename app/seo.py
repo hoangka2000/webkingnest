@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote
 from xml.etree.ElementTree import Element, SubElement, tostring
@@ -15,6 +16,12 @@ SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 SCHEMA_CONTEXT = "https://schema.org"
 BRAND_NAME = "Kingnest - Yến Sào Khánh Hoà"
 BRAND_SHORT = "Kingnest"
+BRAND_DISPLAY = "Yến Sào Khánh Hoà"
+PRIMARY_KEYWORD = "yến sào khánh hoà"
+BRAND_TAGLINE = (
+    f"{BRAND_DISPLAY} chuyên yến chưng sẵn, yến tinh chế, yến thô và hộp quà cao cấp "
+    "tại Cam Ranh, Khánh Hòa. Giao hàng toàn quốc, tư vấn miễn phí."
+)
 PHONE = "+84564175414"
 EMAIL = "nguyendanghoang551@gmail.com"
 ADDRESS = {
@@ -28,85 +35,97 @@ OG_IMAGE = (
     "v1783077806/banner_chung_tmiyyw.png"
 )
 DEFAULT_KEYWORDS = (
-    "yến sào, yến chưng, yến sào Kingnest, yến sào Cam Ranh, yến sào Khánh Hòa, "
-    "Yến Sào Khánh Hoà, mua yến sào, yến chưng sẵn, yến tinh chế, hộp quà yến sào"
+    f"{PRIMARY_KEYWORD}, Yến Sào Khánh Hoà, yến sào Cam Ranh, yến chưng khánh hoà, "
+    "mua yến sào khánh hoà, yến sào chính hãng, yến chưng sẵn, yến tinh chế, "
+    "hộp quà yến sào, Kingnest"
 )
 
 PAGE_SEO: dict[str, dict[str, str]] = {
     "Trangchu.html": {
-        "title": "Yến Sào Khánh Hoà | Kingnest - Mua yến sào chính hãng Cam Ranh",
+        "title": f"Yến sào Khánh Hoà chính hãng | Kingnest - Mua yến chưng Cam Ranh",
         "description": (
-            "Kingnest - Yến Sào Khánh Hoà chuyên yến chưng sẵn, yến tinh chế, yến thô "
-            "và hộp quà cao cấp tại Cam Ranh, Khánh Hòa. Giao hàng toàn quốc, tư vấn miễn phí."
+            f"Mua {PRIMARY_KEYWORD} chính hãng tại Kingnest - {BRAND_DISPLAY}. "
+            f"{BRAND_TAGLINE}"
         ),
         "keywords": DEFAULT_KEYWORDS,
         "path": "/",
         "og_type": "website",
     },
     "San_pham.html": {
-        "title": "Sản phẩm yến sào Kingnest | Yến chưng, yến tinh, hộp quà tại Cam Ranh",
+        "title": f"Sản phẩm {PRIMARY_KEYWORD} | Yến chưng, yến tinh chế Kingnest Cam Ranh",
         "description": (
-            "Danh sách sản phẩm yến sào Kingnest: yến chưng sẵn, yến tinh chế, yến thô, "
-            "hộp quà cao cấp. Giá tốt, chất lượng, giao nhanh toàn quốc."
+            f"Danh sách sản phẩm {PRIMARY_KEYWORD} tại Kingnest: yến chưng sẵn, yến tinh chế, "
+            "yến thô, hộp quà cao cấp. Giá tốt, chất lượng, giao nhanh toàn quốc."
         ),
-        "keywords": "yến sào, sản phẩm yến sào, yến chưng Kingnest, yến tinh chế, hộp quà yến sào",
+        "keywords": (
+            f"{PRIMARY_KEYWORD}, sản phẩm yến sào khánh hoà, yến chưng Kingnest, "
+            "yến tinh chế Cam Ranh, hộp quà yến sào"
+        ),
         "path": "/san-pham",
         "og_type": "website",
     },
     "gioi_thieu.html": {
-        "title": "Giới thiệu Kingnest | Thương hiệu Yến Sào Khánh Hoà Cam Ranh",
+        "title": f"Giới thiệu {BRAND_DISPLAY} | Thương hiệu yến sào Kingnest Cam Ranh",
         "description": (
-            "Giới thiệu thương hiệu Yến Sào Khánh Hoà - Kingnest: uy tín yến sạch, "
-            "quy trình chọn lọc kỹ và cam kết chất lượng tại Khánh Hòa."
+            f"Tìm hiểu {BRAND_DISPLAY} - Kingnest, thương hiệu {PRIMARY_KEYWORD} uy tín "
+            "tại Cam Ranh, Khánh Hòa. Yến sạch, chọn lọc kỹ, cam kết chất lượng."
         ),
-        "keywords": "giới thiệu Kingnest, Yến Sào Khánh Hoà, thương hiệu yến sào Cam Ranh",
+        "keywords": (
+            f"giới thiệu {PRIMARY_KEYWORD}, {BRAND_DISPLAY}, thương hiệu yến sào Cam Ranh, Kingnest"
+        ),
         "path": "/gioi-thieu",
         "og_type": "website",
     },
     "Tin_tuc.html": {
-        "title": "Tin tức yến sào Kingnest | Kiến thức chọn yến, chế biến yến",
+        "title": f"Tin tức {PRIMARY_KEYWORD} | Kiến thức chọn yến Kingnest",
         "description": (
-            "Tin tức và kiến thức yến sào: cách chế biến, phân biệt yến thật giả, "
-            "lợi ích sức khỏe từ chuyên gia Kingnest."
+            f"Tin tức và kiến thức về {PRIMARY_KEYWORD}: cách chế biến, phân biệt yến thật giả, "
+            f"lợi ích sức khỏe từ {BRAND_DISPLAY} - Kingnest."
         ),
-        "keywords": "tin tức yến sào, kiến thức yến sào, cách chế biến yến sào, Kingnest",
+        "keywords": (
+            f"tin tức {PRIMARY_KEYWORD}, kiến thức yến sào, cách chế biến yến sào, Kingnest"
+        ),
         "path": "/tin-tuc",
         "og_type": "website",
     },
     "Tin_tuc_chi_tiet.html": {
-        "title": "Tin tức yến sào Kingnest | Yến Sào Khánh Hoà",
+        "title": f"Tin tức {PRIMARY_KEYWORD} | {BRAND_DISPLAY} Kingnest",
         "description": (
-            "Đọc bài viết về yến sào, sức khỏe và thương hiệu Kingnest - "
-            "Yến Sào Khánh Hoà tại Cam Ranh."
+            f"Đọc bài viết về {PRIMARY_KEYWORD}, sức khỏe và thương hiệu "
+            f"Kingnest - {BRAND_DISPLAY} tại Cam Ranh, Khánh Hòa."
         ),
-        "keywords": "tin tức yến sào, bài viết yến sào, Kingnest",
+        "keywords": f"tin tức {PRIMARY_KEYWORD}, bài viết yến sào, {BRAND_DISPLAY}, Kingnest",
         "path": "/tin-tuc",
         "og_type": "article",
     },
     "Chi_tiet_san_pham.html": {
-        "title": "Sản phẩm yến sào Kingnest | Mua online chính hãng",
+        "title": f"Mua {PRIMARY_KEYWORD} online | Sản phẩm yến sào Kingnest chính hãng",
         "description": (
-            "Chi tiết sản phẩm yến sào Kingnest: giá, thành phần, công dụng, "
+            f"Chi tiết sản phẩm {PRIMARY_KEYWORD} tại Kingnest: giá, thành phần, công dụng, "
             "hướng dẫn sử dụng và đặt hàng online giao toàn quốc."
         ),
-        "keywords": "mua yến sào, yến chưng, sản phẩm yến sào Kingnest",
+        "keywords": (
+            f"mua {PRIMARY_KEYWORD}, yến chưng khánh hoà, sản phẩm yến sào Kingnest, {BRAND_DISPLAY}"
+        ),
         "path": "/san-pham",
         "og_type": "product",
     },
     "Lien_he.html": {
-        "title": "Liên hệ Kingnest | Tư vấn mua yến sào Cam Ranh, Khánh Hòa",
+        "title": f"Liên hệ {PRIMARY_KEYWORD} | Kingnest Cam Ranh - Hotline 0564175414",
         "description": (
-            "Liên hệ Kingnest - Yến Sào Khánh Hoà: tư vấn sản phẩm, báo giá sỉ, "
-            "đặt hàng yến sào. Hotline 0564175414, Cam Ranh, Khánh Hòa."
+            f"Liên hệ mua {PRIMARY_KEYWORD} tại Kingnest - {BRAND_DISPLAY}. "
+            "Tư vấn sản phẩm, báo giá sỉ, đặt hàng yến sào. Hotline 0564175414, Cam Ranh, Khánh Hòa."
         ),
-        "keywords": "liên hệ Kingnest, tư vấn yến sào Cam Ranh, mua yến sào Khánh Hòa",
+        "keywords": (
+            f"liên hệ {PRIMARY_KEYWORD}, tư vấn yến sào Cam Ranh, mua yến sào khánh hoà, Kingnest"
+        ),
         "path": "/lien-he",
         "og_type": "website",
     },
     "Gio_hang.html": {
-        "title": "Giỏ hàng | Kingnest - Yến Sào Khánh Hoà",
-        "description": "Giỏ hàng đặt mua yến sào Kingnest online.",
-        "keywords": "giỏ hàng yến sào, đặt yến sào online",
+        "title": f"Giỏ hàng | Mua {PRIMARY_KEYWORD} online - Kingnest",
+        "description": f"Giỏ hàng đặt mua {PRIMARY_KEYWORD} Kingnest online, giao toàn quốc.",
+        "keywords": f"giỏ hàng yến sào, đặt {PRIMARY_KEYWORD} online, Kingnest",
         "path": "/gio-hang",
         "og_type": "website",
     },
@@ -162,7 +181,9 @@ def seo_context_for(template_name: str) -> dict[str, Any]:
         template_name,
         {
             "title": f"{BRAND_NAME}",
-            "description": "Yến sào cao cấp chính hãng Kingnest tại Cam Ranh, Khánh Hòa.",
+            "description": (
+                f"Mua {PRIMARY_KEYWORD} chính hãng tại Kingnest - {BRAND_DISPLAY}, Cam Ranh, Khánh Hòa."
+            ),
             "keywords": DEFAULT_KEYWORDS,
             "path": "/",
             "og_type": "website",
@@ -172,17 +193,22 @@ def seo_context_for(template_name: str) -> dict[str, Any]:
 
 
 def product_seo_context(product: dict[str, Any], slug: str) -> dict[str, Any]:
-    title = f"{product['title']} | Mua yến sào Kingnest chính hãng"
+    title = f"{product['title']} | {PRIMARY_KEYWORD} Kingnest chính hãng"
     desc = (product.get("desc") or product.get("title") or "").strip()
+    if PRIMARY_KEYWORD not in desc.lower():
+        desc = f"Mua {product['title']} - {PRIMARY_KEYWORD} Kingnest. {desc}"
     if len(desc) > 155:
         desc = desc[:152] + "..."
     if not desc:
-        desc = f"Mua {product['title']} - yến sào Kingnest chất lượng, giao toàn quốc."
+        desc = f"Mua {product['title']} - {PRIMARY_KEYWORD} chất lượng, giao toàn quốc."
     path = f"/chi-tiet-san-pham?slug={quote(slug, safe='')}"
     meta = {
         "title": title,
         "description": desc,
-        "keywords": f"{product['title']}, yến sào, mua yến sào, Kingnest, yến chưng",
+        "keywords": (
+            f"{product['title']}, {PRIMARY_KEYWORD}, {BRAND_DISPLAY}, "
+            "mua yến sào, Kingnest, yến chưng"
+        ),
         "path": path,
         "og_type": "product",
     }
@@ -193,15 +219,20 @@ def product_seo_context(product: dict[str, Any], slug: str) -> dict[str, Any]:
 
 
 def article_seo_context(article: dict[str, Any], slug: str) -> dict[str, Any]:
-    title = f"{article['title']} | Tin yến sào Kingnest"
+    title = f"{article['title']} | {PRIMARY_KEYWORD} Kingnest"
     desc = (article.get("desc") or article.get("title") or "").strip()
+    if PRIMARY_KEYWORD not in desc.lower():
+        desc = f"{desc} | {BRAND_DISPLAY} - Kingnest."
     if len(desc) > 155:
         desc = desc[:152] + "..."
     path = f"/tin-tuc-chi-tiet?slug={quote(slug, safe='')}"
     meta = {
         "title": title,
-        "description": desc or f"Bài viết về yến sào từ Kingnest - {article['title']}.",
-        "keywords": f"{article.get('category', 'tin tức')}, yến sào, Kingnest, kiến thức yến sào",
+        "description": desc or f"Bài viết về {PRIMARY_KEYWORD} từ Kingnest - {article['title']}.",
+        "keywords": (
+            f"{article.get('category', 'tin tức')}, {PRIMARY_KEYWORD}, "
+            f"{BRAND_DISPLAY}, Kingnest, kiến thức yến sào"
+        ),
         "path": path,
         "og_type": "article",
     }
@@ -216,12 +247,14 @@ def organization_schema(base: str) -> dict[str, Any]:
         "@context": SCHEMA_CONTEXT,
         "@type": "Organization",
         "name": BRAND_NAME,
-        "alternateName": BRAND_SHORT,
+        "alternateName": [BRAND_SHORT, BRAND_DISPLAY, PRIMARY_KEYWORD],
+        "description": BRAND_TAGLINE,
         "url": base,
         "logo": OG_IMAGE,
         "image": OG_IMAGE,
         "email": EMAIL,
         "telephone": PHONE,
+        "keywords": PRIMARY_KEYWORD,
         "address": {
             "@type": "PostalAddress",
             **ADDRESS,
@@ -237,6 +270,10 @@ def website_schema(base: str) -> dict[str, Any]:
         "@context": SCHEMA_CONTEXT,
         "@type": "WebSite",
         "name": BRAND_NAME,
+        "alternateName": [BRAND_DISPLAY, PRIMARY_KEYWORD],
+        "description": (
+            f"Website chính thức mua {PRIMARY_KEYWORD} - Kingnest tại Cam Ranh, Khánh Hòa."
+        ),
         "url": base,
         "inLanguage": "vi-VN",
         "potentialAction": {
@@ -252,6 +289,11 @@ def local_business_schema(base: str) -> dict[str, Any]:
         "@context": SCHEMA_CONTEXT,
         "@type": "Store",
         "name": BRAND_NAME,
+        "alternateName": [BRAND_DISPLAY, PRIMARY_KEYWORD],
+        "description": (
+            f"Cửa hàng {PRIMARY_KEYWORD} Kingnest tại Cam Ranh, Khánh Hòa. "
+            "Yến chưng sẵn, yến tinh chế, hộp quà cao cấp."
+        ),
         "image": OG_IMAGE,
         "url": base,
         "telephone": PHONE,
@@ -302,7 +344,7 @@ def product_schema(product: dict[str, Any], slug: str, base: str) -> dict[str, A
         "description": product.get("desc") or product["title"],
         "image": product.get("image") or OG_IMAGE,
         "sku": str(product.get("id", slug)),
-        "brand": {"@type": "Brand", "name": BRAND_SHORT},
+        "brand": {"@type": "Brand", "name": BRAND_DISPLAY},
         "offers": {
             "@type": "Offer",
             "url": f"{base}/chi-tiet-san-pham?slug={quote(slug, safe='')}",
@@ -384,9 +426,14 @@ def robots_txt() -> str:
     )
 
 
+def _sitemap_lastmod() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
 def _add_url(urlset: Element, loc: str, changefreq: str, priority: str) -> None:
     url = SubElement(urlset, "url")
     SubElement(url, "loc").text = loc
+    SubElement(url, "lastmod").text = _sitemap_lastmod()
     SubElement(url, "changefreq").text = changefreq
     SubElement(url, "priority").text = priority
 
