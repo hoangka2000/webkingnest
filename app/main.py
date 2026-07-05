@@ -20,6 +20,7 @@ from app.seo import (
 )
 from app.services import (
     build_checkout,
+    canonical_article_slug,
     create_order,
     find_product,
     get_news_detail,
@@ -87,6 +88,12 @@ def render_page(template_name: str, request: Request, active_nav: str) -> HTMLRe
                     initial_product = product_detail_map(entity)
                     product_slug = initial_product["slug"]
         elif template_name == "Tin_tuc_chi_tiet.html" and slug:
+            canonical_slug = canonical_article_slug(slug)
+            if slug != canonical_slug:
+                return RedirectResponse(
+                    url=f"/tin-tuc-chi-tiet?slug={quote(canonical_slug, safe='')}",
+                    status_code=301,
+                )
             article = get_news_detail(db, slug)
             if article:
                 initial_article = article

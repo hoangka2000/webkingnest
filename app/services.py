@@ -31,13 +31,21 @@ THUNG_PACK_PRICES = {
     "60hu": 1700000,
 }
 
+ARTICLE_SLUG_REDIRECTS: dict[str, str] = {
+    "tam-nhin-thuong-hieu-yen-sao-an-thinh-nhan": "tam-nhin-thuong-hieu-yen-sao-khanh-hoa",
+    "y-nghia-thuong-hieu-kingnest-an-thinh-nhan": "y-nghia-thuong-hieu-kingnest-khanh-hoa",
+    "su-menh-cua-yen-sao-an-thinh-nhan": "su-menh-cua-yen-sao-khanh-hoa",
+    "vi-sao-nen-lua-chon-yen-sao-kingnest-an-thinh-nhan": "vi-sao-nen-lua-chon-yen-sao-kingnest-khanh-hoa",
+    "thong-diep-thuong-hieu-yen-sao-an-thinh-nhan": "thong-diep-thuong-hieu-yen-sao-khanh-hoa",
+}
+
 NEWS_IMAGE_KEYS = {
     "cach-che-bien-yen-sao-dung-cach": "che_bien",
-    "tam-nhin-thuong-hieu-yen-sao-an-thinh-nhan": "tam_nhin",
-    "y-nghia-thuong-hieu-kingnest-an-thinh-nhan": "y_nghia",
-    "su-menh-cua-yen-sao-an-thinh-nhan": "su_menh",
-    "vi-sao-nen-lua-chon-yen-sao-kingnest-an-thinh-nhan": "chon_Kingnest",
-    "thong-diep-thuong-hieu-yen-sao-an-thinh-nhan": "thong_diep",
+    "tam-nhin-thuong-hieu-yen-sao-khanh-hoa": "tam_nhin",
+    "y-nghia-thuong-hieu-kingnest-khanh-hoa": "y_nghia",
+    "su-menh-cua-yen-sao-khanh-hoa": "su_menh",
+    "vi-sao-nen-lua-chon-yen-sao-kingnest-khanh-hoa": "chon_Kingnest",
+    "thong-diep-thuong-hieu-yen-sao-khanh-hoa": "thong_diep",
     "tac-dung-lam-dep-da-tu-yen-sao": "lam_dep",
     "cach-bao-quan-yen-sao-sau-khi-chung": "bao_quan",
     "loi-ich-cua-yen-cho-tre-nho": "tre_em",
@@ -249,6 +257,10 @@ def get_related_products(db: Session, product: Product, limit: int = 4) -> list[
     return [product_listing_map(item) for item in same_type[:limit]]
 
 
+def canonical_article_slug(slug: str) -> str:
+    return ARTICLE_SLUG_REDIRECTS.get(slug, slug)
+
+
 def news_image(slug: str, detail: bool = False) -> str:
     key = NEWS_IMAGE_KEYS.get(slug, slug)
     folder = "chi_tiet" if detail else "ds_tintuc"
@@ -284,6 +296,7 @@ def list_news(db: Session) -> list[dict[str, Any]]:
 
 
 def get_news_detail(db: Session, slug: str) -> dict[str, Any] | None:
+    slug = canonical_article_slug(slug)
     article = db.query(NewsArticle).filter(NewsArticle.slug == slug).first()
     return news_detail(article) if article else None
 
