@@ -30,7 +30,7 @@ DEFAULT_DELIVERY = "Default"
 COUNTRY_OF_ORIGIN = "Vietnam"
 TIKTOK_NAME_MIN = 25
 TIKTOK_NAME_MAX = 255
-NAME_SUFFIX = " | Kingnest Yến sào Khánh Hoà"
+NAME_SUFFIX = " | Kingnest Yến Sào Khánh Hoà"
 DATA_START_ROW = 6
 
 IMAGE_FIELDS = [
@@ -97,7 +97,7 @@ def tiktok_product_name(title: str) -> str:
     if len(name) < TIKTOK_NAME_MIN:
         name = f"{name}{NAME_SUFFIX}"
     if len(name) < TIKTOK_NAME_MIN:
-        name = f"{name} | Yến sào Khánh Hoà Nguyên Chất Chính Hãng"
+        name = f"{name} | Yến Sào Khánh Hoà Nguyên Chất Chính Hãng"
     return name[:TIKTOK_NAME_MAX]
 
 

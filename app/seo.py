@@ -13,7 +13,7 @@ from app.services import public_product_slug
 
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 SCHEMA_CONTEXT = "https://schema.org"
-BRAND_NAME = "Kingnest - Yến sào Khánh Hoà"
+BRAND_NAME = "Kingnest - Yến Sào Khánh Hoà"
 BRAND_SHORT = "Kingnest"
 PHONE = "+84564175414"
 EMAIL = "nguyendanghoang551@gmail.com"
@@ -29,14 +29,14 @@ OG_IMAGE = (
 )
 DEFAULT_KEYWORDS = (
     "yến sào, yến chưng, yến sào Kingnest, yến sào Cam Ranh, yến sào Khánh Hòa, "
-    "yến sào Khánh Hoà, mua yến sào, yến chưng sẵn, yến tinh chế, hộp quà yến sào"
+    "Yến Sào Khánh Hoà, mua yến sào, yến chưng sẵn, yến tinh chế, hộp quà yến sào"
 )
 
 PAGE_SEO: dict[str, dict[str, str]] = {
     "Trangchu.html": {
-        "title": "Yến sào Khánh Hoà | Kingnest - Mua yến sào chính hãng Cam Ranh",
+        "title": "Yến Sào Khánh Hoà | Kingnest - Mua yến sào chính hãng Cam Ranh",
         "description": (
-            "Kingnest - Yến sào Khánh Hoà chuyên yến chưng sẵn, yến tinh chế, yến thô "
+            "Kingnest - Yến Sào Khánh Hoà chuyên yến chưng sẵn, yến tinh chế, yến thô "
             "và hộp quà cao cấp tại Cam Ranh, Khánh Hòa. Giao hàng toàn quốc, tư vấn miễn phí."
         ),
         "keywords": DEFAULT_KEYWORDS,
@@ -54,12 +54,12 @@ PAGE_SEO: dict[str, dict[str, str]] = {
         "og_type": "website",
     },
     "gioi_thieu.html": {
-        "title": "Giới thiệu Kingnest | Thương hiệu yến sào Khánh Hoà Cam Ranh",
+        "title": "Giới thiệu Kingnest | Thương hiệu Yến Sào Khánh Hoà Cam Ranh",
         "description": (
-            "Giới thiệu thương hiệu Yến sào Khánh Hoà - Kingnest: uy tín yến sạch, "
+            "Giới thiệu thương hiệu Yến Sào Khánh Hoà - Kingnest: uy tín yến sạch, "
             "quy trình chọn lọc kỹ và cam kết chất lượng tại Khánh Hòa."
         ),
-        "keywords": "giới thiệu Kingnest, yến sào Khánh Hoà, thương hiệu yến sào Cam Ranh",
+        "keywords": "giới thiệu Kingnest, Yến Sào Khánh Hoà, thương hiệu yến sào Cam Ranh",
         "path": "/gioi-thieu",
         "og_type": "website",
     },
@@ -74,10 +74,10 @@ PAGE_SEO: dict[str, dict[str, str]] = {
         "og_type": "website",
     },
     "Tin_tuc_chi_tiet.html": {
-        "title": "Tin tức yến sào Kingnest | Yến sào Khánh Hoà",
+        "title": "Tin tức yến sào Kingnest | Yến Sào Khánh Hoà",
         "description": (
             "Đọc bài viết về yến sào, sức khỏe và thương hiệu Kingnest - "
-            "Yến sào Khánh Hoà tại Cam Ranh."
+            "Yến Sào Khánh Hoà tại Cam Ranh."
         ),
         "keywords": "tin tức yến sào, bài viết yến sào, Kingnest",
         "path": "/tin-tuc",
@@ -96,7 +96,7 @@ PAGE_SEO: dict[str, dict[str, str]] = {
     "Lien_he.html": {
         "title": "Liên hệ Kingnest | Tư vấn mua yến sào Cam Ranh, Khánh Hòa",
         "description": (
-            "Liên hệ Kingnest - Yến sào Khánh Hoà: tư vấn sản phẩm, báo giá sỉ, "
+            "Liên hệ Kingnest - Yến Sào Khánh Hoà: tư vấn sản phẩm, báo giá sỉ, "
             "đặt hàng yến sào. Hotline 0564175414, Cam Ranh, Khánh Hòa."
         ),
         "keywords": "liên hệ Kingnest, tư vấn yến sào Cam Ranh, mua yến sào Khánh Hòa",
@@ -104,7 +104,7 @@ PAGE_SEO: dict[str, dict[str, str]] = {
         "og_type": "website",
     },
     "Gio_hang.html": {
-        "title": "Giỏ hàng | Kingnest - Yến sào Khánh Hoà",
+        "title": "Giỏ hàng | Kingnest - Yến Sào Khánh Hoà",
         "description": "Giỏ hàng đặt mua yến sào Kingnest online.",
         "keywords": "giỏ hàng yến sào, đặt yến sào online",
         "path": "/gio-hang",

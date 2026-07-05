@@ -524,7 +524,7 @@ function renderRelatedProducts(product) {
 function renderProduct(product) {
     currentProduct = product;
     setPurchaseQuantity(1);
-    document.title = `${product.title} - Yến sào Khánh Hoà`;
+    document.title = `${product.title} - Yến Sào Khánh Hoà`;
     document.getElementById("productTitle").textContent = product.title;
     basePrice = Number(product.price) || 0;
     document.getElementById("productPrice").textContent = formatPrice(basePrice);

@@ -16,7 +16,7 @@ from app.config import get_settings
 from app.database import Product, get_db
 from app.services import facebook_purchase_options, normalize_product_type, public_product_slug
 
-BRAND = "Kingnest - Yến sào Khánh Hoà"
+BRAND = "Kingnest - Yến Sào Khánh Hoà"
 DEFAULT_INVENTORY = 100
 
 FACEBOOK_COLUMNS = [
