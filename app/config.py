@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     mail_username: str = ""
     mail_password: str = ""
-    mail_notify_to: str = ""
+    mail_notify_to: str = "Kingnestyensaokhanhoa@gmail.com"
     mail_from_name: str = "Kingnest Đơn Hàng"
     site_url: str = ""
     google_site_verification: str = ""

@@ -22,8 +22,8 @@ BRAND_TAGLINE = (
     f"{BRAND_DISPLAY} chuyên yến chưng sẵn, yến tinh chế, yến thô và hộp quà cao cấp "
     "tại Cam Ranh, Khánh Hòa. Giao hàng toàn quốc, tư vấn miễn phí."
 )
-PHONE = "+84564175414"
-EMAIL = "nguyendanghoang551@gmail.com"
+PHONE = "+84708977199"
+EMAIL = "kingnestyensaokhanhhoa@gmail.com"
 ADDRESS = {
     "streetAddress": "65 Lê Trọng Tấn, Phường Bắc Cam Ranh",
     "addressLocality": "Cam Ranh",
@@ -260,7 +260,8 @@ def organization_schema(base: str) -> dict[str, Any]:
             **ADDRESS,
         },
         "sameAs": [
-            "https://www.facebook.com/share/194mLCUAQU/?mibextid=wwXIfr",
+            "https://www.facebook.com/Kingnesyensaokhanhhoa",
+            "https://m.me/Kingnesyensaokhanhhoa",
         ],
     }
 

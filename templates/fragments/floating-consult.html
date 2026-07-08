@@ -1,4 +1,30 @@
-<div class="floating-consult" id="floatingConsult">
+<div class="floating-consult-wrap" id="floatingConsult">
+    <div class="floating-contact-stack" aria-label="Liên hệ nhanh">
+        <a class="floating-contact-link is-zalo" href="https://zalo.me/0708977199" rel="noopener" target="_blank" aria-label="Liên hệ Zalo">
+            <span class="floating-contact-ring"></span>
+            <span class="floating-contact-btn">
+                <span class="floating-contact-text">Zalo</span>
+            </span>
+        </a>
+        <a class="floating-contact-link is-messenger" href="https://m.me/Kingnesyensaokhanhhoa" rel="noopener" target="_blank" aria-label="Liên hệ Messenger">
+            <span class="floating-contact-ring"></span>
+            <span class="floating-contact-btn">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="floating-contact-svg">
+                    <path d="M12 2C6.48 2 2 6.15 2 11.27c0 2.91 1.45 5.5 3.72 7.19V22l3.28-1.8c.96.27 1.98.41 3 .41 5.52 0 10-4.15 10-9.27S17.52 2 12 2zm1.11 12.48-2.55-2.72-4.97 2.72 5.47-5.81 2.61 2.72 4.9-2.72-5.46 5.81z"/>
+                </svg>
+            </span>
+        </a>
+        <a class="floating-contact-link is-facebook" href="https://www.facebook.com/Kingnesyensaokhanhhoa" rel="noopener" target="_blank" aria-label="Xem fanpage Facebook">
+            <span class="floating-contact-ring"></span>
+            <span class="floating-contact-btn">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="floating-contact-svg">
+                    <path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.6-1.6H16.7V4.8c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4V11H8v3h2.5v8h3z"/>
+                </svg>
+            </span>
+        </a>
+    </div>
+
+    <div class="floating-consult">
         <button aria-label="Tắt bong bóng tư vấn" class="floating-close" onclick="toggleFloatingConsult(false)" type="button">×</button>
         <div class="floating-consult-left">
             <div class="floating-crown">
@@ -8,11 +34,12 @@
         </div>
         <div class="floating-divider"></div>
         <div class="floating-consult-actions">
-            <a class="floating-action-btn floating-chat" href="https://www.facebook.com/share/194mLCUAQU/?mibextid=wwXIfr" rel="noopener" target="_blank">
+            <a class="floating-action-btn floating-chat" href="https://m.me/Kingnesyensaokhanhhoa" rel="noopener" target="_blank">
                 <span class="floating-icon">☏</span>
                 <span>Nhắn tin tư vấn ngay</span>
             </a>
         </div>
     </div>
-    <button aria-label="Mở bong bóng tư vấn" class="floating-open" id="floatingOpen" onclick="toggleFloatingConsult(true)" type="button">💬</button>
-    <script src="/js/floating-consult.js" defer></script>
+</div>
+<button aria-label="Mở bong bóng tư vấn" class="floating-open" id="floatingOpen" onclick="toggleFloatingConsult(true)" type="button">💬</button>
+<script src="/js/floating-consult.js" defer></script>
