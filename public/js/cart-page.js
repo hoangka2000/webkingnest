@@ -38,6 +38,37 @@
             return new URLSearchParams(window.location.search);
         }
 
+        function readInitialCheckoutData() {
+            const node = document.getElementById("initialCheckoutData");
+            if (!node) {
+                return null;
+            }
+            try {
+                return JSON.parse(node.textContent || "null");
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function applyCheckoutData(data) {
+            if (!data || !data.success || !Array.isArray(data.products) || data.products.length === 0) {
+                return false;
+            }
+
+            cartApi.replaceCart(data.products);
+            checkoutMeta = {
+                coupon: data.coupon || "",
+                discount: Number(data.discount) || 0,
+                subtotal: Number(data.subtotal) || cartApi.getCartTotal(),
+                total: Number(data.total) || cartApi.getCartTotal()
+            };
+            return true;
+        }
+
+        function hydrateCheckoutFromServer() {
+            return applyCheckoutData(readInitialCheckoutData());
+        }
+
         async function loadCheckoutFromUrl() {
             const params = getUrlParams();
             const productsParam = params.get("products");
@@ -60,22 +91,22 @@
                     return false;
                 }
 
-                cartApi.replaceCart(data.products);
-                checkoutMeta = {
-                    coupon: data.coupon || "",
-                    discount: Number(data.discount) || 0,
-                    subtotal: Number(data.subtotal) || cartApi.getCartTotal(),
-                    total: Number(data.total) || cartApi.getCartTotal()
-                };
-                return true;
+                return applyCheckoutData(data);
             } catch (error) {
                 return false;
             }
         }
 
         function getStepFromUrl() {
-            const step = Number(new URLSearchParams(window.location.search).get("step"));
-            return [1, 2, 3].includes(step) ? step : 1;
+            const params = getUrlParams();
+            const step = Number(params.get("step"));
+            if ([1, 2, 3].includes(step)) {
+                return step;
+            }
+            if (params.get("products")) {
+                return 2;
+            }
+            return 1;
         }
 
         function updateStepIndicator(step) {
@@ -407,6 +438,18 @@
         });
 
         renderAll();
+
+        const hydratedFromServer = hydrateCheckoutFromServer();
+        if (hydratedFromServer) {
+            renderAll();
+            const initialStep = getStepFromUrl();
+            if (initialStep === 3 && validateCustomerForm()) {
+                setStep(3);
+            } else {
+                setStep(initialStep >= 2 ? 2 : 1);
+            }
+            return;
+        }
 
         loadCheckoutFromUrl().finally(() => {
             renderAll();

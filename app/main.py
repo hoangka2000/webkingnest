@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 from urllib.parse import quote
@@ -23,6 +24,7 @@ from app.services import (
     canonical_article_slug,
     create_order,
     find_product,
+    format_vnd,
     get_news_detail,
     get_related_products,
     list_news,
@@ -41,6 +43,7 @@ API_CACHE = "public, s-maxage=120, stale-while-revalidate=600"
 
 app = FastAPI(title="Kingnest")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+templates.env.filters["format_vnd"] = format_vnd
 
 
 @app.exception_handler(SQLAlchemyError)
@@ -70,6 +73,9 @@ def render_page(template_name: str, request: Request, active_nav: str) -> HTMLRe
     product_id = (request.query_params.get("id") or "").strip()
     initial_product = None
     initial_article = None
+    initial_checkout = None
+    initial_checkout_json = ""
+    checkout_step = 1
     product_slug = ""
     article_slug = ""
 
@@ -98,6 +104,17 @@ def render_page(template_name: str, request: Request, active_nav: str) -> HTMLRe
             if article:
                 initial_article = article
                 article_slug = slug
+        elif template_name == "Gio_hang.html":
+            products_param = (request.query_params.get("products") or "").strip()
+            if products_param:
+                coupon = (request.query_params.get("coupon") or "").strip() or None
+                initial_checkout = build_checkout(db, products_param, coupon)
+                initial_checkout_json = json.dumps(initial_checkout, ensure_ascii=False)
+                step_raw = (request.query_params.get("step") or "").strip()
+                if step_raw.isdigit() and int(step_raw) in {1, 2, 3}:
+                    checkout_step = int(step_raw)
+                elif initial_checkout.get("success"):
+                    checkout_step = 2
 
     if initial_product and product_slug:
         seo = product_seo_context(initial_product, product_slug)
@@ -123,6 +140,9 @@ def render_page(template_name: str, request: Request, active_nav: str) -> HTMLRe
             "json_ld_blocks": json_ld_blocks,
             "initial_product": initial_product,
             "initial_article": initial_article,
+            "initial_checkout": initial_checkout,
+            "initial_checkout_json": initial_checkout_json,
+            "checkout_step": checkout_step,
         },
     )
 

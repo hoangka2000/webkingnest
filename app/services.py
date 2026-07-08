@@ -335,6 +335,10 @@ def parse_product_quantities(products_param: str | None) -> dict[str, int]:
     return result
 
 
+def format_vnd(amount: int) -> str:
+    return f"{int(amount):,}".replace(",", ".") + " đ"
+
+
 def build_checkout_page_url(products_param: str, coupon: str | None) -> str:
     base = get_settings().resolved_checkout_base_url()
     params = {"step": "2", "products": products_param}

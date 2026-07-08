@@ -13,24 +13,24 @@
 
 <main class="cart-shell">
     <div class="cart-steps" aria-label="Tiến trình đặt hàng">
-        <div class="cart-step active" data-step-target="1">
+        <div class="cart-step{% if checkout_step == 1 %} active{% elif checkout_step > 1 %} done{% endif %}" data-step-target="1">
             <div class="cart-step-icon" aria-hidden="true">🛒</div>
             <div class="cart-step-label">Sản phẩm đã chọn</div>
         </div>
-        <div class="cart-step" data-step-target="2">
+        <div class="cart-step{% if checkout_step == 2 %} active{% elif checkout_step > 2 %} done{% endif %}" data-step-target="2">
             <div class="cart-step-icon" aria-hidden="true">✓</div>
             <div class="cart-step-label">Xác nhận thông tin</div>
         </div>
-        <div class="cart-step" data-step-target="3">
+        <div class="cart-step{% if checkout_step == 3 %} active{% endif %}" data-step-target="3">
             <div class="cart-step-icon" aria-hidden="true">💳</div>
             <div class="cart-step-label">Thanh toán</div>
         </div>
     </div>
 
     <!-- Bước 1: Danh sách giỏ hàng -->
-    <section class="cart-panel cart-step-panel" id="cartStep1" data-cart-step="1">
+    <section class="cart-panel cart-step-panel" id="cartStep1" data-cart-step="1"{% if checkout_step >= 2 %} hidden{% endif %}>
         <h2>Sản phẩm đã chọn</h2>
-        <div id="cartEmptyBox" class="cart-empty" hidden>
+        <div id="cartEmptyBox" class="cart-empty"{% if initial_checkout and initial_checkout.success %} hidden{% endif %}>
             <p>Giỏ hàng của bạn đang trống.</p>
             <a href="/san-pham">Tiếp tục mua sắm</a>
         </div>
@@ -60,7 +60,7 @@
     </section>
 
     <!-- Bước 2 & 3: Xác nhận + thanh toán (cùng một màn hình, bước 3 mở modal QR) -->
-    <section class="cart-panel cart-step-panel checkout-layout" id="cartStep2" data-cart-step="2" hidden>
+    <section class="cart-panel cart-step-panel checkout-layout" id="cartStep2" data-cart-step="2"{% if checkout_step < 2 %} hidden{% endif %}>
         <div id="checkoutSummaryCol">
             <h2>Sản phẩm đã chọn</h2>
             <table class="checkout-summary-table">
@@ -71,9 +71,31 @@
                         <th>Thành tiền</th>
                     </tr>
                 </thead>
-                <tbody id="checkoutSummaryBody"></tbody>
+                <tbody id="checkoutSummaryBody">
+                    {% if initial_checkout and initial_checkout.success %}
+                        {% for item in initial_checkout.products %}
+                        <tr data-product-id="{{ item.id }}" data-quantity="{{ item.quantity }}" data-price="{{ item.price }}">
+                            <td>
+                                <strong>{{ item.title }}</strong><br>
+                                <span>Giá: {{ item.price | format_vnd }}</span>
+                            </td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ (item.price * item.quantity) | format_vnd }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
             </table>
-            <div class="checkout-totals" id="checkoutTotals"></div>
+            <div class="checkout-totals" id="checkoutTotals">
+                {% if initial_checkout and initial_checkout.success %}
+                <div><span>Thành tiền</span><strong data-checkout-subtotal="{{ initial_checkout.subtotal }}">{{ initial_checkout.subtotal | format_vnd }}</strong></div>
+                {% if initial_checkout.discount %}
+                <div><span>Mã giảm giá{% if initial_checkout.coupon %} ({{ initial_checkout.coupon }}){% endif %}</span><strong data-checkout-discount="{{ initial_checkout.discount }}">- {{ initial_checkout.discount | format_vnd }}</strong></div>
+                {% endif %}
+                <div><span>Phí vận chuyển</span><strong class="shipping-free">0 đ</strong></div>
+                <div class="grand-total"><span>Tổng tiền thanh toán</span><span data-checkout-total="{{ initial_checkout.total }}">{{ initial_checkout.total | format_vnd }}</span></div>
+                {% endif %}
+            </div>
         </div>
 
         <div id="checkoutCustomerCol">
@@ -119,6 +141,9 @@
     </section>
 </main>
 
+{% if initial_checkout_json %}
+<script type="application/json" id="initialCheckoutData">{{ initial_checkout_json | safe }}</script>
+{% endif %}
 <script src="/js/cart-page.js" defer></script>
 </body>
 </html>
