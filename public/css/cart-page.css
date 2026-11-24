@@ -238,8 +238,22 @@
     color: #111827;
 }
 
-.cart-step-totals-row.cart-step-coupon strong {
-    color: #dc2626;
+.cart-step-totals-row.cart-step-deposit strong,
+.shipping-range {
+    color: #9b1117;
+    font-weight: 700;
+    text-align: right;
+}
+
+.deposit-note {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(184, 137, 73, 0.35);
+    background: rgba(255, 248, 236, 0.92);
+    color: #5b4a36;
+    font-size: 13px;
+    line-height: 1.55;
 }
 
 .cart-step-grand-total {
@@ -349,9 +363,16 @@
     color: #064c3d;
 }
 
-.checkout-totals .shipping-free {
-    color: #dc2626;
+.checkout-totals .deposit-total strong,
+.checkout-totals .shipping-range {
+    color: #9b1117;
     font-weight: 700;
+    text-align: right;
+}
+
+.checkout-totals .deposit-note {
+    display: block;
+    margin-top: 12px;
 }
 
 .checkout-form label {
@@ -414,6 +435,40 @@
     color: #064c3d;
 }
 
+.payment-deposit-box {
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(184, 137, 73, 0.35);
+    background: linear-gradient(180deg, #fff8ec, #fbf4e8);
+}
+
+.payment-deposit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    color: #374151;
+}
+
+.payment-deposit-row strong {
+    color: #9b1117;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.payment-transfer-note {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5b4a36;
+}
+
+.payment-transfer-note strong {
+    color: #064c3d;
+}
+
 .payment-qr-block {
     display: flex;
     justify-content: center;
@@ -429,41 +484,33 @@
     background: #fff;
 }
 
-.pay-primary {
-    width: 100%;
-    min-height: 48px;
-    border: none;
-    border-radius: 8px;
-    background: #f0c100;
-    color: #111827;
-    font-weight: 800;
-    cursor: pointer;
-    margin-bottom: 12px;
-}
-
-.pay-secondary-row {
+.pay-actions-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
+    align-items: stretch;
 }
 
-.pay-secondary-row button {
-    min-height: 44px;
+.pay-actions-row .pay-back,
+.pay-actions-row .pay-primary {
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
     border-radius: 8px;
     font-weight: 800;
     cursor: pointer;
+}
+
+.pay-primary {
+    border: none;
+    background: #f0c100;
+    color: #111827;
 }
 
 .pay-back {
     border: none;
     background: #9ca3af;
     color: #fff;
-}
-
-.pay-cod {
-    border: none;
-    background: #064c3d;
-    color: #f0c100;
 }
 
 .confirm-btn {
@@ -621,7 +668,20 @@
         font-size: 11px;
     }
 
-    .pay-secondary-row {
-        grid-template-columns: 1fr;
+    .pay-actions-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .pay-actions-row .pay-back,
+    .pay-actions-row .pay-primary {
+        min-height: 46px;
+        font-size: 13px;
+        padding: 10px 8px;
+    }
+
+    .shipping-range {
+        font-size: 12px;
+        max-width: 58%;
     }
 }

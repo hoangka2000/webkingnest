@@ -570,7 +570,7 @@ def _payment_label(method: str) -> str:
     return {
         "COD": "Thanh toán khi nhận hàng (COD)",
         "MOMO": "MoMo",
-        "BANK_TRANSFER": "Khách xác nhận đã chuyển khoản",
+        "BANK_TRANSFER": "Khách xác nhận đã đặt cọc chuyển khoản",
     }.get(method, method)
 
 
@@ -583,9 +583,10 @@ def send_order_email(order: Order, line_items: list[dict[str, Any]]) -> None:
     subject_payment = {
         "COD": "COD",
         "MOMO": "MoMo",
-        "BANK_TRANSFER": "Đã chuyển khoản",
+        "BANK_TRANSFER": "Đặt cọc CK",
     }.get(order.payment_method, order.payment_method)
 
+    deposit_amount = int(round(int(order.total or 0) * 0.3))
     subject = f"[Kingnest] Đơn mới {order.order_code} - {subject_payment}"
     lines = [
         "Có đơn hàng mới từ website Kingnest",
@@ -610,10 +611,12 @@ def send_order_email(order: Order, line_items: list[dict[str, Any]]) -> None:
         )
     lines.append("")
     lines.append(f"Thành tiền: {order.subtotal:,} đ".replace(",", "."))
+    lines.append("Phí vận chuyển: 30.000 - 100.000 đ (tính theo khoảng cách)")
+    lines.append(f"Số tiền đặt cọc (30%): {deposit_amount:,} đ".replace(",", "."))
     if order.discount:
         coupon = f" ({order.coupon})" if order.coupon else ""
         lines.append(f"Giảm giá{coupon}: -{order.discount:,} đ".replace(",", "."))
-    lines.append(f"TỔNG THANH TOÁN: {order.total:,} đ".replace(",", "."))
+    lines.append(f"TỔNG GIÁ TRỊ ĐƠN HÀNG: {order.total:,} đ".replace(",", "."))
 
     message = MIMEText("\n".join(lines), "plain", "utf-8")
     message["Subject"] = subject

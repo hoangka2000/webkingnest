@@ -40,18 +40,19 @@
                 <span>Thành tiền</span>
                 <strong id="cartStepSubtotal">0 đ</strong>
             </div>
-            <div class="cart-step-totals-row cart-step-coupon" id="cartStepCouponRow" hidden>
-                <span id="cartStepCouponLabel">Mã giảm giá</span>
-                <strong id="cartStepDiscount">0 đ</strong>
-            </div>
             <div class="cart-step-totals-row">
                 <span>Phí vận chuyển</span>
-                <strong class="shipping-free">0 đ</strong>
+                <strong class="shipping-range">30.000 - 100.000 (tính theo khoảng cách)</strong>
+            </div>
+            <div class="cart-step-totals-row cart-step-deposit">
+                <span>Số tiền đặt cọc (30%)</span>
+                <strong id="cartStepDeposit">0 đ</strong>
             </div>
             <div class="cart-step-totals-row cart-step-grand-total">
-                <span>Tổng tiền thanh toán</span>
+                <span>Tổng giá trị đơn hàng</span>
                 <strong id="cartStepGrandTotal">0 đ</strong>
             </div>
+            <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
         </div>
         <div class="cart-actions-row">
             <a class="cart-continue" href="/san-pham">← Tiếp tục mua sắm</a>
@@ -89,11 +90,10 @@
             <div class="checkout-totals" id="checkoutTotals">
                 {% if initial_checkout and initial_checkout.success %}
                 <div><span>Thành tiền</span><strong data-checkout-subtotal="{{ initial_checkout.subtotal }}">{{ initial_checkout.subtotal | format_vnd }}</strong></div>
-                {% if initial_checkout.discount %}
-                <div><span>Mã giảm giá{% if initial_checkout.coupon %} ({{ initial_checkout.coupon }}){% endif %}</span><strong data-checkout-discount="{{ initial_checkout.discount }}">- {{ initial_checkout.discount | format_vnd }}</strong></div>
-                {% endif %}
-                <div><span>Phí vận chuyển</span><strong class="shipping-free">0 đ</strong></div>
-                <div class="grand-total"><span>Tổng tiền thanh toán</span><span data-checkout-total="{{ initial_checkout.total }}">{{ initial_checkout.total | format_vnd }}</span></div>
+                <div><span>Phí vận chuyển</span><strong class="shipping-range">30.000 - 100.000 (tính theo khoảng cách)</strong></div>
+                <div class="deposit-total"><span>Số tiền đặt cọc (30%)</span><strong data-checkout-deposit="{{ (initial_checkout.subtotal * 30) // 100 }}">{{ ((initial_checkout.subtotal * 30) // 100) | format_vnd }}</strong></div>
+                <div class="grand-total"><span>Tổng giá trị đơn hàng</span><span data-checkout-total="{{ initial_checkout.total }}">{{ initial_checkout.total | format_vnd }}</span></div>
+                <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
                 {% endif %}
             </div>
         </div>
@@ -129,13 +129,19 @@
         <div id="paymentSection" hidden>
             <h2>Thanh toán</h2>
             <p class="payment-order-code">Mã đơn hàng: <strong id="orderCodeInline">ORC-000000-0000</strong></p>
+            <div class="payment-deposit-box">
+                <div class="payment-deposit-row">
+                    <span>Số tiền cần đặt cọc (30%)</span>
+                    <strong id="paymentDepositAmount">0 đ</strong>
+                </div>
+                <p class="payment-transfer-note">Khi chuyển khoản, vui lòng ghi <strong>mã đơn hàng</strong> vào nội dung chuyển khoản để cửa hàng xác nhận nhanh chóng.</p>
+            </div>
             <div class="payment-qr-block">
                 <img src="https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077769/QR_usztki.jpg" alt="Mã QR thanh toán VietQR" class="payment-qr-image">
             </div>
-            <button class="pay-primary" type="button" id="confirmPaidBtn">TÔI XÁC NHẬN ĐÃ THANH TOÁN HOÀN TẤT</button>
-            <div class="pay-secondary-row">
+            <div class="pay-actions-row">
                 <button class="pay-back" type="button" id="backToFormBtn">QUAY LẠI</button>
-                <button class="pay-cod" type="button" id="codBtn">THANH TOÁN KHI NHẬN HÀNG</button>
+                <button class="pay-primary" type="button" id="confirmPaidBtn">XÁC NHẬN ĐÃ ĐẶT CỌC</button>
             </div>
         </div>
     </section>

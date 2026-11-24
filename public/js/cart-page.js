@@ -14,17 +14,17 @@
         const cartItemsBox = document.getElementById("cartItemsBox");
         const cartStepTotals = document.getElementById("cartStepTotals");
         const cartStepSubtotal = document.getElementById("cartStepSubtotal");
-        const cartStepCouponRow = document.getElementById("cartStepCouponRow");
-        const cartStepCouponLabel = document.getElementById("cartStepCouponLabel");
-        const cartStepDiscount = document.getElementById("cartStepDiscount");
+        const cartStepDeposit = document.getElementById("cartStepDeposit");
         const cartStepGrandTotal = document.getElementById("cartStepGrandTotal");
         const cartEmptyBox = document.getElementById("cartEmptyBox");
         const checkoutSummaryBody = document.getElementById("checkoutSummaryBody");
         const checkoutTotals = document.getElementById("checkoutTotals");
         const orderCodeInline = document.getElementById("orderCodeInline");
+        const paymentDepositAmount = document.getElementById("paymentDepositAmount");
         const checkoutForm = document.getElementById("checkoutForm");
         const paymentSection = document.getElementById("paymentSection");
         const checkoutLayout = document.getElementById("cartStep2");
+        const DEPOSIT_RATE = 0.3;
         let checkoutMeta = {
             coupon: "",
             discount: 0,
@@ -155,6 +155,7 @@
                 showPaymentSection(false);
             } else if (safeStep === 3) {
                 showPaymentSection(true);
+                updatePaymentDepositDisplay();
                 if (orderCodeInline && !currentOrderCode) {
                     currentOrderCode = generateOrderCode();
                     orderCodeInline.textContent = currentOrderCode;
@@ -178,6 +179,22 @@
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;");
+        }
+
+        function getOrderSubtotal() {
+            return checkoutMeta.subtotal || cartApi.getCartTotal();
+        }
+
+        function getDepositAmount(subtotal) {
+            const amount = Number(subtotal) || 0;
+            return Math.round(amount * DEPOSIT_RATE);
+        }
+
+        function updatePaymentDepositDisplay() {
+            if (!paymentDepositAmount) {
+                return;
+            }
+            paymentDepositAmount.textContent = cartApi.formatPrice(getDepositAmount(getOrderSubtotal()));
         }
 
         function renderCartItems() {
@@ -222,34 +239,27 @@
             }
 
             const subtotal = cartApi.getCartTotal();
-            const discount = checkoutMeta.discount || 0;
-            const coupon = checkoutMeta.coupon;
-            const hasCoupon = Boolean(coupon && coupon !== "No coupon applied" && discount > 0);
-            const total = Math.max(0, subtotal - discount);
+            checkoutMeta.subtotal = subtotal;
+            checkoutMeta.total = subtotal;
+            const deposit = getDepositAmount(subtotal);
 
             cartStepTotals.hidden = false;
             if (cartStepSubtotal) {
                 cartStepSubtotal.textContent = cartApi.formatPrice(subtotal);
             }
-            if (cartStepCouponRow) {
-                cartStepCouponRow.hidden = !hasCoupon;
-            }
-            if (hasCoupon && cartStepCouponLabel) {
-                cartStepCouponLabel.textContent = `Mã giảm giá (${coupon})`;
-            }
-            if (cartStepDiscount) {
-                cartStepDiscount.textContent = `- ${cartApi.formatPrice(discount)}`;
+            if (cartStepDeposit) {
+                cartStepDeposit.textContent = cartApi.formatPrice(deposit);
             }
             if (cartStepGrandTotal) {
-                cartStepGrandTotal.textContent = cartApi.formatPrice(total);
+                cartStepGrandTotal.textContent = cartApi.formatPrice(subtotal);
             }
+            updatePaymentDepositDisplay();
         }
 
         function renderSummary() {
             const items = cartApi.getCart();
-            const subtotal = checkoutMeta.subtotal || cartApi.getCartTotal();
-            const discount = checkoutMeta.discount || 0;
-            const total = checkoutMeta.total || Math.max(0, subtotal - discount);
+            const subtotal = getOrderSubtotal();
+            const deposit = getDepositAmount(subtotal);
 
             checkoutSummaryBody.innerHTML = items.map((item) => `
                 <tr>
@@ -262,16 +272,14 @@
                 </tr>
             `).join("");
 
-            const couponRow = checkoutMeta.coupon && checkoutMeta.coupon !== "No coupon applied"
-                ? `<div><span>Mã giảm giá (${escapeHtml(checkoutMeta.coupon)})</span><strong>- ${cartApi.formatPrice(discount)}</strong></div>`
-                : "";
-
             checkoutTotals.innerHTML = `
                 <div><span>Thành tiền</span><strong>${cartApi.formatPrice(subtotal)}</strong></div>
-                ${couponRow}
-                <div><span>Phí vận chuyển</span><strong class="shipping-free">0 đ</strong></div>
-                <div class="grand-total"><span>Tổng tiền thanh toán</span><span>${cartApi.formatPrice(total)}</span></div>
+                <div><span>Phí vận chuyển</span><strong class="shipping-range">30.000 - 100.000 (tính theo khoảng cách)</strong></div>
+                <div class="deposit-total"><span>Số tiền đặt cọc (30%)</span><strong>${cartApi.formatPrice(deposit)}</strong></div>
+                <div class="grand-total"><span>Tổng giá trị đơn hàng</span><span>${cartApi.formatPrice(subtotal)}</span></div>
+                <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
             `;
+            updatePaymentDepositDisplay();
         }
 
         function renderAll() {
@@ -392,19 +400,9 @@
             if (!success) {
                 return;
             }
-            alert("Cảm ơn bạn! Đơn hàng đã được ghi nhận và gửi tới cửa hàng. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.");
+            alert("Cảm ơn bạn! Đã ghi nhận khoản đặt cọc và đơn hàng. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.");
             cartApi.clearCart();
             window.location.href = "/gio-hang?step=1";
-        });
-
-        document.getElementById("codBtn")?.addEventListener("click", async () => {
-            const success = await submitOrder("COD");
-            if (!success) {
-                return;
-            }
-            alert("Đã ghi nhận đơn hàng thanh toán khi nhận hàng. Cảm ơn bạn!");
-            cartApi.clearCart();
-            window.location.href = "/san-pham";
         });
 
         cartItemsBox?.addEventListener("click", (event) => {
