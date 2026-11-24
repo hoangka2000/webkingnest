@@ -22,11 +22,11 @@ BRAND_TAGLINE = (
     f"{BRAND_DISPLAY} chuyên yến chưng sẵn, yến tinh chế, yến thô và hộp quà cao cấp "
     "tại Cam Ranh, Khánh Hòa. Giao hàng toàn quốc, tư vấn miễn phí."
 )
-PHONE = "+84708977199"
+PHONE = "+84377250870"
 EMAIL = "kingnestyensaokhanhhoa@gmail.com"
 ADDRESS = {
-    "streetAddress": "65 Lê Trọng Tấn, Phường Bắc Cam Ranh",
-    "addressLocality": "Cam Ranh",
+    "streetAddress": "Đ.Lương Định Của, Phường Tây Nha Trang",
+    "addressLocality": "Nha Trang",
     "addressRegion": "Khánh Hòa",
     "addressCountry": "VN",
 }
@@ -111,13 +111,14 @@ PAGE_SEO: dict[str, dict[str, str]] = {
         "og_type": "product",
     },
     "Lien_he.html": {
-        "title": f"Liên hệ {PRIMARY_KEYWORD} | Kingnest Cam Ranh - Hotline 0564175414",
+        "title": f"Liên hệ {PRIMARY_KEYWORD} | Kingnest Nha Trang - Hotline 0377250870",
         "description": (
             f"Liên hệ mua {PRIMARY_KEYWORD} tại Kingnest - {BRAND_DISPLAY}. "
-            "Tư vấn sản phẩm, báo giá sỉ, đặt hàng yến sào. Hotline 0564175414, Cam Ranh, Khánh Hòa."
+            "Tư vấn sản phẩm, báo giá sỉ, đặt hàng yến sào. Hotline 0377250870, "
+            "Đ.Lương Định Của, Phường Tây Nha Trang, Tỉnh Khánh Hòa."
         ),
         "keywords": (
-            f"liên hệ {PRIMARY_KEYWORD}, tư vấn yến sào Cam Ranh, mua yến sào khánh hoà, Kingnest"
+            f"liên hệ {PRIMARY_KEYWORD}, tư vấn yến sào Nha Trang, mua yến sào khánh hoà, Kingnest"
         ),
         "path": "/lien-he",
         "og_type": "website",
