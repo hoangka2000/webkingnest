@@ -195,7 +195,9 @@
 
         .mobile-filter-toggle,
         .filter-backdrop,
-        .filter-drawer-head {
+        .filter-drawer-head,
+        .filter-apply-bar,
+        .filter-title-mobile {
             display: none;
         }
 
@@ -857,7 +859,118 @@
                 flex: 1 1 auto;
                 max-height: none;
                 overflow-y: auto;
-                padding: 12px 16px 20px;
+                padding: 18px 18px 12px;
+            }
+
+            .filter-group--extra {
+                display: none !important;
+            }
+
+            .filter-group--type {
+                border-bottom: 0;
+                padding: 4px 0 8px;
+            }
+
+            .filter-group--type:hover {
+                background: transparent;
+            }
+
+            .filter-group--type .filter-group-head {
+                display: none;
+            }
+
+            .filter-group--type .chevron {
+                display: none;
+            }
+
+            .filter-group--type .filter-options {
+                max-height: none;
+                opacity: 1;
+                padding-top: 4px;
+            }
+
+            .filter-group--type .check-line {
+                margin: 0 0 10px;
+                padding: 12px 14px;
+                border: 1.4px solid rgba(184, 137, 73, 0.35);
+                border-radius: 10px;
+                background: rgba(255, 253, 247, 0.92);
+                font-size: 14px;
+                color: #3f3a34;
+                gap: 12px;
+            }
+
+            .filter-group--type .check-line:hover {
+                transform: none;
+                color: #7d171b;
+                border-color: rgba(155, 28, 32, 0.45);
+                background: #fff6e8;
+            }
+
+            .filter-group--type .check-line:has(input:checked) {
+                border-color: #9b1c20;
+                background: linear-gradient(135deg, rgba(255, 244, 220, 0.98), rgba(255, 250, 242, 0.96));
+                color: #7d171b;
+                box-shadow: 0 4px 12px rgba(123, 23, 27, 0.08);
+            }
+
+            .filter-group--type .check-line input {
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+            }
+
+            .filter-group--type .check-line input::before {
+                width: 10px;
+                height: 10px;
+            }
+
+            .filter-title-full {
+                display: none;
+            }
+
+            .filter-title-mobile {
+                display: inline;
+            }
+
+            .filter-apply-bar {
+                display: flex;
+                flex-shrink: 0;
+                gap: 10px;
+                padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+                border-top: 1px solid rgba(184, 137, 73, 0.28);
+                background: linear-gradient(180deg, #fff8ec, #fbf4e8);
+            }
+
+            .filter-ok-btn {
+                flex: 1;
+                min-height: 46px;
+                border: 0;
+                border-radius: 10px;
+                background: linear-gradient(135deg, #c49a3c 0%, #b88949 48%, #9a6f2e 100%);
+                color: #fffdf7;
+                font-size: 15px;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                cursor: pointer;
+                box-shadow: 0 8px 18px rgba(120, 86, 39, 0.22);
+            }
+
+            .filter-ok-btn:active {
+                transform: scale(0.98);
+            }
+
+            .filter-clear-btn {
+                flex: 0 0 auto;
+                min-width: 88px;
+                min-height: 46px;
+                border: 1.5px solid rgba(184, 137, 73, 0.45);
+                border-radius: 10px;
+                background: rgba(255, 253, 247, 0.96);
+                color: #7d171b;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
             }
 
             .products-layer {
@@ -1250,17 +1363,20 @@
     <div class="filter-backdrop" id="filterBackdrop" aria-hidden="true"></div>
 
     <button type="button" class="mobile-filter-toggle" id="mobileFilterToggle" aria-expanded="false" aria-controls="filterLayer">
-        <span aria-hidden="true">☰</span> Bộ lọc sản phẩm
+        <span aria-hidden="true">☰</span> Lọc theo loại sản phẩm
     </button>
 
     <aside class="filter-layer" id="filterLayer">
         <div class="filter-drawer-head">
-            <span>Bộ lọc</span>
+            <span>
+                <span class="filter-title-full">Bộ lọc</span>
+                <span class="filter-title-mobile">Loại sản phẩm</span>
+            </span>
             <button type="button" class="filter-drawer-close" id="filterCloseBtn" aria-label="Đóng bộ lọc">×</button>
         </div>
         <div class="filter-scroll">
 
-            <div class="filter-group open">
+            <div class="filter-group filter-group--extra open">
                 <button class="filter-group-head" type="button" aria-expanded="true">
                     <div class="left"><span class="filter-icon">🏷️</span><span>Khoảng giá</span></div>
                     <span class="chevron">⌃</span>
@@ -1274,7 +1390,7 @@
                 </div>
             </div>
 
-            <div class="filter-group open">
+            <div class="filter-group filter-group--extra open">
                 <button class="filter-group-head" type="button" aria-expanded="true">
                     <div class="left"><span class="filter-icon">♨️</span><span>Nhu cầu sử dụng</span></div>
                     <span class="chevron">⌃</span>
@@ -1290,7 +1406,7 @@
                 </div>
             </div>
 
-            <div class="filter-group open">
+            <div class="filter-group filter-group--type open">
                 <button class="filter-group-head" type="button" aria-expanded="true">
                     <div class="left"><span class="filter-icon">📦</span><span>Loại sản phẩm</span></div>
                     <span class="chevron">⌃</span>
@@ -1304,7 +1420,7 @@
                 </div>
             </div>
 
-            <div class="filter-group open">
+            <div class="filter-group filter-group--extra open">
                 <button class="filter-group-head" type="button" aria-expanded="true">
                     <div class="left"><span class="filter-icon">☆</span><span>Trạng thái</span></div>
                     <span class="chevron">⌃</span>
@@ -1318,6 +1434,10 @@
                 </div>
             </div>
 
+        </div>
+        <div class="filter-apply-bar">
+            <button type="button" class="filter-clear-btn" id="filterClearBtn">Xóa</button>
+            <button type="button" class="filter-ok-btn" id="filterOkBtn">OK</button>
         </div>
     </aside>
 
@@ -1577,6 +1697,10 @@
         }
     }
 
+    function isMobileFilterView() {
+        return window.matchMedia("(max-width: 1180px)").matches;
+    }
+
     function setupExclusiveFilters() {
         filterInputs.forEach((input) => {
             input.addEventListener("change", () => {
@@ -1590,7 +1714,9 @@
                         });
                     }
                 }
-                renderProducts();
+                if (!isMobileFilterView()) {
+                    renderProducts();
+                }
             });
         });
     }
@@ -1661,14 +1787,43 @@
     (function setupMobileFilter() {
         const toggle = document.getElementById("mobileFilterToggle");
         const closeBtn = document.getElementById("filterCloseBtn");
+        const okBtn = document.getElementById("filterOkBtn");
+        const clearBtn = document.getElementById("filterClearBtn");
         const backdrop = document.getElementById("filterBackdrop");
         const filterLayer = document.getElementById("filterLayer");
+        let filterSnapshot = [];
 
         if (!toggle || !filterLayer) {
             return;
         }
 
-        function closeFilter() {
+        function snapshotFilters() {
+            filterSnapshot = Array.from(filterInputs).map((input) => input.checked);
+        }
+
+        function restoreFilters() {
+            filterInputs.forEach((input, index) => {
+                input.checked = Boolean(filterSnapshot[index]);
+            });
+        }
+
+        function clearTypeFilters() {
+            filterInputs.forEach((input) => {
+                if (input.dataset.filter === "type") {
+                    input.checked = false;
+                }
+            });
+        }
+
+        function closeFilter(options = {}) {
+            const { apply = false, discard = true } = options;
+
+            if (apply) {
+                renderProducts();
+            } else if (discard && isMobileFilterView()) {
+                restoreFilters();
+            }
+
             filterLayer.classList.remove("is-open");
             toggle.setAttribute("aria-expanded", "false");
             if (backdrop) {
@@ -1676,9 +1831,17 @@
                 backdrop.setAttribute("aria-hidden", "true");
             }
             document.body.classList.remove("filter-open");
+
+            if (apply) {
+                const productsLayer = document.querySelector(".products-layer");
+                if (productsLayer) {
+                    productsLayer.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
         }
 
         function openFilter() {
+            snapshotFilters();
             filterLayer.classList.add("is-open");
             toggle.setAttribute("aria-expanded", "true");
             if (backdrop) {
@@ -1690,23 +1853,34 @@
 
         toggle.addEventListener("click", function () {
             if (filterLayer.classList.contains("is-open")) {
-                closeFilter();
+                closeFilter({ discard: true });
             } else {
                 openFilter();
             }
         });
 
         if (closeBtn) {
-            closeBtn.addEventListener("click", closeFilter);
+            closeBtn.addEventListener("click", () => closeFilter({ discard: true }));
         }
 
         if (backdrop) {
-            backdrop.addEventListener("click", closeFilter);
+            backdrop.addEventListener("click", () => closeFilter({ discard: true }));
+        }
+
+        if (okBtn) {
+            okBtn.addEventListener("click", () => closeFilter({ apply: true, discard: false }));
+        }
+
+        if (clearBtn) {
+            clearBtn.addEventListener("click", () => {
+                clearTypeFilters();
+            });
         }
 
         window.addEventListener("resize", function () {
             if (window.innerWidth > 1180) {
-                closeFilter();
+                closeFilter({ discard: false });
+                renderProducts();
             }
         });
     })();
