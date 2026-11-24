@@ -118,10 +118,13 @@ const THUNG_VARIANTS = [
     { id: "60hu", label: "60 hũ", price: 1700000 }
 ];
 
-const YEN_CHUNG_VARIANTS = [
-    { id: "10hu", label: "10 hũ", price: 350000 },
-    { id: "30hu", label: "30 hũ", price: 900000 }
-];
+function buildYenChungVariants(unitPrice) {
+    const jarPrice = Number(unitPrice) || 0;
+    return [
+        { id: "10hu", label: "10 hũ", price: jarPrice * 10 },
+        { id: "30hu", label: "30 hũ", price: jarPrice * 30 }
+    ];
+}
 
 function supportsWeightVariants(product) {
     const type = normalizeProductType(product.type);
@@ -163,7 +166,12 @@ function getVariantConfig(product) {
         return { kind: "thung", label: "Quy cách", options: THUNG_VARIANTS };
     }
     if (supportsYenChungVariants(product)) {
-        return { kind: "yen-chung-pack", label: "Chọn gói mua", options: YEN_CHUNG_VARIANTS, keepDisplayPrice: true };
+        return {
+            kind: "yen-chung-pack",
+            label: "Chọn gói mua",
+            options: buildYenChungVariants(product.price),
+            keepDisplayPrice: true
+        };
     }
     if (supportsWeightVariants(product)) {
         return { kind: "weight", label: "Khối lượng", options: WEIGHT_VARIANTS };

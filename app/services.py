@@ -21,9 +21,9 @@ COUPON_DISCOUNTS = {
     "FACEBOOK5": 0.05,
 }
 
-YEN_CHUNG_PACK_PRICES = {
-    "10hu": 350000,
-    "30hu": 900000,
+YEN_CHUNG_PACK_COUNTS = {
+    "10hu": 10,
+    "30hu": 30,
 }
 
 YEN_CHUNG_LOAI1_SLUGS = {
@@ -135,6 +135,13 @@ def is_gift_box_loai_product(product: Product) -> bool:
     return (product.slug or "") in GIFT_BOX_LOAI_PRICES
 
 
+def yen_chung_pack_price(base_price: int, variant_id: str) -> int:
+    count = YEN_CHUNG_PACK_COUNTS.get(variant_id)
+    if not count:
+        return base_price
+    return int(base_price) * count
+
+
 def facebook_purchase_options(product: Product) -> list[dict[str, Any]]:
     base_price = int(product.price)
     if is_gift_box_loai_product(product):
@@ -157,7 +164,7 @@ def facebook_purchase_options(product: Product) -> list[dict[str, Any]]:
                 "variantId": variant_id,
                 "label": label,
                 "title": f"{product.title} ({label})",
-                "price": YEN_CHUNG_PACK_PRICES[variant_id],
+                "price": yen_chung_pack_price(base_price, variant_id),
             }
             for variant_id, label in (("10hu", "10 hũ"), ("30hu", "30 hũ"))
         ]
@@ -202,7 +209,7 @@ def _variant_price(product: Product, base_price: int, variant_id: str) -> int:
     if is_gift_box_loai_product(product):
         return GIFT_BOX_LOAI_PRICES[product.slug].get(variant_id, base_price)
     if product_type == "yen-chung":
-        return YEN_CHUNG_PACK_PRICES.get(variant_id, base_price)
+        return yen_chung_pack_price(base_price, variant_id)
     if product.slug == "thung-yen-gia-si":
         return THUNG_PACK_PRICES.get(variant_id, base_price)
     if product_type == "yen-tinh-che":

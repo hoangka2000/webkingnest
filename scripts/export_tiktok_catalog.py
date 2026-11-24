@@ -15,13 +15,13 @@ import openpyxl
 from app.database import Product, get_db, parse_json_field
 from app.services import (
     THUNG_PACK_PRICES,
-    YEN_CHUNG_PACK_PRICES,
     _product_images,
     facebook_catalog_id,
     facebook_purchase_options,
     is_gift_box_loai_product,
     normalize_product_type,
     supports_yen_chung_packs,
+    yen_chung_pack_price,
 )
 
 BRAND = "kingnest"
@@ -60,6 +60,9 @@ def tiktok_purchase_options(product: Product) -> list[dict[str, Any]]:
             for option in facebook_purchase_options(product)
         ]
 
+    product_type = normalize_product_type(product.product_type)
+    base_price = int(product.price)
+
     if supports_yen_chung_packs(product):
         return [
             {
@@ -67,13 +70,10 @@ def tiktok_purchase_options(product: Product) -> list[dict[str, Any]]:
                 "variantId": variant_id,
                 "label": label,
                 "title": product.title,
-                "price": YEN_CHUNG_PACK_PRICES[variant_id],
+                "price": yen_chung_pack_price(base_price, variant_id),
             }
             for variant_id, label in (("10hu", "10 hũ"), ("30hu", "30 hũ"))
         ]
-
-    product_type = normalize_product_type(product.product_type)
-    base_price = int(product.price)
 
     if product.slug == "thung-yen-gia-si":
         return [
