@@ -933,13 +933,13 @@
                 display: inline;
             }
 
-            .filter-apply-bar {
+            .filter-group--type .filter-apply-bar {
                 display: flex;
-                flex-shrink: 0;
                 gap: 10px;
-                padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-                border-top: 1px solid rgba(184, 137, 73, 0.28);
-                background: linear-gradient(180deg, #fff8ec, #fbf4e8);
+                margin-top: 4px;
+                padding: 0;
+                border-top: 0;
+                background: transparent;
             }
 
             .filter-ok-btn {
@@ -1417,6 +1417,10 @@
                     <label class="check-line"><input type="checkbox" data-filter="type" value="yen-tinh-che"><span>Yến tinh</span></label>
                     <label class="check-line"><input type="checkbox" data-filter="type" value="yen-tho"><span>Yến thô</span></label>
                     <label class="check-line"><input type="checkbox" data-filter="type" value="hop-qua"><span>Hộp quà</span></label>
+                    <div class="filter-apply-bar">
+                        <button type="button" class="filter-clear-btn" id="filterClearBtn">Xóa</button>
+                        <button type="button" class="filter-ok-btn" id="filterOkBtn">OK</button>
+                    </div>
                 </div>
             </div>
 
@@ -1434,10 +1438,6 @@
                 </div>
             </div>
 
-        </div>
-        <div class="filter-apply-bar">
-            <button type="button" class="filter-clear-btn" id="filterClearBtn">Xóa</button>
-            <button type="button" class="filter-ok-btn" id="filterOkBtn">OK</button>
         </div>
     </aside>
 
