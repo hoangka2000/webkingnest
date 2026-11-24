@@ -610,13 +610,14 @@ def send_order_email(order: Order, line_items: list[dict[str, Any]]) -> None:
             f"{int(item.get('lineTotal', 0)):,} đ".replace(",", ".")
         )
     lines.append("")
+    remaining_amount = max(0, int(order.total or 0) - deposit_amount)
     lines.append(f"Thành tiền: {order.subtotal:,} đ".replace(",", "."))
     lines.append("Phí vận chuyển: 30.000 - 100.000 đ (tính theo khoảng cách)")
     lines.append(f"Số tiền đặt cọc (30%): {deposit_amount:,} đ".replace(",", "."))
+    lines.append(f"Số tiền thanh toán khi nhận hàng: {remaining_amount:,} đ".replace(",", "."))
     if order.discount:
         coupon = f" ({order.coupon})" if order.coupon else ""
         lines.append(f"Giảm giá{coupon}: -{order.discount:,} đ".replace(",", "."))
-    lines.append(f"TỔNG GIÁ TRỊ ĐƠN HÀNG: {order.total:,} đ".replace(",", "."))
 
     message = MIMEText("\n".join(lines), "plain", "utf-8")
     message["Subject"] = subject

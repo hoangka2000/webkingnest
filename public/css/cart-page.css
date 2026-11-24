@@ -238,6 +238,22 @@
     color: #111827;
 }
 
+.cart-step-totals-row {
+    gap: 16px;
+}
+
+.cart-step-totals-row > span:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.4;
+}
+
+.cart-step-totals-row > strong {
+    flex: 0 0 auto;
+    text-align: right;
+    white-space: nowrap;
+}
+
 .cart-step-totals-row.cart-step-deposit strong,
 .shipping-range {
     color: #9b1117;
@@ -256,18 +272,18 @@
     line-height: 1.55;
 }
 
-.cart-step-grand-total {
+.cart-step-remaining {
     margin-top: 8px;
     margin-bottom: 0;
     padding-top: 12px;
     border-top: 1px solid #e5e7eb;
-    font-size: 18px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 700;
     color: #064c3d;
 }
 
-.cart-step-grand-total strong {
-    font-size: 18px;
+.cart-step-remaining strong {
+    font-size: 16px;
     font-weight: 800;
     color: #064c3d;
 }
@@ -351,14 +367,36 @@
 .checkout-totals div {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 16px;
     margin-bottom: 8px;
     font-size: 14px;
 }
 
-.checkout-totals .grand-total {
+.checkout-totals div > span:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.4;
+}
+
+.checkout-totals div > strong,
+.checkout-totals div > span:last-child {
+    flex: 0 0 auto;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.checkout-totals .remaining-total {
     margin-top: 8px;
-    font-size: 18px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 15px;
+    font-weight: 700;
+    color: #064c3d;
+}
+
+.checkout-totals .remaining-total strong {
+    font-size: 16px;
     font-weight: 800;
     color: #064c3d;
 }

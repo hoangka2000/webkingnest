@@ -48,9 +48,9 @@
                 <span>Số tiền đặt cọc (30%)</span>
                 <strong id="cartStepDeposit">0 đ</strong>
             </div>
-            <div class="cart-step-totals-row cart-step-grand-total">
-                <span>Tổng giá trị đơn hàng</span>
-                <strong id="cartStepGrandTotal">0 đ</strong>
+            <div class="cart-step-totals-row cart-step-remaining">
+                <span>Số tiền thanh toán khi nhận hàng</span>
+                <strong id="cartStepRemaining">0 đ</strong>
             </div>
             <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
         </div>
@@ -92,7 +92,7 @@
                 <div><span>Thành tiền</span><strong data-checkout-subtotal="{{ initial_checkout.subtotal }}">{{ initial_checkout.subtotal | format_vnd }}</strong></div>
                 <div><span>Phí vận chuyển</span><strong class="shipping-range">30.000 - 100.000 (tính theo khoảng cách)</strong></div>
                 <div class="deposit-total"><span>Số tiền đặt cọc (30%)</span><strong data-checkout-deposit="{{ (initial_checkout.subtotal * 30) // 100 }}">{{ ((initial_checkout.subtotal * 30) // 100) | format_vnd }}</strong></div>
-                <div class="grand-total"><span>Tổng giá trị đơn hàng</span><span data-checkout-total="{{ initial_checkout.total }}">{{ initial_checkout.total | format_vnd }}</span></div>
+                <div class="remaining-total"><span>Số tiền thanh toán khi nhận hàng</span><strong data-checkout-remaining="{{ initial_checkout.subtotal - ((initial_checkout.subtotal * 30) // 100) }}">{{ (initial_checkout.subtotal - ((initial_checkout.subtotal * 30) // 100)) | format_vnd }}</strong></div>
                 <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
                 {% endif %}
             </div>

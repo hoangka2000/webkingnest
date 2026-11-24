@@ -15,7 +15,7 @@
         const cartStepTotals = document.getElementById("cartStepTotals");
         const cartStepSubtotal = document.getElementById("cartStepSubtotal");
         const cartStepDeposit = document.getElementById("cartStepDeposit");
-        const cartStepGrandTotal = document.getElementById("cartStepGrandTotal");
+        const cartStepRemaining = document.getElementById("cartStepRemaining");
         const cartEmptyBox = document.getElementById("cartEmptyBox");
         const checkoutSummaryBody = document.getElementById("checkoutSummaryBody");
         const checkoutTotals = document.getElementById("checkoutTotals");
@@ -190,6 +190,11 @@
             return Math.round(amount * DEPOSIT_RATE);
         }
 
+        function getRemainingAmount(subtotal) {
+            const amount = Number(subtotal) || 0;
+            return Math.max(0, amount - getDepositAmount(amount));
+        }
+
         function updatePaymentDepositDisplay() {
             if (!paymentDepositAmount) {
                 return;
@@ -242,6 +247,7 @@
             checkoutMeta.subtotal = subtotal;
             checkoutMeta.total = subtotal;
             const deposit = getDepositAmount(subtotal);
+            const remaining = getRemainingAmount(subtotal);
 
             cartStepTotals.hidden = false;
             if (cartStepSubtotal) {
@@ -250,8 +256,8 @@
             if (cartStepDeposit) {
                 cartStepDeposit.textContent = cartApi.formatPrice(deposit);
             }
-            if (cartStepGrandTotal) {
-                cartStepGrandTotal.textContent = cartApi.formatPrice(subtotal);
+            if (cartStepRemaining) {
+                cartStepRemaining.textContent = cartApi.formatPrice(remaining);
             }
             updatePaymentDepositDisplay();
         }
@@ -260,6 +266,7 @@
             const items = cartApi.getCart();
             const subtotal = getOrderSubtotal();
             const deposit = getDepositAmount(subtotal);
+            const remaining = getRemainingAmount(subtotal);
 
             checkoutSummaryBody.innerHTML = items.map((item) => `
                 <tr>
@@ -276,7 +283,7 @@
                 <div><span>Thành tiền</span><strong>${cartApi.formatPrice(subtotal)}</strong></div>
                 <div><span>Phí vận chuyển</span><strong class="shipping-range">30.000 - 100.000 (tính theo khoảng cách)</strong></div>
                 <div class="deposit-total"><span>Số tiền đặt cọc (30%)</span><strong>${cartApi.formatPrice(deposit)}</strong></div>
-                <div class="grand-total"><span>Tổng giá trị đơn hàng</span><span>${cartApi.formatPrice(subtotal)}</span></div>
+                <div class="remaining-total"><span>Số tiền thanh toán khi nhận hàng</span><strong>${cartApi.formatPrice(remaining)}</strong></div>
                 <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
             `;
             updatePaymentDepositDisplay();
