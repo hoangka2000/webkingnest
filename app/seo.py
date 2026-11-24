@@ -260,8 +260,8 @@ def organization_schema(base: str) -> dict[str, Any]:
             **ADDRESS,
         },
         "sameAs": [
-            "https://www.facebook.com/Kingnestyensaokhanhhoa",
-            "https://m.me/Kingnestyensaokhanhhoa",
+            "https://www.facebook.com/yensaokhanhhoasile",
+            "https://m.me/yensaokhanhhoasile",
         ],
     }
 

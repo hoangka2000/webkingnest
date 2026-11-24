@@ -283,7 +283,7 @@
                 <div><span>Thành tiền</span><strong>${cartApi.formatPrice(subtotal)}</strong></div>
                 <div><span>Phí vận chuyển</span><strong class="shipping-range">30.000 - 100.000 (tính theo khoảng cách)</strong></div>
                 <div class="deposit-total"><span>Số tiền đặt cọc (30%)</span><strong>${cartApi.formatPrice(deposit)}</strong></div>
-                <div class="remaining-total"><span>Số tiền thanh toán khi nhận hàng</span><strong>${cartApi.formatPrice(remaining)}</strong></div>
+                <div class="remaining-total"><span>Số tiền thanh toán khi nhận hàng (chưa tính ship)</span><strong>${cartApi.formatPrice(remaining)}</strong></div>
                 <p class="deposit-note">Lưu ý: Quý khách vui lòng đặt cọc 30% tổng giá trị đơn hàng để xác nhận đặt hàng. 70% giá trị còn lại sẽ được thanh toán khi nhận hàng. Đơn hàng được chuẩn bị và xử lý ngay sau khi xác nhận khoản đặt cọc.</p>
             `;
             updatePaymentDepositDisplay();
