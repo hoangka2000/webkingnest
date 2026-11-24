@@ -19,6 +19,7 @@ from app.services import (
     _product_images,
     facebook_catalog_id,
     facebook_purchase_options,
+    is_gift_box_loai_product,
     normalize_product_type,
     supports_yen_chung_packs,
 )
@@ -47,6 +48,18 @@ IMAGE_FIELDS = [
 
 
 def tiktok_purchase_options(product: Product) -> list[dict[str, Any]]:
+    if is_gift_box_loai_product(product):
+        return [
+            {
+                "id": option["id"],
+                "variantId": option["variantId"],
+                "label": option["label"],
+                "title": product.title,
+                "price": option["price"],
+            }
+            for option in facebook_purchase_options(product)
+        ]
+
     if supports_yen_chung_packs(product):
         return [
             {
@@ -141,6 +154,8 @@ def parcel_defaults(product: Product) -> tuple[int, int, int, int]:
     if product_type == "hop-qua":
         if "10-hu" in slug:
             return 1200, 30, 25, 12
+        if "8-hu" in slug:
+            return 1000, 29, 24, 11
         return 800, 28, 22, 10
 
     if product_type == "yen-chung":

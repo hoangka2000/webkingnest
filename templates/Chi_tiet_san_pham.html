@@ -37,6 +37,7 @@
                     <div class="variant-picker" id="variantPicker" hidden>
                         <span class="variant-label" id="variantLabel">Quy cách</span>
                         <div class="variant-options" id="variantOptions"></div>
+                        <p class="variant-note" id="variantNote" hidden></p>
                     </div>
 
                     <div class="summary-box" id="benefitBox">
@@ -129,7 +130,11 @@ function supportsWeightVariants(product) {
 
 function supportsYenChungVariants(product) {
     const type = normalizeProductType(product.type);
-    return type === "yen-chung" && product.slug !== "hop-qua-yen-chung-6-hu";
+    return type === "yen-chung";
+}
+
+function isGiftBoxLoaiProduct(product) {
+    return ["hop-qua-yen-chung-6-hu", "hop-qua-yen-chung-8-hu", "hop-qua-yen-chung-10-hu"].includes(product.slug);
 }
 
 let pendingCatalogId = "";
@@ -139,17 +144,19 @@ function getVariantConfig(product) {
         ? product.purchaseOptions.filter((option) => option.variantId)
         : [];
     if (purchaseOptions.length > 0) {
+        const isGiftLoai = isGiftBoxLoaiProduct(product);
         const isYenChung = supportsYenChungVariants(product);
         return {
-            kind: isYenChung ? "yen-chung-pack" : "catalog",
-            label: isYenChung ? "Chọn gói mua" : "Quy cách",
+            kind: isGiftLoai ? "gift-loai" : (isYenChung ? "yen-chung-pack" : "catalog"),
+            label: isGiftLoai ? "Chọn loại" : (isYenChung ? "Chọn gói mua" : "Quy cách"),
             options: purchaseOptions.map((option) => ({
                 id: option.variantId,
                 label: option.label,
                 price: option.price,
-                catalogId: option.id
+                catalogId: option.id,
+                note: option.note || ""
             })),
-            keepDisplayPrice: isYenChung
+            keepDisplayPrice: isYenChung && !isGiftLoai
         };
     }
     if (product.slug === "thung-yen-gia-si") {
@@ -186,6 +193,21 @@ function updateDisplayedPrice() {
     }
 }
 
+function updateVariantNote() {
+    const noteEl = document.getElementById("variantNote");
+    if (!noteEl) {
+        return;
+    }
+    const note = selectedVariant?.note || "";
+    if (note) {
+        noteEl.textContent = note;
+        noteEl.removeAttribute("hidden");
+    } else {
+        noteEl.textContent = "";
+        noteEl.setAttribute("hidden", "");
+    }
+}
+
 function selectVariant(variantId) {
     if (!variantConfig) {
         return;
@@ -199,17 +221,20 @@ function selectVariant(variantId) {
         button.classList.toggle("active", button.dataset.variantId === variantId);
     });
     updateDisplayedPrice();
+    updateVariantNote();
 }
 
 function renderVariantPicker(product) {
     const picker = document.getElementById("variantPicker");
     const optionsEl = document.getElementById("variantOptions");
     const labelEl = document.getElementById("variantLabel");
+    const noteEl = document.getElementById("variantNote");
     variantConfig = getVariantConfig(product);
     selectedVariant = null;
 
     if (!variantConfig || !picker || !optionsEl) {
         picker?.setAttribute("hidden", "");
+        noteEl?.setAttribute("hidden", "");
         return;
     }
 
@@ -247,8 +272,11 @@ function renderVariantPicker(product) {
 }
 
 function getCatalogId(product, variant) {
-    if (supportsYenChungVariants(product) && variant?.id) {
-        return variant.catalogId || `${product.id}-${variant.id}`;
+    if (variant?.catalogId) {
+        return variant.catalogId;
+    }
+    if (variant?.id && (supportsYenChungVariants(product) || isGiftBoxLoaiProduct(product))) {
+        return `${product.id}-${variant.id}`;
     }
     return String(product.catalogId || product.id);
 }
@@ -577,6 +605,7 @@ function renderProductError(message) {
     variantConfig = null;
     selectedVariant = null;
     document.getElementById("variantPicker")?.setAttribute("hidden", "");
+    document.getElementById("variantNote")?.setAttribute("hidden", "");
     document.getElementById("productTitle").textContent = "Không tìm thấy sản phẩm";
     document.getElementById("productPrice").textContent = "";
     document.getElementById("descriptionBlock").innerHTML = `<p>${message}</p>`;

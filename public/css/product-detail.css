@@ -229,6 +229,17 @@
     color: #ffe2a9;
 }
 
+.variant-note {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(184, 137, 73, 0.28);
+    background: rgba(255, 248, 236, 0.88);
+    color: #5b4a36;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .summary-box {
     padding: clamp(14px, 1.2vw, 20px);
     border-radius: 16px;
