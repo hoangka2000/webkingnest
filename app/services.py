@@ -33,9 +33,9 @@ YEN_CHUNG_LOAI1_SLUGS = {
 }
 
 GIFT_BOX_LOAI_PRICES = {
-    "hop-qua-yen-chung-6-hu": {"loai1": 260000, "loai2": 280000},
-    "hop-qua-yen-chung-8-hu": {"loai1": 330000, "loai2": 350000},
-    "hop-qua-yen-chung-10-hu": {"loai1": 400000, "loai2": 420000},
+    "hop-qua-yen-chung-6-hu": {"loai1": 280000, "loai2": 290000},
+    "hop-qua-yen-chung-8-hu": {"loai1": 350000, "loai2": 360000},
+    "hop-qua-yen-chung-10-hu": {"loai1": 400000, "loai2": 410000},
 }
 
 GIFT_BOX_LOAI_NOTES = {
