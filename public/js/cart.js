@@ -58,10 +58,26 @@
         return items;
     }
 
-    function buyNow(product, quantity) {
+    function buyNow(product, quantity, extras) {
         const qty = Math.max(1, Number(quantity) || 1);
         const normalized = normalizeProduct(product);
-        writeCart([{ ...normalized, quantity: qty }]);
+        const items = [{ ...normalized, quantity: qty }];
+
+        (Array.isArray(extras) ? extras : []).forEach((extra) => {
+            if (!extra) {
+                return;
+            }
+            const normalizedExtra = normalizeProduct(extra);
+            const extraQty = Math.max(1, Number(extra.quantity) || 1);
+            const existing = items.find((item) => item.id === normalizedExtra.id);
+            if (existing) {
+                existing.quantity += extraQty;
+            } else {
+                items.push({ ...normalizedExtra, quantity: extraQty });
+            }
+        });
+
+        writeCart(items);
         window.location.href = "/gio-hang?step=2";
     }
 
