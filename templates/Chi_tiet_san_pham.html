@@ -38,6 +38,11 @@
                         <p class="variant-note" id="variantNote" hidden></p>
                     </div>
 
+                    <button type="button" class="detail-gift-addon" id="addGiftBoxBtn" hidden aria-pressed="false">
+                        <span class="detail-gift-addon-check" aria-hidden="true">✓</span>
+                        <span class="detail-gift-addon-text">Thêm hộp quà tặng sang trọng — 120.000đ/hộp</span>
+                    </button>
+
                     <div class="summary-box" id="benefitBox">
                         <h3>Công dụng</h3>
                         <ul class="summary-list" id="benefitList"></ul>
@@ -57,9 +62,6 @@
                         <button type="button" class="detail-cart" id="addToCartBtn">Thêm vào giỏ hàng</button>
                         <button type="button" class="detail-buy" id="buyNowBtn">MUA NGAY</button>
                     </div>
-                    <button type="button" class="detail-gift-addon" id="addGiftBoxBtn" hidden>
-                        Thêm hộp quà tặng sang trọng — 120.000đ/hộp
-                    </button>
                 </div>
 
                 <aside class="detail-sidebar">
@@ -322,6 +324,7 @@ function handleDetailBuyNow() {
     if (!currentProduct || !window.KingnestCart) {
         return;
     }
+    addSelectedGiftBoxToCart();
     window.KingnestCart.buyNow(getCartProductPayload(currentProduct), getPurchaseQuantity());
 }
 
@@ -330,6 +333,19 @@ function handleDetailAddToCart() {
         return;
     }
     window.KingnestCart.addToCart(getCartProductPayload(currentProduct), getPurchaseQuantity());
+    addSelectedGiftBoxToCart();
+}
+
+let giftBoxSelected = false;
+
+function setGiftBoxSelected(selected) {
+    giftBoxSelected = Boolean(selected);
+    const giftBtn = document.getElementById("addGiftBoxBtn");
+    if (!giftBtn) {
+        return;
+    }
+    giftBtn.classList.toggle("is-active", giftBoxSelected);
+    giftBtn.setAttribute("aria-pressed", giftBoxSelected ? "true" : "false");
 }
 
 function updateGiftBoxAddonButton(product) {
@@ -339,13 +355,13 @@ function updateGiftBoxAddonButton(product) {
     }
     const show = Boolean(product && supportsGiftBoxAddon(product));
     giftBtn.hidden = !show;
+    if (!show) {
+        setGiftBoxSelected(false);
+    }
 }
 
-function handleAddGiftBox() {
-    if (!window.KingnestCart) {
-        return;
-    }
-    window.KingnestCart.addToCart({
+function getGiftBoxPayload() {
+    return {
         id: GIFT_BOX_ADDON.id,
         productId: GIFT_BOX_ADDON.productId,
         variantId: "",
@@ -355,13 +371,24 @@ function handleAddGiftBox() {
         desc: GIFT_BOX_ADDON.desc,
         price: GIFT_BOX_ADDON.price,
         image: GIFT_BOX_ADDON.image
-    }, 1);
+    };
+}
+
+function handleToggleGiftBox() {
+    setGiftBoxSelected(!giftBoxSelected);
+}
+
+function addSelectedGiftBoxToCart() {
+    if (!giftBoxSelected || !window.KingnestCart) {
+        return;
+    }
+    window.KingnestCart.addToCart(getGiftBoxPayload(), 1);
 }
 
 function setupDetailActions() {
     document.getElementById("buyNowBtn")?.addEventListener("click", handleDetailBuyNow);
     document.getElementById("addToCartBtn")?.addEventListener("click", handleDetailAddToCart);
-    document.getElementById("addGiftBoxBtn")?.addEventListener("click", handleAddGiftBox);
+    document.getElementById("addGiftBoxBtn")?.addEventListener("click", handleToggleGiftBox);
     document.getElementById("qtyMinus")?.addEventListener("click", () => setPurchaseQuantity(getPurchaseQuantity() - 1));
     document.getElementById("qtyPlus")?.addEventListener("click", () => setPurchaseQuantity(getPurchaseQuantity() + 1));
 }
@@ -590,6 +617,7 @@ function renderProduct(product) {
     basePrice = Number(product.price) || 0;
     document.getElementById("productPrice").textContent = formatPrice(basePrice);
     renderVariantPicker(product);
+    setGiftBoxSelected(false);
     updateGiftBoxAddonButton(product);
 
     const seoText = document.getElementById("productSeoText");

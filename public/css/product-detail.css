@@ -299,22 +299,56 @@
 
 .detail-gift-addon {
     width: 100%;
-    margin-top: 12px;
-    min-height: 46px;
+    margin: 0 0 clamp(14px, 1.4vw, 22px);
+    min-height: 48px;
+    padding: 12px 16px;
     border: 1.5px solid rgba(184, 137, 73, 0.55);
-    border-radius: 10px;
+    border-radius: 12px;
     background: linear-gradient(135deg, #fff8ec 0%, #f7e7c8 100%);
     color: #7d171b;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+}
+
+.detail-gift-addon-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(155, 17, 23, 0.35);
+    background: rgba(255, 255, 255, 0.75);
+    color: transparent;
+    display: inline-grid;
+    place-items: center;
+    font-size: 13px;
+    line-height: 1;
+    flex: 0 0 auto;
+    transition: 0.2s ease;
 }
 
 .detail-gift-addon:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 16px rgba(120, 86, 39, 0.14);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(120, 86, 39, 0.16);
     background: linear-gradient(135deg, #fff4dc 0%, #f3dfb4 100%);
+}
+
+.detail-gift-addon.is-active {
+    transform: translateY(-3px) scale(1.01);
+    border-color: #9b1117;
+    background: linear-gradient(135deg, #b61d24 0%, #8f1419 100%);
+    color: #fff8ef;
+    box-shadow: 0 14px 28px rgba(155, 17, 23, 0.28);
+}
+
+.detail-gift-addon.is-active .detail-gift-addon-check {
+    border-color: rgba(255, 226, 169, 0.9);
+    background: rgba(255, 248, 239, 0.18);
+    color: #ffe2a9;
 }
 
 .detail-gift-addon[hidden] {
