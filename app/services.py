@@ -629,25 +629,48 @@ def _parse_data_url_image(data_url: str | None) -> tuple[bytes, str] | None:
     return payload, mime_type
 
 
-def send_order_email(
+def _format_money(amount: int) -> str:
+    return f"{int(amount):,} đ".replace(",", ".")
+
+
+def _order_item_lines(line_items: list[dict[str, Any]]) -> list[str]:
+    lines: list[str] = []
+    for item in line_items:
+        lines.append(
+            f"- {item.get('title', 'Sản phẩm')} x{item.get('quantity', 1)} = "
+            f"{_format_money(int(item.get('lineTotal', 0)))}"
+        )
+    return lines
+
+
+def _order_totals_lines(order: Order) -> list[str]:
+    deposit_amount = int(round(int(order.total or 0) * 0.3))
+    remaining_amount = max(0, int(order.total or 0) - deposit_amount)
+    lines = [
+        f"Thành tiền: {_format_money(int(order.subtotal or 0))}",
+        "Phí vận chuyển: 30.000 - 100.000 đ (tính theo khoảng cách)",
+        f"Số tiền đặt cọc (30%): {_format_money(deposit_amount)}",
+        f"Số tiền thanh toán khi nhận hàng (chưa tính ship): {_format_money(remaining_amount)}",
+    ]
+    if order.discount:
+        coupon = f" ({order.coupon})" if order.coupon else ""
+        lines.append(f"Giảm giá{coupon}: -{_format_money(int(order.discount))}")
+    return lines
+
+
+def _build_shop_order_email(
     order: Order,
     line_items: list[dict[str, Any]],
     payment_proof_base64: str | None = None,
     payment_proof_name: str | None = None,
-) -> None:
+) -> MIMEMultipart:
     settings = get_settings()
-    if not (settings.mail_username and settings.mail_password and settings.mail_notify_to):
-        logger.warning("Bỏ qua gửi email: chưa cấu hình MAIL_USERNAME/MAIL_PASSWORD/MAIL_NOTIFY_TO")
-        return
-
     subject_payment = {
         "COD": "COD",
         "MOMO": "MoMo",
         "BANK_TRANSFER": "Đặt cọc CK",
     }.get(order.payment_method, order.payment_method)
 
-    deposit_amount = int(round(int(order.total or 0) * 0.3))
-    subject = f"[Kingnest] Đơn mới {order.order_code} - {subject_payment}"
     lines = [
         "Có đơn hàng mới từ website Kingnest",
         "=====================================\n",
@@ -664,20 +687,9 @@ def send_order_email(
     if order.customer_note:
         lines.append(f"Ghi chú: {order.customer_note}")
     lines.append("\n--- Sản phẩm ---")
-    for item in line_items:
-        lines.append(
-            f"- {item.get('title', 'Sản phẩm')} x{item.get('quantity', 1)} = "
-            f"{int(item.get('lineTotal', 0)):,} đ".replace(",", ".")
-        )
+    lines.extend(_order_item_lines(line_items))
     lines.append("")
-    remaining_amount = max(0, int(order.total or 0) - deposit_amount)
-    lines.append(f"Thành tiền: {order.subtotal:,} đ".replace(",", "."))
-    lines.append("Phí vận chuyển: 30.000 - 100.000 đ (tính theo khoảng cách)")
-    lines.append(f"Số tiền đặt cọc (30%): {deposit_amount:,} đ".replace(",", "."))
-    lines.append(f"Số tiền thanh toán khi nhận hàng (chưa tính ship): {remaining_amount:,} đ".replace(",", "."))
-    if order.discount:
-        coupon = f" ({order.coupon})" if order.coupon else ""
-        lines.append(f"Giảm giá{coupon}: -{order.discount:,} đ".replace(",", "."))
+    lines.extend(_order_totals_lines(order))
 
     proof = _parse_data_url_image(payment_proof_base64)
     if proof:
@@ -686,7 +698,7 @@ def send_order_email(
         lines.append("\nLưu ý: Khách hàng chưa đính kèm hình ảnh đặt cọc.")
 
     message = MIMEMultipart()
-    message["Subject"] = subject
+    message["Subject"] = f"[Kingnest] Đơn mới {order.order_code} - {subject_payment}"
     message["From"] = f"{settings.mail_from_name} <{settings.mail_username}>"
     message["To"] = settings.mail_notify_to
     message.attach(MIMEText("\n".join(lines), "plain", "utf-8"))
@@ -698,14 +710,100 @@ def send_order_email(
         filename = (payment_proof_name or f"dat-coc-{order.order_code}.{subtype}").strip() or f"dat-coc-{order.order_code}.jpg"
         image.add_header("Content-Disposition", "attachment", filename=filename)
         message.attach(image)
+    return message
+
+
+def _build_customer_order_email(order: Order, line_items: list[dict[str, Any]]) -> MIMEMultipart:
+    settings = get_settings()
+    lines = [
+        f"Xin chào {order.customer_name},",
+        "",
+        "Kingnest Yến Sào xin cảm ơn quý khách đã đặt hàng thành công.",
+        "Chúng tôi đã nhận được thông tin đơn hàng và sẽ sớm liên hệ để xác nhận giao hàng.",
+        "",
+        "=== THÔNG TIN ĐƠN HÀNG ===",
+        f"Mã đơn: {order.order_code}",
+        f"Thời gian đặt: {order.created_at.strftime('%d/%m/%Y %H:%M')}",
+        f"Hình thức thanh toán: {_payment_label(order.payment_method)}",
+        "",
+        "--- Địa chỉ nhận hàng ---",
+        f"Họ tên: {order.customer_name}",
+        f"SĐT: {order.customer_phone}",
+        f"Địa chỉ: {order.customer_address}",
+    ]
+    if order.customer_note:
+        lines.append(f"Ghi chú: {order.customer_note}")
+    lines.append("")
+    lines.append("--- Nội dung đơn hàng ---")
+    lines.extend(_order_item_lines(line_items))
+    lines.append("")
+    lines.extend(_order_totals_lines(order))
+    lines.extend(
+        [
+            "",
+            "Nếu cần hỗ trợ, quý khách vui lòng liên hệ:",
+            f"Email: {settings.mail_username}",
+            "Hotline / Zalo: 0377250870",
+            "",
+            "Trân trọng,",
+            "Kingnest Yến Sào Khánh Hòa",
+        ]
+    )
+
+    message = MIMEMultipart()
+    message["Subject"] = f"[Kingnest] Đặt hàng thành công - Mã đơn {order.order_code}"
+    message["From"] = f"{settings.mail_from_name} <{settings.mail_username}>"
+    message["To"] = order.customer_email
+    message["Reply-To"] = settings.mail_username
+    message.attach(MIMEText("\n".join(lines), "plain", "utf-8"))
+    return message
+
+
+def send_order_email(
+    order: Order,
+    line_items: list[dict[str, Any]],
+    payment_proof_base64: str | None = None,
+    payment_proof_name: str | None = None,
+) -> None:
+    settings = get_settings()
+    if not (settings.mail_username and settings.mail_password):
+        logger.warning("Bỏ qua gửi email: chưa cấu hình MAIL_USERNAME/MAIL_PASSWORD")
+        return
+
+    messages: list[tuple[str, MIMEMultipart]] = []
+    if settings.mail_notify_to:
+        messages.append(
+            (
+                "shop",
+                _build_shop_order_email(
+                    order,
+                    line_items,
+                    payment_proof_base64=payment_proof_base64,
+                    payment_proof_name=payment_proof_name,
+                ),
+            )
+        )
+    customer_email = (order.customer_email or "").strip()
+    if customer_email:
+        messages.append(("customer", _build_customer_order_email(order, line_items)))
+
+    if not messages:
+        logger.warning("Bỏ qua gửi email đơn %s: không có người nhận", order.order_code)
+        return
 
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             server.login(settings.mail_username, settings.mail_password)
-            server.send_message(message)
+            for recipient_kind, message in messages:
+                server.send_message(message)
+                logger.info(
+                    "Đã gửi email %s đơn %s tới %s",
+                    recipient_kind,
+                    order.order_code,
+                    message["To"],
+                )
         order.email_sent = True
-        logger.info("Đã gửi email đơn %s tới %s", order.order_code, settings.mail_notify_to)
     except Exception:
         logger.exception("Gửi email đơn %s thất bại", order.order_code)
         order.email_sent = False
