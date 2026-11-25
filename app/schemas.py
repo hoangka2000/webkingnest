@@ -33,4 +33,6 @@ class CreateOrderRequest(CamelModel):
     customer_note: str | None = None
     coupon: str | None = None
     payment_method: str | None = None
+    payment_proof_base64: str | None = None
+    payment_proof_name: str | None = None
     items: list[OrderItemRequest]

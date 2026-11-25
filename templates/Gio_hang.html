@@ -137,11 +137,26 @@
                 <p class="payment-transfer-note">Khi chuyển khoản, vui lòng ghi <strong>mã đơn hàng</strong> vào nội dung chuyển khoản để cửa hàng xác nhận nhanh chóng.</p>
             </div>
             <div class="payment-qr-block">
-                <img src="https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783077769/QR_usztki.jpg" alt="Mã QR thanh toán VietQR" class="payment-qr-image">
+                <img src="https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_900/v1795618714/Kingnest/qr_vietinbank_dat_coc.jpg" alt="Mã QR đặt cọc VietinBank - VO NGOC KHANH LINH" class="payment-qr-image">
+                <p class="payment-qr-caption">VietinBank · VO NGOC KHANH LINH · STK 101875104053</p>
+            </div>
+            <div class="payment-proof-box">
+                <label class="payment-proof-label" for="paymentProofInput">Thêm hình ảnh đã đặt cọc</label>
+                <p class="payment-proof-hint">Tải ảnh biên lai / screenshot chuyển khoản để cửa hàng xác nhận đơn hàng.</p>
+                <input type="file" id="paymentProofInput" accept="image/*" capture="environment">
+                <div class="payment-proof-preview" id="paymentProofPreview" hidden>
+                    <img id="paymentProofImage" alt="Xem trước ảnh đặt cọc">
+                    <button type="button" class="payment-proof-remove" id="paymentProofRemove">Xóa ảnh</button>
+                </div>
             </div>
             <div class="pay-actions-row">
                 <button class="pay-back" type="button" id="backToFormBtn">QUAY LẠI</button>
                 <button class="pay-primary" type="button" id="confirmPaidBtn">XÁC NHẬN ĐÃ ĐẶT CỌC</button>
+            </div>
+            <div class="payment-success" id="paymentSuccess" hidden>
+                <h3>Đơn hàng đặt thành công</h3>
+                <p>Sau khi chúng tôi xác nhận đơn hàng sẽ gọi điện xác thực với bạn sau 1-12 tiếng.</p>
+                <a class="payment-success-link" href="/san-pham">Tiếp tục mua sắm</a>
             </div>
         </div>
     </section>

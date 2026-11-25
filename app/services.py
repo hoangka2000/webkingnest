@@ -1,8 +1,12 @@
+import base64
 import json
 import logging
 import random
+import re
 import smtplib
 from datetime import datetime
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Any
 from urllib.parse import quote, urlencode
@@ -509,6 +513,9 @@ def create_order(db: Session, request: CreateOrderRequest) -> Order:
         raise ValueError("Giỏ hàng trống")
 
     payment_method = parse_payment_method(request.payment_method)
+    if payment_method == "BANK_TRANSFER" and not _parse_data_url_image(request.payment_proof_base64):
+        raise ValueError("Vui lòng đính kèm hình ảnh đã đặt cọc")
+
     line_items: list[dict[str, Any]] = []
     subtotal = 0
 
@@ -570,7 +577,12 @@ def create_order(db: Session, request: CreateOrderRequest) -> Order:
     )
     db.add(order)
     db.flush()
-    send_order_email(order, line_items)
+    send_order_email(
+        order,
+        line_items,
+        payment_proof_base64=request.payment_proof_base64,
+        payment_proof_name=request.payment_proof_name,
+    )
     return order
 
 
@@ -596,7 +608,33 @@ def _payment_label(method: str) -> str:
     }.get(method, method)
 
 
-def send_order_email(order: Order, line_items: list[dict[str, Any]]) -> None:
+def _parse_data_url_image(data_url: str | None) -> tuple[bytes, str] | None:
+    if not data_url or not data_url.strip():
+        return None
+    value = data_url.strip()
+    match = re.match(r"^data:(image/[a-zA-Z0-9.+-]+);base64,(.+)$", value, flags=re.DOTALL)
+    if not match:
+        return None
+    mime_type = match.group(1).lower()
+    raw = match.group(2).strip()
+    try:
+        payload = base64.b64decode(raw, validate=False)
+    except Exception:
+        return None
+    if not payload:
+        return None
+    # Keep email payloads reasonable on serverless.
+    if len(payload) > 4_500_000:
+        return None
+    return payload, mime_type
+
+
+def send_order_email(
+    order: Order,
+    line_items: list[dict[str, Any]],
+    payment_proof_base64: str | None = None,
+    payment_proof_name: str | None = None,
+) -> None:
     settings = get_settings()
     if not (settings.mail_username and settings.mail_password and settings.mail_notify_to):
         logger.warning("Bỏ qua gửi email: chưa cấu hình MAIL_USERNAME/MAIL_PASSWORD/MAIL_NOTIFY_TO")
@@ -641,10 +679,25 @@ def send_order_email(order: Order, line_items: list[dict[str, Any]]) -> None:
         coupon = f" ({order.coupon})" if order.coupon else ""
         lines.append(f"Giảm giá{coupon}: -{order.discount:,} đ".replace(",", "."))
 
-    message = MIMEText("\n".join(lines), "plain", "utf-8")
+    proof = _parse_data_url_image(payment_proof_base64)
+    if proof:
+        lines.append("\nĐính kèm: Hình ảnh khách hàng đã đặt cọc (xem file đính kèm).")
+    elif order.payment_method == "BANK_TRANSFER":
+        lines.append("\nLưu ý: Khách hàng chưa đính kèm hình ảnh đặt cọc.")
+
+    message = MIMEMultipart()
     message["Subject"] = subject
     message["From"] = f"{settings.mail_from_name} <{settings.mail_username}>"
     message["To"] = settings.mail_notify_to
+    message.attach(MIMEText("\n".join(lines), "plain", "utf-8"))
+
+    if proof:
+        payload, mime_type = proof
+        subtype = mime_type.split("/", 1)[-1] if "/" in mime_type else "jpeg"
+        image = MIMEImage(payload, _subtype=subtype)
+        filename = (payment_proof_name or f"dat-coc-{order.order_code}.{subtype}").strip() or f"dat-coc-{order.order_code}.jpg"
+        image.add_header("Content-Disposition", "attachment", filename=filename)
+        message.attach(image)
 
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as server:

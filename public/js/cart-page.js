@@ -24,6 +24,13 @@
         const checkoutForm = document.getElementById("checkoutForm");
         const paymentSection = document.getElementById("paymentSection");
         const checkoutLayout = document.getElementById("cartStep2");
+        const paymentProofInput = document.getElementById("paymentProofInput");
+        const paymentProofPreview = document.getElementById("paymentProofPreview");
+        const paymentProofImage = document.getElementById("paymentProofImage");
+        const paymentProofRemove = document.getElementById("paymentProofRemove");
+        const paymentSuccess = document.getElementById("paymentSuccess");
+        const confirmPaidBtn = document.getElementById("confirmPaidBtn");
+        const backToFormBtn = document.getElementById("backToFormBtn");
         const DEPOSIT_RATE = 0.3;
         let checkoutMeta = {
             coupon: "",
@@ -33,6 +40,8 @@
         };
         let currentOrderCode = "";
         let isSubmitting = false;
+        let paymentProofDataUrl = "";
+        let paymentProofName = "";
 
         function getUrlParams() {
             return new URLSearchParams(window.location.search);
@@ -156,6 +165,17 @@
             } else if (safeStep === 3) {
                 showPaymentSection(true);
                 updatePaymentDepositDisplay();
+                if (paymentSuccess) {
+                    paymentSuccess.hidden = true;
+                }
+                if (confirmPaidBtn) {
+                    confirmPaidBtn.hidden = false;
+                }
+                if (backToFormBtn) {
+                    backToFormBtn.hidden = false;
+                }
+                paymentProofInput?.removeAttribute("disabled");
+                paymentProofRemove?.removeAttribute("disabled");
                 if (orderCodeInline && !currentOrderCode) {
                     currentOrderCode = generateOrderCode();
                     orderCodeInline.textContent = currentOrderCode;
@@ -300,7 +320,15 @@
         }
 
         function validatePayment() {
-            return validateCustomerForm();
+            if (!validateCustomerForm()) {
+                return false;
+            }
+            if (!paymentProofDataUrl) {
+                alert("Vui lòng thêm hình ảnh đã đặt cọc trước khi xác nhận.");
+                paymentProofInput?.focus();
+                return false;
+            }
+            return true;
         }
 
         function getCouponValue() {
@@ -309,6 +337,99 @@
                 return "";
             }
             return coupon;
+        }
+
+        function clearPaymentProof() {
+            paymentProofDataUrl = "";
+            paymentProofName = "";
+            if (paymentProofInput) {
+                paymentProofInput.value = "";
+            }
+            if (paymentProofImage) {
+                paymentProofImage.removeAttribute("src");
+            }
+            paymentProofPreview?.setAttribute("hidden", "");
+        }
+
+        function readFileAsDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result || ""));
+                reader.onerror = () => reject(new Error("Không đọc được ảnh đặt cọc"));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function compressImageFile(file, maxWidth, quality) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const dataUrl = await readFileAsDataUrl(file);
+                    const image = new Image();
+                    image.onload = () => {
+                        const width = image.width || maxWidth;
+                        const height = image.height || maxWidth;
+                        const scale = Math.min(1, maxWidth / Math.max(width, 1));
+                        const canvas = document.createElement("canvas");
+                        canvas.width = Math.max(1, Math.round(width * scale));
+                        canvas.height = Math.max(1, Math.round(height * scale));
+                        const ctx = canvas.getContext("2d");
+                        if (!ctx) {
+                            resolve(dataUrl);
+                            return;
+                        }
+                        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL("image/jpeg", quality));
+                    };
+                    image.onerror = () => reject(new Error("Ảnh đặt cọc không hợp lệ"));
+                    image.src = dataUrl;
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        async function handlePaymentProofChange(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) {
+                clearPaymentProof();
+                return;
+            }
+            if (!file.type.startsWith("image/")) {
+                alert("Vui lòng chọn tệp hình ảnh.");
+                clearPaymentProof();
+                return;
+            }
+            try {
+                const compressed = await compressImageFile(file, 1400, 0.82);
+                paymentProofDataUrl = compressed;
+                paymentProofName = (file.name || "dat-coc.jpg").replace(/\.[^.]+$/, ".jpg");
+                if (paymentProofImage) {
+                    paymentProofImage.src = compressed;
+                }
+                paymentProofPreview?.removeAttribute("hidden");
+            } catch (error) {
+                clearPaymentProof();
+                alert(error.message || "Không thể tải ảnh đặt cọc");
+            }
+        }
+
+        function showOrderSuccess() {
+            const actionsRow = document.querySelector(".pay-actions-row");
+            if (paymentSuccess) {
+                paymentSuccess.hidden = false;
+            }
+            if (actionsRow) {
+                actionsRow.hidden = true;
+            }
+            if (confirmPaidBtn) {
+                confirmPaidBtn.hidden = true;
+            }
+            if (backToFormBtn) {
+                backToFormBtn.hidden = true;
+            }
+            paymentProofInput?.setAttribute("disabled", "disabled");
+            paymentProofRemove?.setAttribute("disabled", "disabled");
+            paymentSuccess?.scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
         function buildOrderPayload(paymentMethod) {
@@ -321,6 +442,8 @@
                 customerNote: document.getElementById("customerNote").value.trim(),
                 coupon: getCouponValue(),
                 paymentMethod,
+                paymentProofBase64: paymentProofDataUrl || null,
+                paymentProofName: paymentProofName || null,
                 items: cartApi.getCart().map((item) => ({
                     id: item.id,
                     productId: item.productId || String(item.id).split("-")[0],
@@ -389,7 +512,7 @@
 
         document.getElementById("backToCartBtn")?.addEventListener("click", () => setStep(1));
 
-        document.getElementById("backToFormBtn")?.addEventListener("click", () => {
+        backToFormBtn?.addEventListener("click", () => {
             showPaymentSection(false);
             setStep(2);
             checkoutForm.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -402,14 +525,16 @@
             setStep(3);
         });
 
-        document.getElementById("confirmPaidBtn")?.addEventListener("click", async () => {
+        paymentProofInput?.addEventListener("change", handlePaymentProofChange);
+        paymentProofRemove?.addEventListener("click", clearPaymentProof);
+
+        confirmPaidBtn?.addEventListener("click", async () => {
             const success = await submitOrder("BANK_TRANSFER");
             if (!success) {
                 return;
             }
-            alert("Cảm ơn bạn! Đã ghi nhận khoản đặt cọc và đơn hàng. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.");
             cartApi.clearCart();
-            window.location.href = "/gio-hang?step=1";
+            showOrderSuccess();
         });
 
         cartItemsBox?.addEventListener("click", (event) => {
