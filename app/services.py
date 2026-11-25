@@ -212,11 +212,8 @@ def _variant_price(product: Product, base_price: int, variant_id: str) -> int:
         return yen_chung_pack_price(base_price, variant_id)
     if product.slug == "thung-yen-gia-si":
         return THUNG_PACK_PRICES.get(variant_id, base_price)
-    if product_type == "yen-tinh-che":
-        if variant_id == "50g":
-            return round(base_price * 0.5)
-        if variant_id == "100g":
-            return base_price
+    if product_type in {"yen-tinh-che", "yen-tho"} and variant_id == "100g":
+        return base_price
     return base_price
 
 
@@ -280,8 +277,22 @@ def find_product(db: Session, id_or_slug: str) -> Product | None:
     return None
 
 
+HIDDEN_LISTING_STATUSES = {"hidden", "addon"}
+
+
+def is_hidden_listing_product(product: Product) -> bool:
+    status = parse_json_field(product.status, [])
+    if not isinstance(status, list):
+        return False
+    return any(str(item) in HIDDEN_LISTING_STATUSES for item in status)
+
+
 def list_products(db: Session) -> list[dict[str, Any]]:
-    return [product_listing_map(p) for p in db.query(Product).all()]
+    return [
+        product_listing_map(p)
+        for p in db.query(Product).all()
+        if not is_hidden_listing_product(p)
+    ]
 
 
 def get_product_detail(db: Session, id_or_slug: str) -> dict[str, Any] | None:
@@ -291,7 +302,11 @@ def get_product_detail(db: Session, id_or_slug: str) -> dict[str, Any] | None:
 
 def get_related_products(db: Session, product: Product, limit: int = 4) -> list[dict[str, Any]]:
     current_type = normalize_product_type(product.product_type)
-    others = db.query(Product).filter(Product.id != product.id).all()
+    others = [
+        item
+        for item in db.query(Product).filter(Product.id != product.id).all()
+        if not is_hidden_listing_product(item)
+    ]
     if not current_type:
         return [product_listing_map(item) for item in others[:limit]]
     same_type = [

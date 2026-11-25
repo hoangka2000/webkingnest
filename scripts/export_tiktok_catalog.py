@@ -90,16 +90,12 @@ def tiktok_purchase_options(product: Product) -> list[dict[str, Any]]:
     if product_type in {"yen-tinh-che", "yen-tho"}:
         return [
             {
-                "id": facebook_catalog_id(product.id, variant_id),
-                "variantId": variant_id,
-                "label": label,
+                "id": facebook_catalog_id(product.id),
+                "variantId": "",
+                "label": "",
                 "title": product.title,
-                "price": round(base_price * multiplier),
+                "price": base_price,
             }
-            for variant_id, label, multiplier in (
-                ("50g", "50g", 0.5),
-                ("100g", "100g", 1),
-            )
         ]
 
     return facebook_purchase_options(product)

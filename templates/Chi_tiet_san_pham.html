@@ -30,9 +30,7 @@
                     <span class="product-category" id="productCategory">{% if initial_product %}{{ initial_product.category or 'Sản phẩm yến sào' }}{% endif %}</span>
                     <h1 id="productTitle">{% if initial_product %}{{ initial_product.title }}{% else %}Đang tải...{% endif %}</h1>
                     <div class="detail-price" id="productPrice">{% if initial_product %}{{ initial_product.price }} VNĐ{% endif %}</div>
-                    {% if initial_product and initial_product.desc %}
-                    <p class="product-seo-text" id="productSeoText">{{ initial_product.desc }}</p>
-                    {% endif %}
+                    <p class="product-seo-text" id="productSeoText"{% if not initial_product or not initial_product.desc %} hidden{% endif %}>{% if initial_product and initial_product.desc %}{{ initial_product.desc }}{% endif %}</p>
 
                     <div class="variant-picker" id="variantPicker" hidden>
                         <span class="variant-label" id="variantLabel">Quy cách</span>
@@ -59,6 +57,9 @@
                         <button type="button" class="detail-cart" id="addToCartBtn">Thêm vào giỏ hàng</button>
                         <button type="button" class="detail-buy" id="buyNowBtn">MUA NGAY</button>
                     </div>
+                    <button type="button" class="detail-gift-addon" id="addGiftBoxBtn" hidden>
+                        Thêm hộp quà tặng sang trọng — 120.000đ/hộp
+                    </button>
                 </div>
 
                 <aside class="detail-sidebar">
@@ -108,15 +109,20 @@ let basePrice = 0;
 let selectedVariant = null;
 let variantConfig = null;
 
-const WEIGHT_VARIANTS = [
-    { id: "100g", label: "100g", multiplier: 1 },
-    { id: "50g", label: "50g", multiplier: 0.5 }
-];
-
 const THUNG_VARIANTS = [
     { id: "40hu", label: "40 hũ", price: 1200000 },
     { id: "60hu", label: "60 hũ", price: 1700000 }
 ];
+
+const GIFT_BOX_ADDON = {
+    id: "104",
+    productId: "104",
+    slug: "hop-qua-tang-sang-trong",
+    title: "Hộp quà tặng sang trọng",
+    desc: "Hộp quà tặng sang trọng dùng kèm sản phẩm yến sào.",
+    price: 120000,
+    image: "https://res.cloudinary.com/ln22f4im/image/upload/f_auto,q_auto,w_1200/v1783078091/trungbay_jmmpoc.png"
+};
 
 function buildYenChungVariants(unitPrice) {
     const jarPrice = Number(unitPrice) || 0;
@@ -126,7 +132,7 @@ function buildYenChungVariants(unitPrice) {
     ];
 }
 
-function supportsWeightVariants(product) {
+function supportsGiftBoxAddon(product) {
     const type = normalizeProductType(product.type);
     return type === "yen-tinh-che" || product.type === "yen-tho";
 }
@@ -173,18 +179,12 @@ function getVariantConfig(product) {
             keepDisplayPrice: true
         };
     }
-    if (supportsWeightVariants(product)) {
-        return { kind: "weight", label: "Khối lượng", options: WEIGHT_VARIANTS };
-    }
     return null;
 }
 
 function getVariantPrice(variant) {
     if (!variant || !variantConfig) {
         return basePrice;
-    }
-    if (variantConfig.kind === "weight") {
-        return Math.round(basePrice * (variant.multiplier || 1));
     }
     return variant.price ?? basePrice;
 }
@@ -262,9 +262,7 @@ function renderVariantPicker(product) {
         button.addEventListener("click", () => selectVariant(button.dataset.variantId));
     });
 
-    const defaultVariant = variantConfig.kind === "weight"
-        ? variantConfig.options.find(option => option.id === "100g") || variantConfig.options[0]
-        : variantConfig.options[0];
+    const defaultVariant = variantConfig.options[0];
     picker.removeAttribute("hidden");
     selectVariant(defaultVariant.id);
 
@@ -334,9 +332,36 @@ function handleDetailAddToCart() {
     window.KingnestCart.addToCart(getCartProductPayload(currentProduct), getPurchaseQuantity());
 }
 
+function updateGiftBoxAddonButton(product) {
+    const giftBtn = document.getElementById("addGiftBoxBtn");
+    if (!giftBtn) {
+        return;
+    }
+    const show = Boolean(product && supportsGiftBoxAddon(product));
+    giftBtn.hidden = !show;
+}
+
+function handleAddGiftBox() {
+    if (!window.KingnestCart) {
+        return;
+    }
+    window.KingnestCart.addToCart({
+        id: GIFT_BOX_ADDON.id,
+        productId: GIFT_BOX_ADDON.productId,
+        variantId: "",
+        variantLabel: "",
+        slug: GIFT_BOX_ADDON.slug,
+        title: GIFT_BOX_ADDON.title,
+        desc: GIFT_BOX_ADDON.desc,
+        price: GIFT_BOX_ADDON.price,
+        image: GIFT_BOX_ADDON.image
+    }, 1);
+}
+
 function setupDetailActions() {
     document.getElementById("buyNowBtn")?.addEventListener("click", handleDetailBuyNow);
     document.getElementById("addToCartBtn")?.addEventListener("click", handleDetailAddToCart);
+    document.getElementById("addGiftBoxBtn")?.addEventListener("click", handleAddGiftBox);
     document.getElementById("qtyMinus")?.addEventListener("click", () => setPurchaseQuantity(getPurchaseQuantity() - 1));
     document.getElementById("qtyPlus")?.addEventListener("click", () => setPurchaseQuantity(getPurchaseQuantity() + 1));
 }
@@ -565,6 +590,14 @@ function renderProduct(product) {
     basePrice = Number(product.price) || 0;
     document.getElementById("productPrice").textContent = formatPrice(basePrice);
     renderVariantPicker(product);
+    updateGiftBoxAddonButton(product);
+
+    const seoText = document.getElementById("productSeoText");
+    if (seoText) {
+        const desc = product.desc || product.shortDesc || "";
+        seoText.textContent = desc;
+        seoText.hidden = !desc;
+    }
 
     const category = document.getElementById("productCategory");
     if (product.category) {
@@ -614,6 +647,7 @@ function renderProductError(message) {
     selectedVariant = null;
     document.getElementById("variantPicker")?.setAttribute("hidden", "");
     document.getElementById("variantNote")?.setAttribute("hidden", "");
+    document.getElementById("addGiftBoxBtn")?.setAttribute("hidden", "");
     document.getElementById("productTitle").textContent = "Không tìm thấy sản phẩm";
     document.getElementById("productPrice").textContent = "";
     document.getElementById("descriptionBlock").innerHTML = `<p>${message}</p>`;
