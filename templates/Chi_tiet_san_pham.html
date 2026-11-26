@@ -113,8 +113,9 @@ let variantConfig = null;
 let giftBoxSelected = false;
 
 const THUNG_VARIANTS = [
-    { id: "40hu", label: "40 hũ", price: 1200000 },
-    { id: "60hu", label: "60 hũ", price: 1700000 }
+    { id: "40hu", label: "40 hũ", price: 1340000 },
+    { id: "60hu", label: "60 hũ", price: 1760000 },
+    { id: "120hu", label: "120 hũ", price: 3025000 }
 ];
 
 const GIFT_BOX_ADDON = {
@@ -151,15 +152,20 @@ function isGiftBoxLoaiProduct(product) {
 
 let pendingCatalogId = "";
 
+function isThungYenProduct(product) {
+    return product.slug === "thung-yen-gia-si";
+}
+
 function getVariantConfig(product) {
     const purchaseOptions = Array.isArray(product.purchaseOptions)
         ? product.purchaseOptions.filter((option) => option.variantId)
         : [];
     if (purchaseOptions.length > 0) {
         const isGiftLoai = isGiftBoxLoaiProduct(product);
-        const isYenChung = supportsYenChungVariants(product);
+        const isThung = isThungYenProduct(product);
+        const isYenChung = supportsYenChungVariants(product) && !isThung;
         return {
-            kind: isGiftLoai ? "gift-loai" : (isYenChung ? "yen-chung-pack" : "catalog"),
+            kind: isGiftLoai ? "gift-loai" : (isThung ? "thung" : (isYenChung ? "yen-chung-pack" : "catalog")),
             label: isGiftLoai ? "Chọn loại" : (isYenChung ? "Chọn gói mua" : "Quy cách"),
             options: purchaseOptions.map((option) => ({
                 id: option.variantId,
@@ -171,7 +177,7 @@ function getVariantConfig(product) {
             keepDisplayPrice: isYenChung && !isGiftLoai
         };
     }
-    if (product.slug === "thung-yen-gia-si") {
+    if (isThungYenProduct(product)) {
         return { kind: "thung", label: "Quy cách", options: THUNG_VARIANTS };
     }
     if (supportsYenChungVariants(product)) {

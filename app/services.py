@@ -48,9 +48,12 @@ GIFT_BOX_LOAI_NOTES = {
 }
 
 THUNG_PACK_PRICES = {
-    "40hu": 1200000,
-    "60hu": 1700000,
+    "40hu": 1340000,
+    "60hu": 1760000,
+    "120hu": 3025000,
 }
+
+THUNG_YEN_SLUG = "thung-yen-gia-si"
 
 ARTICLE_SLUG_REDIRECTS: dict[str, str] = {
     "tam-nhin-thuong-hieu-yen-sao-an-thinh-nhan": "tam-nhin-thuong-hieu-yen-sao-khanh-hoa",
@@ -130,9 +133,13 @@ def facebook_catalog_id(product_id: int | str, variant_id: str = "") -> str:
     return f"{base}-{variant}" if variant else base
 
 
+def is_thung_yen_product(product: Product) -> bool:
+    return (product.slug or "") == THUNG_YEN_SLUG
+
+
 def supports_yen_chung_packs(product: Product) -> bool:
     product_type = normalize_product_type(product.product_type)
-    return product_type == "yen-chung"
+    return product_type == "yen-chung" and not is_thung_yen_product(product)
 
 
 def is_gift_box_loai_product(product: Product) -> bool:
@@ -160,6 +167,17 @@ def facebook_purchase_options(product: Product) -> list[dict[str, Any]]:
                 "note": GIFT_BOX_LOAI_NOTES[variant_id],
             }
             for variant_id, label in (("loai1", "Loại 1"), ("loai2", "Loại 2"))
+        ]
+    if is_thung_yen_product(product):
+        return [
+            {
+                "id": facebook_catalog_id(product.id, variant_id),
+                "variantId": variant_id,
+                "label": label,
+                "title": f"{product.title} ({label})",
+                "price": THUNG_PACK_PRICES[variant_id],
+            }
+            for variant_id, label in (("40hu", "40 hũ"), ("60hu", "60 hũ"), ("120hu", "120 hũ"))
         ]
     if supports_yen_chung_packs(product):
         return [
@@ -201,6 +219,7 @@ def _variant_label(variant_id: str) -> str:
         "30hu": "30 hũ",
         "40hu": "40 hũ",
         "60hu": "60 hũ",
+        "120hu": "120 hũ",
         "100g": "100g",
         "50g": "50g",
         "loai1": "Loại 1",
@@ -212,10 +231,10 @@ def _variant_price(product: Product, base_price: int, variant_id: str) -> int:
     product_type = normalize_product_type(product.product_type)
     if is_gift_box_loai_product(product):
         return GIFT_BOX_LOAI_PRICES[product.slug].get(variant_id, base_price)
+    if is_thung_yen_product(product):
+        return THUNG_PACK_PRICES.get(variant_id, base_price)
     if product_type == "yen-chung":
         return yen_chung_pack_price(base_price, variant_id)
-    if product.slug == "thung-yen-gia-si":
-        return THUNG_PACK_PRICES.get(variant_id, base_price)
     if product_type in {"yen-tinh-che", "yen-tho"} and variant_id == "100g":
         return base_price
     return base_price
@@ -292,11 +311,14 @@ def is_hidden_listing_product(product: Product) -> bool:
 
 
 def list_products(db: Session) -> list[dict[str, Any]]:
-    return [
+    products = [
         product_listing_map(p)
         for p in db.query(Product).all()
         if not is_hidden_listing_product(p)
     ]
+    # Thùng yến luôn hiện ô đầu trong danh mục yến chưng / danh sách mặc định.
+    products.sort(key=lambda item: (0 if item.get("slug") == THUNG_YEN_SLUG else 1, item.get("id") or 0))
+    return products
 
 
 def get_product_detail(db: Session, id_or_slug: str) -> dict[str, Any] | None:

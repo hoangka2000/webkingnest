@@ -84,7 +84,7 @@ def tiktok_purchase_options(product: Product) -> list[dict[str, Any]]:
                 "title": product.title,
                 "price": THUNG_PACK_PRICES[variant_id],
             }
-            for variant_id, label in (("40hu", "40 hũ"), ("60hu", "60 hũ"))
+            for variant_id, label in (("40hu", "40 hũ"), ("60hu", "60 hũ"), ("120hu", "120 hũ"))
         ]
 
     if product_type in {"yen-tinh-che", "yen-tho"}:
